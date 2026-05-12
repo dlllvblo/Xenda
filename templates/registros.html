@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+    <title>Registros - Xenda</title>
+
+</head>
+
+<body>
+
+<h1>Xenda v1.0</h1>
+<h2>Registros Capturados</h2>
+
+<table border="1">
+
+    <tr>
+
+        <th>ID</th>
+        <th>Tramo</th>
+        <th>Entidad</th>
+        <th>Municipio</th>
+        <th>Núcleo</th>
+        <th>Frente</th>
+        <th>Actividad</th>
+        <th>Tipo</th>
+        <th>Observaciones</th>
+        <th>Fecha</th>
+
+    </tr>
+
+    {% for r in registros %}
+
+    <tr>
+
+        <td>{{ r.id }}</td>
+        <td>{{ r.tramo }}</td>
+        <td>{{ r.entidad }}</td>
+        <td>{{ r.municipio }}</td>
+        <td>{{ r.nucleo }}</td>
+        <td>{{ r.frente }}</td>
+        <td>{{ r.actividad }}</td>
+        <td>{{ r.tipo }}</td>
+        <td>{{ r.observaciones }}</td>
+        <td>{{ r.fecha }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+<br>
+
+<a href="/">
+    Volver al formulario
+</a>
+
+</body>
+</html>

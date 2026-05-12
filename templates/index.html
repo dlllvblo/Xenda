@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+    <title>Xenda v1.0</title>
+
+</head>
+
+<body>
+
+<h1>Xenda v1.0</h1>
+<h2>Reporte de actividades en campo</h2>
+
+<p>Los campos marcados con * son obligatorios.</p>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+
+            <p style="color: green;">
+                <strong>{{ message }}</strong>
+            </p>
+
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+<form method="POST">
+
+    <!-- DIRECCIÓN -->
+
+    <label>Dirección *</label><br>
+
+    <select name="direccion" required>
+
+        <option value="">Seleccione una dirección</option>
+
+        <option value="PLANEACIÓN">PLANEACIÓN / GEOG. JORGE DANIEL LAZCANO SÁNCHEZ</option>
+        <option value="TOPOGRAFÍA">TOPOGRAFÍA CENTRO / GEOG. RODRIGO SANDOVAL PIÑA</option>
+        <option value="TOPOGRAFÍA OCCIDENTE">TOPOGRAFÍA OCCIDENTE / ING. MARTÍN FLORES BAILÓN</option>
+        <option value="TOPOGRAFÍA NORTE">TOPOGRAFÍA NORTE / ING. LUIS HUMBERTO QUIROZ ESCAMILLA</option>
+        <option value="TOPOGRAFÍA OCCIDENTE PACÍFICO">TOPOGRAFÍA OCCIDENTE PACÍFICO / ARQ. MIGUEL ÁNGEL SÁNCHEZ CORTES</option>
+        <option value="TOPOGRAFÍA NORTE ORIENTE">TOPOGRAFÍA NORTE ORIENTE / ING. AGUSTIN TAPIA VIVEROS</option>
+        <option value="PRODUCTOS Y SISTEMAS GEOESPACIALES">PRODUCTOS Y SISTEMAS GEOESPACIALES / MTRA. VICTORIA ERIKA VELÁSQUEZ ALFARO</option>
+        <option value="BDT'S CONSTRUCCIÓN">BDT'S CONSTRUCCIÓN / ARQ. RAÚL IVAN PÉREZ JUÁREZ</option>
+        <option value="BDT'S AGROFORESTALES">BDT'S AGROFORESTALES / ING. EDUARDO MORALES DAMASO</option>
+        <option value="MEDICIONES">MEDICIONES / ING. MAURO JOEL LÓPEZ FRANCO</option>
+        <option value="TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN">TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN / ING. JAVIER RODRÍGUEZ HERNÁNDEZ</option>
+        <option value="CARTOGRAFÍA">CARTOGRAFÍA / MTRA. THANIA LORENA COLIN ESPINOZA</option>
+        <option value="GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL">GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL / ING. JOSÉ GILBERTO MUÑIZ ROMERO</option>
+        <option value="CONTROL OPERATIVO CENTRO">CONTROL OPERATIVO CENTRO / MTRO. ÁNGEL CEDILLO RODRÍGUEZ</option>
+        <option value="CONTROL OPERATIVO OCCIDENTE">CONTROL OPERATIVO OCCIDENTE / LIC. JESSICA CAROLINA LÓPEZ SÁNCHEZ</option>
+        <option value="CONTROL OPERATIVO NORTE">CONTROL OPERATIVO NORTE / MTRA. KAREN RAMÍREZ RODRÍGUEZ</option>
+
+    </select><br><br>
+
+    <!-- TRAMO -->
+
+    <label>Tramo *</label><br>
+
+    <select name="tramo" required>
+
+        <option value="">Seleccione un tramo</option>
+
+        <option value="TAP">AIFA-PACHUCA</option>
+        <option value="TMQ">MÉXICO-QUERÉTARO</option>
+        <option value="TQI">QUERÉTARO-IRAPUATO</option>
+        <option value="TSNL">SALTILLO-NUEVO LAREDO</option>
+        <option value="TIG">IRAPUATO-GUADALAJARA</option>
+        <option value="TQSLP">QUERÉTARO-SAN LUIS POTOSÍ</option>
+        <option value="TSLPS">SAN LUIS POTOSÍ-SALTILLO</option>
+        <option value="TMLM">MAZATLÁN-LOS MOCHIS</option>
+
+    </select><br><br>
+
+
+    <!-- ENTIDAD -->
+
+    <label>Entidad Federativa *</label><br>
+
+    <select name="entidad" id="entidad" required>
+
+        <option value="">Seleccione una entidad</option>
+
+        {% for entidad in entidades %}
+
+            <option value="{{ entidad }}">
+                {{ entidad }}
+            </option>
+
+        {% endfor %}
+
+    </select><br><br>
+
+
+    <!-- MUNICIPIO -->
+
+    <label>Municipio *</label><br>
+
+    <select name="municipio" id="municipio" required>
+
+        <option value="">
+            Seleccione un municipio
+        </option>
+
+    </select><br><br>
+
+
+    <!-- NUCLEO -->
+
+    <label>Núcleo Agrario *</label><br>
+
+    <select name="nucleo" id="nucleo" required>
+
+        <option value="">
+            Seleccione un núcleo agrario
+        </option>
+
+    </select><br><br>
+
+
+    <!-- FRENTE -->
+
+    <label>Frente</label><br>
+
+    <input name="frente"><br><br>
+
+
+    <!-- ACTIVIDAD -->
+
+    <label>Actividad *</label><br>
+
+    <select name="actividad" required>
+
+        <option value="">Seleccione una actividad</option>
+
+        <option value="LEVANTAMIENTO">LEVANTAMIENTO / MEDICIÓN</option>
+        <option value="RECORRIDO">RECORRIDO</option>
+        <option value="REUNIÓN">REUNIÓN</option>
+        <option value="ASAMBLEA">ASAMBLEA</option>
+
+    </select><br><br>
+
+
+    <!-- TIPO -->
+
+    <label>Tipo *</label><br>
+
+    <select name="tipo" required>
+
+        <option value="">Seleccione un tipo</option>
+
+        <option value="AGROFORESTAL">AGROFORESTAL</option>
+        <option value="BDT'S">BDT'S</option>
+
+    </select><br><br>
+
+    <!-- OBSERVACIONES -->
+
+    <label>Observaciones</label><br>
+
+    <textarea name="observaciones"></textarea><br><br>
+
+
+    <button type="submit">
+        Guardar Registro
+    </button>
+
+</form>
+
+<br>
+
+<a href="/registros">
+    Ver registros capturados
+</a>
+
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    const entidadSelect = document.getElementById('entidad');
+    const municipioSelect = document.getElementById('municipio');
+    const nucleoSelect = document.getElementById('nucleo');
+
+
+    // =====================================
+    // ENTIDAD -> MUNICIPIOS
+    // =====================================
+
+    entidadSelect.addEventListener('change', function() {
+
+        const entidad = entidadSelect.value;
+
+        municipioSelect.innerHTML =
+            '<option value="">Cargando municipios...</option>';
+
+        nucleoSelect.innerHTML =
+            '<option value="">Seleccione un núcleo agrario</option>';
+
+        fetch(`/municipios/${encodeURIComponent(entidad)}`)
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                municipioSelect.innerHTML =
+                    '<option value="">Seleccione un municipio</option>';
+
+                data.forEach(function(municipio) {
+
+                    municipioSelect.innerHTML += `
+                        <option value="${municipio}">
+                            ${municipio}
+                        </option>
+                    `;
+                });
+
+            });
+
+    });
+
+
+    // =====================================
+    // MUNICIPIO -> NUCLEOS
+    // =====================================
+
+    municipioSelect.addEventListener('change', function() {
+
+        const entidad = entidadSelect.value;
+        const municipio = municipioSelect.value;
+
+        nucleoSelect.innerHTML =
+            '<option value="">Cargando núcleos...</option>';
+
+        fetch(`/nucleos/${encodeURIComponent(entidad)}/${encodeURIComponent(municipio)}`)
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                nucleoSelect.innerHTML =
+                    '<option value="">Seleccione un núcleo agrario</option>';
+
+                data.forEach(function(nucleo) {
+
+                    nucleoSelect.innerHTML += `
+                        <option value="${nucleo}">
+                            ${nucleo}
+                        </option>
+                    `;
+                });
+
+            });
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>
