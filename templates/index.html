@@ -39,6 +39,13 @@
             padding: 20px;
         }
 
+        .container {
+
+            max-width: 1200px;
+
+            margin: auto;
+        }
+
         .topbar {
 
             background:
@@ -50,19 +57,19 @@
 
             color: white;
 
-            padding: 28px;
+            padding: 30px;
 
             border-radius: 24px;
 
             margin-bottom: 25px;
 
             box-shadow:
-                0 8px 24px rgba(0,0,0,0.15);
+                0 10px 24px rgba(0,0,0,0.15);
         }
 
         .topbar h1 {
 
-            font-size: 36px;
+            font-size: 38px;
 
             letter-spacing: 2px;
 
@@ -71,16 +78,9 @@
 
         .topbar p {
 
-            opacity: 0.92;
-
             font-size: 15px;
-        }
 
-        .container {
-
-            max-width: 1200px;
-
-            margin: auto;
+            opacity: 0.92;
         }
 
         .card {
@@ -196,7 +196,7 @@
 
             text-align: center;
 
-            margin-top: 30px;
+            margin-top: 35px;
         }
 
         .submit-btn {
@@ -212,7 +212,7 @@
 
             border: none;
 
-            padding: 18px 40px;
+            padding: 18px 42px;
 
             border-radius: 18px;
 
@@ -240,7 +240,7 @@
 
             text-align: center;
 
-            margin-top: 30px;
+            margin-top: 35px;
 
             color: #6b7280;
 
@@ -260,17 +260,6 @@
             font-weight: bold;
         }
 
-        hr {
-
-            border: none;
-
-            height: 1px;
-
-            background: #e5e7eb;
-
-            margin: 30px 0;
-        }
-
         @media (max-width: 768px) {
 
             body {
@@ -280,7 +269,7 @@
 
             .topbar h1 {
 
-                font-size: 26px;
+                font-size: 28px;
             }
 
             .card {
@@ -305,18 +294,6 @@
         <p>
             Sistema de Captura Territorial ·
             RAN · SEDATU · Proyecto Ferroviario
-        </p>
-
-    </div>
-
-    <div class="card">
-
-        <div class="section-title">
-            Registro de Actividades en Campo
-        </div>
-
-        <p style="color:#6b7280;">
-            Los campos marcados con * son obligatorios.
         </p>
 
     </div>
@@ -423,36 +400,157 @@
                         Seleccione un tramo
                     </option>
 
-                    <option value="TAP">
-                        AIFA-PACHUCA
+                    <option value="TAP">AIFA-PACHUCA</option>
+                    <option value="TMQ">MÉXICO-QUERÉTARO</option>
+                    <option value="TQI">QUERÉTARO-IRAPUATO</option>
+                    <option value="TSNL">SALTILLO-NUEVO LAREDO</option>
+                    <option value="TIG">IRAPUATO-GUADALAJARA</option>
+                    <option value="TQSLP">QUERÉTARO-SAN LUIS POTOSÍ</option>
+                    <option value="TSLPS">SAN LUIS POTOSÍ-SALTILLO</option>
+                    <option value="TMLM">MAZATLÁN-LOS MOCHIS</option>
+
+                </select>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Entidad Federativa *</label>
+
+                <select
+                    name="entidad"
+                    id="entidad"
+                    required
+                >
+
+                    <option value="">
+                        Seleccione una entidad
                     </option>
 
-                    <option value="TMQ">
-                        MÉXICO-QUERÉTARO
+                    {% for entidad in entidades %}
+
+                        <option value="{{ entidad }}">
+                            {{ entidad }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Municipio *</label>
+
+                <select
+                    name="municipio"
+                    id="municipio"
+                    required
+                >
+
+                    <option value="">
+                        Seleccione un municipio
                     </option>
 
-                    <option value="TQI">
-                        QUERÉTARO-IRAPUATO
+                </select>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Núcleo Agrario *</label>
+
+                <select
+                    name="nucleo"
+                    id="nucleo"
+                    required
+                >
+
+                    <option value="">
+                        Seleccione un núcleo agrario
                     </option>
 
-                    <option value="TSNL">
-                        SALTILLO-NUEVO LAREDO
+                </select>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Frente</label>
+
+                <input name="frente">
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="section-title">
+            Actividad Operativa
+        </div>
+
+        <div class="grid">
+
+            <div class="input-group">
+
+                <label>Tipo de actividad *</label>
+
+                <select
+                    name="actividad"
+                    required
+                >
+
+                    <option value="">
+                        Seleccione una opción
                     </option>
 
-                    <option value="TIG">
-                        IRAPUATO-GUADALAJARA
+                    <option value="MEDICIÓN">
+                        MEDICIÓN
                     </option>
 
-                    <option value="TQSLP">
-                        QUERÉTARO-SAN LUIS POTOSÍ
+                    <option value="REUNIÓN">
+                        REUNIÓN
                     </option>
 
-                    <option value="TSLPS">
-                        SAN LUIS POTOSÍ-SALTILLO
+                    <option value="ASAMBLEA">
+                        ASAMBLEA
                     </option>
 
-                    <option value="TMLM">
-                        MAZATLÁN-LOS MOCHIS
+                </select>
+
+            </div>
+
+            <div class="input-group">
+
+                <label>Modalidad *</label>
+
+                <select
+                    name="tipo"
+                    required
+                >
+
+                    <option value="">
+                        Seleccione una opción
+                    </option>
+
+                    <option value="AGROFORESTAL">
+                        AGROFORESTAL
+                    </option>
+
+                    <option value="BDT'S">
+                        BDT'S
+                    </option>
+
+                    <option value="1RA">
+                        1RA
+                    </option>
+
+                    <option value="2DA">
+                        2DA
                     </option>
 
                 </select>
@@ -460,6 +558,87 @@
             </div>
 
         </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="section-title">
+            Producción Técnica
+        </div>
+
+        <div class="grid">
+
+            <div class="input-group">
+
+                <label>
+                    No. DE MEDICIONES AGROFORESTALES
+                </label>
+
+                <input
+                    type="number"
+                    name="mediciones_agroforestales"
+                    min="0"
+                    placeholder="Ingrese el número de mediciones realizadas"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>
+                    No. DE MEDICIONES BDT'S
+                </label>
+
+                <input
+                    type="number"
+                    name="mediciones_bdts"
+                    min="0"
+                    placeholder="Ingrese el número de mediciones realizadas"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>PLANOS</label>
+
+                <input
+                    type="number"
+                    name="planos"
+                    min="0"
+                    placeholder="Ingrese el número de planos realizados"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>INFOGRAFÍAS</label>
+
+                <input
+                    type="number"
+                    name="infografias"
+                    min="0"
+                    placeholder="Ingrese el número de infografías realizadas"
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="section-title">
+            Observaciones
+        </div>
+
+        <textarea
+            name="observaciones"
+            placeholder="Ingrese observaciones generales..."
+        ></textarea>
 
     </div>
 
@@ -476,6 +655,13 @@
 
 </form>
 
+<a
+    href="/registros"
+    class="link-registros"
+>
+    Ver registros capturados
+</a>
+
 <div class="footer">
 
     XENDA · Registro Agrario Nacional ·
@@ -484,6 +670,83 @@
 </div>
 
 </div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    const entidadSelect = document.getElementById('entidad');
+
+    const municipioSelect = document.getElementById('municipio');
+
+    const nucleoSelect = document.getElementById('nucleo');
+
+    entidadSelect.addEventListener('change', function() {
+
+        const entidad = entidadSelect.value;
+
+        municipioSelect.innerHTML =
+            '<option value=\"\">Cargando municipios...</option>';
+
+        nucleoSelect.innerHTML =
+            '<option value=\"\">Seleccione un núcleo agrario</option>';
+
+        fetch(`/municipios/${encodeURIComponent(entidad)}`)
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                municipioSelect.innerHTML =
+                    '<option value=\"\">Seleccione un municipio</option>';
+
+                data.forEach(function(municipio) {
+
+                    municipioSelect.innerHTML += `
+                        <option value=\"${municipio}\">
+                            ${municipio}
+                        </option>
+                    `;
+                });
+
+            });
+
+    });
+
+    municipioSelect.addEventListener('change', function() {
+
+        const entidad = entidadSelect.value;
+
+        const municipio = municipioSelect.value;
+
+        nucleoSelect.innerHTML =
+            '<option value=\"\">Cargando núcleos...</option>';
+
+        fetch(`/nucleos/${encodeURIComponent(entidad)}/${encodeURIComponent(municipio)}`)
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                nucleoSelect.innerHTML =
+                    '<option value=\"\">Seleccione un núcleo agrario</option>';
+
+                data.forEach(function(nucleo) {
+
+                    nucleoSelect.innerHTML += `
+                        <option value=\"${nucleo}\">
+                            ${nucleo}
+                        </option>
+                    `;
+                });
+
+            });
+
+    });
+
+});
+
+</script>
 
 </body>
 </html>
