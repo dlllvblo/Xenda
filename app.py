@@ -1,15 +1,21 @@
 from flask import Flask, render_template, request, redirect, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask import session
 import pandas as pd
 import unicodedata
 
 app = Flask(__name__)
-app.secret_key = 'xenda123'
+app.secret_key = 'RAND-GCAT_2026'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda_v2.db'
 
 db = SQLAlchemy(app)
+usuarios = {
+    "brigada1@gmail.com": "xenda123",
+    "brigada2@gmail.com": "xenda456",
+    "admin@gmail.com": "admin123"
+}
 
 
 # =========================================
@@ -103,8 +109,40 @@ def periodo_abierto():
 # FORMULARIO PRINCIPAL
 # =========================================
 
+@app.route('/login', methods=['GET', 'POST'])
+
+def login():
+
+    if request.method == 'POST':
+
+        correo = request.form['correo']
+        password = request.form['password']
+
+        if correo in usuarios and usuarios[correo] == password:
+
+            session['usuario'] = correo
+
+            return redirect('/')
+
+        else:
+
+            return render_template(
+                'login.html',
+                error='Correo o contraseña incorrectos'
+            )
+
+    return render_template('login.html')
+@app.route('/logout')
+
+def logout():
+
+    session.pop('usuario', None)
+
+    return redirect('/login')
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    if 'usuario' not in session:
+        return redirect('/login')
 
     if not periodo_abierto():
         return render_template('cerrado.html')
