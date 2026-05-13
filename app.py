@@ -118,7 +118,6 @@ def index():
     if request.method == 'POST':
 
         nuevo = Registro(
-
             tramo=request.form['tramo'],
             entidad=request.form['entidad'],
             municipio=request.form['municipio'],
@@ -126,12 +125,11 @@ def index():
             frente=request.form['frente'],
             actividad=request.form['actividad'],
             tipo=request.form['tipo'],
-            observaciones=request.form['observaciones']
             mediciones_agroforestales=request.form.get('mediciones_agroforestales') or 0,
             mediciones_bdts=request.form.get('mediciones_bdts') or 0,
             planos=request.form.get('planos') or 0,
             infografias=request.form.get('infografias') or 0,
-
+            observaciones=request.form['observaciones'],
         )
 
         db.session.add(nuevo)
