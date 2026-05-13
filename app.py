@@ -30,6 +30,7 @@ from googleapiclient.http import MediaFileUpload
 app = Flask(__name__)
 
 app.secret_key = 'RAN-DGCAT_2026'
+ADMIN_CORREO = 'diazedgar1701@gmail.com'
 
 app.permanent_session_lifetime = timedelta(days=7)
 
@@ -379,6 +380,81 @@ def logout():
 
     return redirect('/login')
 
+
+# =========================================
+# ADMIN
+# =========================================
+
+@app.route('/admin', methods=['GET', 'POST'])
+
+def admin():
+
+    if 'usuario' not in session:
+
+        return redirect('/login')
+
+    if session['usuario'] != ADMIN_CORREO:
+
+        return 'Acceso no autorizado'
+
+    if request.method == 'POST':
+
+        correo = request.form['correo']
+
+        correo = correo.strip().lower()
+
+        existente = Usuario.query.filter_by(
+            correo=correo
+        ).first()
+
+        if existente:
+
+            flash('El usuario ya existe')
+
+        else:
+
+            nuevo = Usuario(
+                correo=correo
+            )
+
+            db.session.add(nuevo)
+
+            db.session.commit()
+
+            flash('Usuario agregado correctamente')
+
+        return redirect('/admin')
+
+    usuarios = Usuario.query.order_by(
+        Usuario.correo.asc()
+    ).all()
+
+    return render_template(
+        'admin.html',
+        usuarios=usuarios
+    )
+
+@app.route('/eliminar_usuario/<int:id>')
+
+def eliminar_usuario(id):
+
+    if 'usuario' not in session:
+
+        return redirect('/login')
+
+    if session['usuario'] != ADMIN_CORREO:
+
+        return 'Acceso no autorizado'
+
+    usuario = Usuario.query.get_or_404(id)
+
+    db.session.delete(usuario)
+
+    db.session.commit()
+
+    flash('Usuario eliminado')
+
+    return redirect('/admin')
 
 # =========================================
 # CREAR USUARIOS
