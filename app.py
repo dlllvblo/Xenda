@@ -429,10 +429,7 @@ def admin():
         Usuario.correo.asc()
     ).all()
 
-    return render_template(
-        'admin.html',
-        usuarios=usuarios
-    )
+    return 'ADMIN FUNCIONANDO'
 
 @app.route('/eliminar_usuario/<int:id>')
 
