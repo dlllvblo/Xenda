@@ -18,7 +18,7 @@ import unicodedata
 from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'RAND-GCAT_2026'
+app.secret_key = 'RAN-DGCAT_2026'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda_v2.db'
 
@@ -33,11 +33,6 @@ class Usuario(db.Model):
     correo = db.Column(
         db.String(200),
         unique=True,
-        nullable=False
-    )
-
-    password = db.Column(
-        db.String(300),
         nullable=False
     )
 
@@ -154,10 +149,7 @@ def login():
             correo=correo
         ).first()
 
-        if usuario and check_password_hash(
-            usuario.password,
-            password
-        ):
+        if usuario and password == 'RAN-DGCAT_2026':
 
             session.permanent = True
 
@@ -169,10 +161,11 @@ def login():
 
             return render_template(
                 'login.html',
-                error='Correo o contraseña incorrectos'
+                error='Acceso no autorizado'
             )
 
     return render_template('login.html')
+
 @app.route('/logout')
 
 def logout():
@@ -187,11 +180,7 @@ def crear_usuario():
 
     usuario = Usuario(
 
-        correo='TU_CORREO@gmail.com',
-
-        password=generate_password_hash(
-            'TU_PASSWORD'
-        )
+        correo='paolamateoponce@gmail.com'
 
     )
 
