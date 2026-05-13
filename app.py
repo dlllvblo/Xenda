@@ -7,20 +7,36 @@ from flask import (
     session,
     jsonify
 )
+
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+
+from datetime import datetime, timedelta
+
 import pandas as pd
 import unicodedata
-from datetime import datetime
+
+
+# =========================================
+# APP
+# =========================================
 
 app = Flask(__name__)
+
 app.secret_key = 'RAN-DGCAT_2026'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda_v2.db'
+app.permanent_session_lifetime = timedelta(days=7)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda_v3.db'
 
 db = SQLAlchemy(app)
+
+
+# =========================================
+# MODELO USUARIOS
+# =========================================
+
 class Usuario(db.Model):
-    
+
     id = db.Column(
         db.Integer,
         primary_key=True
@@ -32,13 +48,48 @@ class Usuario(db.Model):
         nullable=False
     )
 
-def registro_habilitado():
-    
-    ahora = datetime.now()
 
-    dia = ahora.day
+# =========================================
+# MODELO REGISTROS
+# =========================================
 
-    return (10 <= dia <= 14) or (25 <= dia <= 29) 
+class Registro(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    direccion = db.Column(db.String(200))
+
+    tramo = db.Column(db.String(100))
+
+    entidad = db.Column(db.String(100))
+
+    municipio = db.Column(db.String(100))
+
+    nucleo = db.Column(db.String(200))
+
+    frente = db.Column(db.String(50))
+
+    actividad = db.Column(db.String(100))
+
+    tipo = db.Column(db.String(100))
+
+    mediciones_agroforestales = db.Column(db.Integer)
+
+    mediciones_bdts = db.Column(db.Integer)
+
+    planos = db.Column(db.Integer)
+
+    infografias = db.Column(db.Integer)
+
+    observaciones = db.Column(db.Text)
+
+    fecha = db.Column(
+        db.DateTime,
+        default=datetime.now
+    )
 
 
 # =========================================
@@ -49,10 +100,32 @@ def normalizar(texto):
 
     texto = str(texto).strip().upper()
 
-    texto = unicodedata.normalize('NFKD', texto)
-    texto = texto.encode('ASCII', 'ignore').decode('utf-8')
+    texto = unicodedata.normalize(
+        'NFKD',
+        texto
+    )
+
+    texto = texto.encode(
+        'ASCII',
+        'ignore'
+    ).decode('utf-8')
 
     return texto
+
+
+# =========================================
+# CONTROL DE PERIODOS
+# =========================================
+
+def registro_habilitado():
+
+    dia = datetime.now().day
+
+    return (
+        (10 <= dia <= 14)
+        or
+        (25 <= dia <= 29)
+    )
 
 
 # =========================================
@@ -93,43 +166,7 @@ catalogo['MUNICIPIO_NORMALIZADO'] = (
 
 
 # =========================================
-# BASE DE DATOS
-# =========================================
-
-class Registro(db.Model):
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    direccion = db.Column(db.String(200))
-    tramo = db.Column(db.String(100))
-    entidad = db.Column(db.String(100))
-    municipio = db.Column(db.String(100))
-    nucleo = db.Column(db.String(200))
-    frente = db.Column(db.String(50))
-    actividad = db.Column(db.String(100))
-    tipo = db.Column(db.String(100))
-    observaciones = db.Column(db.Text)
-    mediciones_agroforestales = db.Column(db.Integer)
-    mediciones_bdts = db.Column(db.Integer)
-    planos = db.Column(db.Integer)
-    infografias = db.Column(db.Integer)
-
-    fecha = db.Column(db.DateTime, default=datetime.now)
-
-
-# =========================================
-# CONTROL DE PERIODO
-# =========================================
-
-def periodo_abierto():
-
-    dia = datetime.now().day
-
-    return (10 <= dia <= 14) or (25 <= dia <= 29)
-
-
-# =========================================
-# FORMULARIO PRINCIPAL
+# LOGIN
 # =========================================
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -139,6 +176,7 @@ def login():
     if request.method == 'POST':
 
         correo = request.form['correo']
+
         password = request.form['password']
 
         usuario = Usuario.query.filter_by(
@@ -162,13 +200,23 @@ def login():
 
     return render_template('login.html')
 
+
+# =========================================
+# LOGOUT
+# =========================================
+
 @app.route('/logout')
 
 def logout():
 
-    session.pop('usuario', None)
+    session.clear()
 
     return redirect('/login')
+
+
+# =========================================
+# CREAR USUARIO
+# =========================================
 
 @app.route('/crear_usuario')
 
@@ -186,6 +234,11 @@ def crear_usuario():
 
     return 'Usuario creado correctamente'
 
+
+# =========================================
+# VER USUARIOS
+# =========================================
+
 @app.route('/usuarios')
 
 def ver_usuarios():
@@ -200,50 +253,101 @@ def ver_usuarios():
 
     return '<br>'.join(lista)
 
+
+# =========================================
+# FORMULARIO PRINCIPAL
+# =========================================
+
 @app.route('/', methods=['GET', 'POST'])
+
 def index():
+
     if not registro_habilitado():
-    
+
         session.clear()
 
-        return render_template('cerrado.html')
+        return render_template(
+            'cerrado.html'
+        )
 
     if 'usuario' not in session:
+
         return redirect('/login')
 
     entidades = sorted(
+
         catalogo['ENTIDAD_FEDERATIVA']
+
         .dropna()
+
         .unique()
+
     )
 
     if request.method == 'POST':
 
         nuevo = Registro(
+
             tramo=request.form['tramo'],
+
             entidad=request.form['entidad'],
+
             municipio=request.form['municipio'],
+
             nucleo=request.form['nucleo'],
+
             frente=request.form['frente'],
+
             actividad=request.form['actividad'],
+
             tipo=request.form['tipo'],
-            mediciones_agroforestales=request.form.get('mediciones_agroforestales') or 0,
-            mediciones_bdts=request.form.get('mediciones_bdts') or 0,
-            planos=request.form.get('planos') or 0,
-            infografias=request.form.get('infografias') or 0,
-            observaciones=request.form['observaciones'],
+
+            mediciones_agroforestales=(
+                request.form.get(
+                    'mediciones_agroforestales'
+                ) or 0
+            ),
+
+            mediciones_bdts=(
+                request.form.get(
+                    'mediciones_bdts'
+                ) or 0
+            ),
+
+            planos=(
+                request.form.get(
+                    'planos'
+                ) or 0
+            ),
+
+            infografias=(
+                request.form.get(
+                    'infografias'
+                ) or 0
+            ),
+
+            observaciones=request.form[
+                'observaciones'
+            ]
+
         )
 
         db.session.add(nuevo)
+
         db.session.commit()
 
-        flash('Registro guardado correctamente')
+        flash(
+            'Registro guardado correctamente'
+        )
 
         return redirect('/')
 
     return render_template(
+
         'index.html',
+
         entidades=entidades
+
     )
 
 
@@ -252,17 +356,26 @@ def index():
 # =========================================
 
 @app.route('/municipios/<entidad>')
+
 def municipios(entidad):
 
     entidad = normalizar(entidad)
 
     municipios = catalogo[
-        catalogo['ENTIDAD_NORMALIZADA'] == entidad
-    ]['MUNICIPIO'].dropna().unique()
+
+        catalogo[
+            'ENTIDAD_NORMALIZADA'
+        ] == entidad
+
+    ][
+        'MUNICIPIO'
+    ].dropna().unique()
 
     municipios = sorted(municipios)
 
-    return jsonify(list(municipios))
+    return jsonify(
+        list(municipios)
+    )
 
 
 # =========================================
@@ -270,26 +383,46 @@ def municipios(entidad):
 # =========================================
 
 @app.route('/nucleos/<entidad>/<municipio>')
+
 def nucleos(entidad, municipio):
 
     entidad = normalizar(entidad)
+
     municipio = normalizar(municipio)
 
     nucleos = catalogo[
-        (catalogo['ENTIDAD_NORMALIZADA'] == entidad) &
-        (catalogo['MUNICIPIO_NORMALIZADO'] == municipio)
-    ]['NUCLEO_AGRARIO'].dropna().unique()
+
+        (
+            catalogo[
+                'ENTIDAD_NORMALIZADA'
+            ] == entidad
+        )
+
+        &
+
+        (
+            catalogo[
+                'MUNICIPIO_NORMALIZADO'
+            ] == municipio
+        )
+
+    ][
+        'NUCLEO_AGRARIO'
+    ].dropna().unique()
 
     nucleos = sorted(nucleos)
 
-    return jsonify(list(nucleos))
+    return jsonify(
+        list(nucleos)
+    )
 
 
 # =========================================
-# VER REGISTROS
+# REGISTROS
 # =========================================
 
 @app.route('/registros')
+
 def registros():
 
     lista = Registro.query.order_by(
@@ -303,13 +436,22 @@ def registros():
 
 
 # =========================================
-# INICIO
+# CREAR TABLAS
 # =========================================
 
 with app.app_context():
+
     db.create_all()
 
 
+# =========================================
+# INICIO
+# =========================================
+
 if __name__ == '__main__':
 
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=True
+    )
