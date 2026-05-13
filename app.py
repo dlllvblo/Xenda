@@ -8,10 +8,6 @@ from flask import (
     jsonify
 )
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import (
-    generate_password_hash,
-    check_password_hash
-)
 from datetime import datetime
 import pandas as pd
 import unicodedata
@@ -189,6 +185,20 @@ def crear_usuario():
     db.session.commit()
 
     return 'Usuario creado correctamente'
+
+@app.route('/usuarios')
+
+def ver_usuarios():
+
+    usuarios = Usuario.query.all()
+
+    lista = []
+
+    for u in usuarios:
+
+        lista.append(u.correo)
+
+    return '<br>'.join(lista)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
