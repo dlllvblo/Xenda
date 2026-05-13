@@ -26,7 +26,7 @@ app.secret_key = 'RAN-DGCAT_2026'
 
 app.permanent_session_lifetime = timedelta(days=7)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda_v1.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda.db'
 
 db = SQLAlchemy(app)
 
@@ -223,7 +223,7 @@ def logout():
 def crear_usuario():
 
     existente = Usuario.query.filter_by(
-        correo='paolamateoponce@gmail.com'
+        correo='diazedgar1701@gmail.com'
     ).first()
 
     if existente:
@@ -232,7 +232,7 @@ def crear_usuario():
 
     usuario = Usuario(
 
-        correo='paolamateoponce@gmail.com'
+        correo='diazedgar1701@gmail.com'
 
     )
 
