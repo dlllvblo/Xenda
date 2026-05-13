@@ -126,72 +126,213 @@
     <input name="frente"><br><br>
 
 
-<label>Tipo de Actividad *</label><br>
+<h2>ACTIVIDAD</h2>
 
-<select name="actividad" required>
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
 
-    <option value="">
-        Seleccione una actividad
-    </option>
+    <!-- ACTIVIDAD -->
 
-    <option value="MEDICIÓN">
-        MEDICIÓN
-    </option>
+    <div style="flex: 1; min-width: 300px;">
 
-    <option value="REUNIÓN">
-        REUNIÓN
-    </option>
+        <label>
+            Tipo de actividad *
+        </label><br><br>
 
-    <option value="ASAMBLEA">
-        ASAMBLEA
-    </option>
+        <select
+            name="actividad"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            "
+        >
 
-</select>
+            <option value="">
+                Seleccione una opción
+            </option>
+
+            <option value="MEDICIÓN">
+                MEDICIÓN
+            </option>
+
+            <option value="REUNIÓN">
+                REUNIÓN
+            </option>
+
+            <option value="ASAMBLEA">
+                ASAMBLEA
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- MODALIDAD -->
+
+    <div style="flex: 1; min-width: 300px;">
+
+        <label>
+            Modalidad *
+        </label><br><br>
+
+        <select
+            name="tipo"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            "
+        >
+
+            <option value="">
+                Seleccione una opción
+            </option>
+
+            <option value="AGROFORESTAL">
+                AGROFORESTAL
+            </option>
+
+            <option value="BDT'S">
+                BDT'S
+            </option>
+
+            <option value="1RA">
+                1RA
+            </option>
+
+            <option value="2DA">
+                2DA
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+<br><br>
+
+<hr>
+
+<br><br>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+
+    <!-- AGROFORESTALES -->
+
+    <div style="flex: 1; min-width: 300px;">
+
+        <label>
+            <strong>
+                No. DE MEDICIONES AGROFORESTALES
+            </strong>
+        </label><br><br>
+
+        <input
+            type="number"
+            name="mediciones_agroforestales"
+            min="0"
+            placeholder="Ingrese el número de mediciones realizadas"
+
+            style="
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            "
+        >
+
+    </div>
+
+
+    <!-- BDTS -->
+
+    <div style="flex: 1; min-width: 300px;">
+
+        <label>
+            <strong>
+                No. DE MEDICIONES BDT'S
+            </strong>
+        </label><br><br>
+
+        <input
+            type="number"
+            name="mediciones_bdts"
+            min="0"
+            placeholder="Ingrese el número de mediciones realizadas"
+
+            style="
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            "
+        >
+
+    </div>
+
+</div>
 
 <br><br>
 
 
-<label>Modalidad *</label><br>
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
 
-<select name="tipo" required>
+    <!-- PLANOS -->
 
-    <option value="">
-        Seleccione una modalidad
-    </option>
+    <div style="flex: 1; min-width: 300px;">
 
-    <option value="AGROFORESTAL">
-        AGROFORESTAL
-    </option>
+        <label>
+            <strong>
+                PLANOS
+            </strong>
+        </label><br><br>
 
-    <option value="BDT'S">
-        BDT'S
-    </option>
+        <input
+            type="number"
+            name="planos"
+            min="0"
+            placeholder="Ingrese el número de planos realizados"
 
-    <option value="1RA">
-        1RA
-    </option>
+            style="
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            "
+        >
 
-    <option value="2DA">
-        2DA
-    </option>
+    </div>
 
-</select>
+
+    <!-- INFOGRAFIAS -->
+
+    <div style="flex: 1; min-width: 300px;">
+
+        <label>
+            <strong>
+                INFOGRAFÍAS
+            </strong>
+        </label><br><br>
+
+        <input
+            type="number"
+            name="infografias"
+            min="0"
+            placeholder="Ingrese el número de infografías realizadas"
+
+            style="
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            "
+        >
+
+    </div>
+
+</div>
 
 <br><br>
-
-
-    <!-- TIPO -->
-
-    <label>Tipo *</label><br>
-
-    <select name="tipo" required>
-
-        <option value="">Seleccione un tipo</option>
-
-        <option value="AGROFORESTAL">AGROFORESTAL</option>
-        <option value="BDT'S">BDT'S</option>
-
-    </select><br><br>
 
     <!-- OBSERVACIONES -->
 

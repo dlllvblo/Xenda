@@ -80,6 +80,10 @@ class Registro(db.Model):
     actividad = db.Column(db.String(100))
     tipo = db.Column(db.String(100))
     observaciones = db.Column(db.Text)
+    mediciones_agroforestales = db.Column(db.Integer)
+    mediciones_bdts = db.Column(db.Integer)
+    planos = db.Column(db.Integer)
+    infografias = db.Column(db.Integer)
 
     fecha = db.Column(db.DateTime, default=datetime.now)
 
@@ -123,6 +127,10 @@ def index():
             actividad=request.form['actividad'],
             tipo=request.form['tipo'],
             observaciones=request.form['observaciones']
+            mediciones_agroforestales=request.form.get('mediciones_agroforestales') or 0,
+            mediciones_bdts=request.form.get('mediciones_bdts') or 0,
+            planos=request.form.get('planos') or 0,
+            infografias=request.form.get('infografias') or 0,
 
         )
 
