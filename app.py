@@ -26,7 +26,7 @@ app.secret_key = 'RAN-DGCAT_2026'
 
 app.permanent_session_lifetime = timedelta(days=7)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda_v3.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda.db'
 
 db = SQLAlchemy(app)
 
