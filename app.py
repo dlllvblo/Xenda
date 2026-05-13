@@ -14,6 +14,13 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import unicodedata
+import os
+
+from google.oauth2.service_account import Credentials
+
+from googleapiclient.discovery import build
+
+from googleapiclient.http import MediaFileUpload
 
 
 # =========================================
@@ -46,6 +53,29 @@ class Usuario(db.Model):
         db.String(200),
         unique=True,
         nullable=False
+    )
+
+
+# =========================================
+# CONTROL EXPORTACIONES
+# =========================================
+
+class Exportacion(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    mes = db.Column(
+        db.String(20),
+        unique=True,
+        nullable=False
+    )
+
+    fecha_exportacion = db.Column(
+        db.DateTime,
+        default=datetime.now
     )
 
 
@@ -126,6 +156,142 @@ def registro_habilitado():
         or
         (25 <= dia <= 29)
     )
+
+
+# =========================================
+# EXPORTACION AUTOMATICA
+# =========================================
+
+def exportar_excel_mensual():
+
+    ahora = datetime.now()
+
+    dia = ahora.day
+
+    if dia != 30:
+
+        return
+
+    mes_actual = ahora.strftime('%Y_%m')
+
+    exportado = Exportacion.query.filter_by(
+        mes=mes_actual
+    ).first()
+
+    if exportado:
+
+        return
+
+    registros = Registro.query.filter(
+
+        db.extract('year', Registro.fecha) == ahora.year,
+
+        db.extract('month', Registro.fecha) == ahora.month
+
+    ).all()
+
+    if not registros:
+
+        return
+
+    datos = []
+
+    for r in registros:
+
+        datos.append({
+
+            'FECHA': r.fecha,
+            'TRAMO': r.tramo,
+            'ENTIDAD': r.entidad,
+            'MUNICIPIO': r.municipio,
+            'NUCLEO': r.nucleo,
+            'FRENTE': r.frente,
+            'ACTIVIDAD': r.actividad,
+            'MODALIDAD': r.tipo,
+            'MEDICIONES_AGROFORESTALES': r.mediciones_agroforestales,
+            'MEDICIONES_BDTS': r.mediciones_bdts,
+            'PLANOS': r.planos,
+            'INFOGRAFIAS': r.infografias,
+            'OBSERVACIONES': r.observaciones
+
+        })
+
+    df = pd.DataFrame(datos)
+
+    nombre_excel = f'XENDA_{mes_actual}.xlsx'
+
+    ruta_excel = os.path.join(
+        os.getcwd(),
+        nombre_excel
+    )
+
+    df.to_excel(
+        ruta_excel,
+        index=False
+    )
+
+    SCOPES = [
+        'https://www.googleapis.com/auth/drive'
+    ]
+
+    creds = Credentials.from_service_account_file(
+        'credentials.json',
+        scopes=SCOPES
+    )
+
+    service = build(
+        'drive',
+        'v3',
+        credentials=creds
+    )
+
+    folders = service.files().list(
+
+        q="mimeType='application/vnd.google-apps.folder' and name='XENDA_REPORTES'",
+
+        spaces='drive',
+
+        fields='files(id, name)'
+
+    ).execute()
+
+    folder_id = folders['files'][0]['id']
+
+    file_metadata = {
+
+        'name': nombre_excel,
+
+        'parents': [folder_id]
+
+    }
+
+    media = MediaFileUpload(
+
+        ruta_excel,
+
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+    )
+
+    service.files().create(
+
+        body=file_metadata,
+
+        media_body=media,
+
+        fields='id'
+
+    ).execute()
+
+    nueva_exportacion = Exportacion(
+
+        mes=mes_actual
+
+    )
+
+    db.session.add(nueva_exportacion)
+
+    db.session.commit()
 
 
 # =========================================
@@ -215,38 +381,39 @@ def logout():
 
 
 # =========================================
-# CREAR USUARIO
+# CREAR USUARIOS
 # =========================================
 
-# @app.route('/crear_usuarios')
+@app.route('/crear_usuarios')
 
-# def crear_usuarios():
+def crear_usuarios():
 
-#     correos = [
+    correos = [
 
-#         'diazedgar1701@gmail.com',
+        'diazedgar1701@gmail.com',
 
-#         'paolamateoponce@gmail.com'
+        'paolamateoponce@gmail.com'
 
-#     ]
+    ]
 
-#     for correo in correos:
+    for correo in correos:
 
-#         existente = Usuario.query.filter_by(
-#             correo=correo
-#         ).first()
+        existente = Usuario.query.filter_by(
+            correo=correo
+        ).first()
 
-#         if not existente:
+        if not existente:
 
-#             nuevo = Usuario(
-#                 correo=correo
-#             )
+            nuevo = Usuario(
+                correo=correo
+            )
 
-#             db.session.add(nuevo)
+            db.session.add(nuevo)
 
-#     db.session.commit()
+    db.session.commit()
 
-#     return 'Usuarios creados correctamente'
+    return 'Usuarios creados correctamente'
+
 
 
 # =========================================
@@ -275,6 +442,8 @@ def ver_usuarios():
 @app.route('/', methods=['GET', 'POST'])
 
 def index():
+
+    exportar_excel_mensual()
 
     if not registro_habilitado():
 
