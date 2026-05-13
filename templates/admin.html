@@ -130,8 +130,11 @@
                 </td>
 
                 <td>
-                    <a href="/eliminar_usuario/{{ usuario.id }}">
-                        Eliminar
+                    <a href="/eliminar_usuario/{{ usuario.id }}"
+    		       onclick="return confirm('¿Eliminar este usuario?')"
+		    >
+    		       Eliminar
+		    </a>
                     </a>
                 </td>
 
