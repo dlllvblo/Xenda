@@ -391,8 +391,8 @@ def crear_usuarios():
     correos = [
 
         'diazedgar1701@gmail.com',
-
-        'paolamateoponce@gmail.com'
+        'paolamateoponce@gmail.com',
+        'jorgelazcano.iica@gmail.com'
 
     ]
 
