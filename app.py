@@ -8,6 +8,10 @@ from flask import (
     jsonify
 )
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
 from datetime import datetime
 import pandas as pd
 import unicodedata
@@ -19,6 +23,24 @@ app.secret_key = 'RAND-GCAT_2026'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda_v2.db'
 
 db = SQLAlchemy(app)
+class Usuario(db.Model):
+    
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    correo = db.Column(
+        db.String(200),
+        unique=True,
+        nullable=False
+    )
+
+    password = db.Column(
+        db.String(300),
+        nullable=False
+    )
+
 def registro_habilitado():
     
     ahora = datetime.now()
@@ -128,9 +150,18 @@ def login():
         correo = request.form['correo']
         password = request.form['password']
 
-        if correo in usuarios and usuarios[correo] == password:
+        usuario = Usuario.query.filter_by(
+            correo=correo
+        ).first()
 
-            session['usuario'] = correo
+        if usuario and check_password_hash(
+            usuario.password,
+            password
+        ):
+
+            session.permanent = True
+
+            session['usuario'] = usuario.correo
 
             return redirect('/')
 
@@ -149,6 +180,27 @@ def logout():
     session.pop('usuario', None)
 
     return redirect('/login')
+
+@app.route('/crear_usuario')
+
+def crear_usuario():
+
+    usuario = Usuario(
+
+        correo='TU_CORREO@gmail.com',
+
+        password=generate_password_hash(
+            'TU_PASSWORD'
+        )
+
+    )
+
+    db.session.add(usuario)
+
+    db.session.commit()
+
+    return 'Usuario creado correctamente'
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if not registro_habilitado():
