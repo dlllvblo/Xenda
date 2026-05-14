@@ -130,9 +130,14 @@ class Registro(db.Model):
     observaciones = db.Column(db.Text)
 
     fecha = db.Column(
-        db.DateTime,
-        default=datetime.now(ZoneInfo('America/Mexico_City'))
+
+    db.DateTime,
+
+    default=lambda: datetime.now(
+        ZoneInfo('America/Mexico_City')
     )
+
+)
 
 
 # =========================================
