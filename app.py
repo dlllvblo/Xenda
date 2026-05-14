@@ -734,8 +734,6 @@ def eliminar_registro(id):
 
 with app.app_context():
 
-    
-
     db.create_all()
 
 
