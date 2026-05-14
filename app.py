@@ -131,13 +131,7 @@ class Registro(db.Model):
 
     fecha = db.Column(
 
-    db.DateTime,
-
-    default=lambda: datetime.now(
-        ZoneInfo('America/Mexico_City')
-    )
-
-)
+    db.DateTime) 
 
 
 # =========================================
@@ -565,6 +559,8 @@ def index():
         nuevo = Registro(
 
             usuario=session['usuario'],
+
+            fecha=datetime.now(ZoneInfo('America/Mexico_City')),
 
             tramo=request.form['tramo'],
 
