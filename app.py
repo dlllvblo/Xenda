@@ -125,6 +125,10 @@ class Registro(db.Model):
 
     planos = db.Column(db.Integer)
 
+    planos_generados = db.Column(db.Integer)
+
+    planos_validados = db.Column(db.Integer)
+
     infografias = db.Column(db.Integer)
 
     observaciones = db.Column(db.Text)
@@ -593,6 +597,10 @@ def index():
                     'planos'
                 ) or 0
             ),
+
+            planos_generados=request.form['planos_generados'],
+
+            planos_validados=request.form['planos_validados'],
 
             infografias=(
                 request.form.get(
