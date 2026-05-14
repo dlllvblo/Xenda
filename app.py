@@ -707,6 +707,22 @@ def registros():
         registros=lista
     )
 
+@app.route('/eliminar_registro/<int:id>')
+
+def eliminar_registro(id):
+
+    if session.get('usuario') != 'diazedgar1701@gmail.com':
+
+        return 'No autorizado', 403
+
+    registro = Registro.query.get_or_404(id)
+
+    db.session.delete(registro)
+
+    db.session.commit()
+
+    return redirect('/registros')
+
 
 # =========================================
 # CREAR TABLAS
@@ -714,7 +730,7 @@ def registros():
 
 with app.app_context():
 
-    db.drop_all()
+    
 
     db.create_all()
 
