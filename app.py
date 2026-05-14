@@ -540,13 +540,17 @@ def index():
 
     exportar_excel_mensual()
 
-    if not registro_habilitado():
+    if (
+        not registro_habilitado()
+        and
+        session.get('usuario') != ADMIN_CORREO
+):
 
         session.clear()
 
         return render_template(
             'cerrado.html'
-        )
+    )
 
     if 'usuario' not in session:
 
@@ -731,6 +735,8 @@ def eliminar_registro(id):
 # =========================================
 
 with app.app_context():
+
+    db.drop_all()
 
     db.create_all()
 
