@@ -96,7 +96,7 @@ class Exportacion(db.Model):
 # =========================================
 
 class Registro(db.Model):
-
+    
     id = db.Column(
         db.Integer,
         primary_key=True
@@ -129,7 +129,13 @@ class Registro(db.Model):
 
     planos_validados = db.Column(db.Integer)
 
-    infografias = db.Column(db.Integer)
+    #infografias = db.Column(db.Integer)
+
+    num_infografias = db.Column(db.Integer)
+
+    infografias_generadas = db.Column(db.Integer)
+
+    infografias_validadas = db.Column(db.Integer)
 
     observaciones = db.Column(db.Text)
 
@@ -580,38 +586,23 @@ def index():
 
             tipo=request.form['tipo'],
 
-            mediciones_agroforestales=(
-                request.form.get(
-                    'mediciones_agroforestales'
-                ) or 0
-            ),
+            mediciones_agroforestales=(request.form.get('mediciones_agroforestales') or 0),
 
-            mediciones_bdts=(
-                request.form.get(
-                    'mediciones_bdts'
-                ) or 0
-            ),
+            mediciones_bdts=(request.form.get('mediciones_bdts') or 0),
 
-            planos=(
-                request.form.get(
-                    'planos'
-                ) or 0
-            ),
+            planos=(request.form.get('planos') or 0),
 
             planos_generados=request.form['planos_generados'],
 
             planos_validados=request.form['planos_validados'],
 
-            infografias=(
-                request.form.get(
-                    'infografias'
-                ) or 0
-            ),
+            num_infografias=request.form['num_infografias'],
 
-            observaciones=request.form[
-                'observaciones'
-            ]
+            infografias_generadas=request.form['infografias_generadas'],
 
+            infografias_validadas=request.form['infografias_validadas'],
+
+            observaciones=request.form['observaciones']
         )
 
         db.session.add(nuevo)
@@ -723,7 +714,7 @@ def registros():
 
 with app.app_context():
 
-    
+    db.drop_all()
 
     db.create_all()
 
