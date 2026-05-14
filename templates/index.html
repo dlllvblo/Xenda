@@ -510,6 +510,7 @@
 
             <select
                 name="actividad"
+                id="actividad"
                 required
             >
 
@@ -539,6 +540,7 @@
 
             <select
                 name="tipo"
+                id="tipo"   
                 required
             >
 
@@ -842,6 +844,72 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 });
+
+const actividadSelect =
+    document.getElementById('actividad');
+
+const tipoSelect =
+    document.getElementById('tipo');
+
+actividadSelect.addEventListener(
+    'change',
+    function() {
+
+        const actividad =
+            actividadSelect.value;
+
+        tipoSelect.innerHTML = '';
+
+        if (actividad === 'MEDICIÓN') {
+
+            tipoSelect.innerHTML = `
+
+                <option value="">
+                    Seleccione una opción
+                </option>
+
+                <option value="PROPIEDAD PRIVADA">
+                    PROPIEDAD PRIVADA
+                </option>
+
+                <option value="PROPIEDAD SOCIAL">
+                    PROPIEDAD SOCIAL
+                </option>
+
+            `;
+
+        }
+
+        else {
+
+            tipoSelect.innerHTML = `
+
+                <option value="">
+                    Seleccione una opción
+                </option>
+
+                <option value="AGROFORESTAL">
+                    BDT'S AGROFORESTAL
+                </option>
+
+                <option value="BDT'S">
+                    BDT'S CONSTRUCCIÓN
+                </option>
+
+                <option value="1RA">
+                    1ERA
+                </option>
+
+                <option value="2DA">
+                    2NDA
+                </option>
+
+            `;
+
+        }
+
+    }
+);
 
 </script>
 
