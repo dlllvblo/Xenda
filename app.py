@@ -487,13 +487,7 @@ def eliminar_usuario(id):
 
 def crear_usuarios():
 
-    correos = [
-
-        'diazedgar1701@gmail.com',
-        'paolamateoponce@gmail.com',
-        'jorgelazcano.iica@gmail.com'
-
-    ]
+    correos = ['diazedgar1701@gmail.com']
 
     for correo in correos:
 
