@@ -137,6 +137,8 @@ class Registro(db.Model):
 
     infografias_validadas = db.Column(db.Integer)
 
+    estatus_infografias = db.Column(db.String(100))
+
     observaciones = db.Column(db.Text)
 
     fecha = db.Column(
@@ -601,6 +603,8 @@ def index():
             infografias_generadas=request.form['infografias_generadas'],
 
             infografias_validadas=request.form['infografias_validadas'],
+
+            estatus_infografias=request.form['estatus_infografias'],
 
             observaciones=request.form['observaciones']
         )
