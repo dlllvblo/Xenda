@@ -100,6 +100,7 @@ class Registro(db.Model):
         db.Integer,
         primary_key=True
     )
+    usuario = db.Column(db.String(200))
 
     direccion = db.Column(db.String(200))
 
@@ -557,6 +558,8 @@ def index():
 
         nuevo = Registro(
 
+            usuario=session['usuario'],
+
             tramo=request.form['tramo'],
 
             entidad=request.form['entidad'],
@@ -709,6 +712,8 @@ def registros():
 # =========================================
 
 with app.app_context():
+
+    db.drop_all()
 
     db.create_all()
 
