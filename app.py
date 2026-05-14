@@ -616,7 +616,7 @@ def index():
         db.session.commit()
 
         flash(
-            'Registro guardado correctamente'
+            'Registro guardado exitosamente'
         )
 
         return redirect('/')
