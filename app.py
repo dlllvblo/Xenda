@@ -34,9 +34,17 @@ ADMIN_CORREO = 'diazedgar1701@gmail.com'
 
 app.permanent_session_lifetime = timedelta(days=7)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URL'
-)
+database_url = os.getenv('DATABASE_URL')
+
+if database_url.startswith('postgres://'):
+
+    database_url = database_url.replace(
+        'postgres://',
+        'postgresql://',
+        1
+    )
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
 db = SQLAlchemy(app)
 
