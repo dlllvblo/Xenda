@@ -416,9 +416,9 @@ def admin():
 
     #    return redirect('/login')
 
-    if session['usuario'] != ADMIN_CORREO:
-
-        return 'Acceso no autorizado'
+    if session.get('usuario') != ADMIN_CORREO:
+    
+        return redirect('/login')
 
     if request.method == 'POST':
 
