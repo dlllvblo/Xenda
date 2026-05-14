@@ -412,9 +412,9 @@ def logout():
 
 def admin():
 
-    if 'usuario' not in session:
+    #if 'usuario' not in session:
 
-        return redirect('/login')
+    #    return redirect('/login')
 
     if session['usuario'] != ADMIN_CORREO:
 
