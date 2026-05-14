@@ -489,92 +489,94 @@
 
     <div class="card">
 
-        <div class="section-title">
-            Actividad Operativa
+    <div class="section-title">
+        Actividad Operativa
+    </div>
+
+    <div class="grid">
+
+        <div class="input-group">
+
+            <label>Tipo de actividad *</label>
+
+            <select
+                name="actividad"
+                required
+            >
+
+                <option value="">
+                    Seleccione una opción
+                </option>
+
+                <option value="MEDICIÓN">
+                    MEDICIÓN
+                </option>
+
+                <option value="REUNIÓN DE SEGUIMIENTO">
+                    REUNIÓN DE SEGUIMIENTO
+                </option>
+
+                <option value="ASAMBLEA">
+                    ASAMBLEA
+                </option>
+
+            </select>
+
         </div>
 
-        <div class="grid">
+        <div class="input-group">
 
-            <div class="input-group">
+            <label>Modalidad *</label>
 
-                <label>Tipo de actividad *</label>
+            <select
+                name="tipo"
+                required
+            >
 
-                <select
-                    name="actividad"
-                    required
-                >
+                <option value="">
+                    Seleccione una opción
+                </option>
 
-                    <option value="">
-                        Seleccione una opción
-                    </option>
+                <option value="AGROFORESTAL">
+                    AGROFORESTAL
+                </option>
 
-                    <option value="MEDICIÓN">
-                        MEDICIÓN
-                    </option>
+                <option value="BDT'S">
+                    BDT'S
+                </option>
 
-                    <option value="REUNIÓN DE SEGUIMIENTO">
-                        REUNIÓN DE SEGUIMIENTO
-                    </option>
+                <option value="1RA">
+                    1RA
+                </option>
 
-                    <option value="ASAMBLEA">
-                        ASAMBLEA
-                    </option>
+                <option value="2DA">
+                    2DA
+                </option>
 
-                </select>
+            </select>
 
-            </div>
+        </div>
 
-            <div class="input-group">
+        <div class="input-group">
 
-                <label>Modalidad *</label>
+            <label>
+                No. DE INFOGRAFÍAS
+            </label>
 
-                <select
-                    name="tipo"
-                    required
-                >
+            <input
+                type="number"
+                name="num_infografias"
+                min="0"
+                placeholder="Ingrese el número de infografías"
+            >
 
-                    <option value="">
-                        Seleccione una opción
-                    </option>
+        </div>
 
-                    <option value="AGROFORESTAL">
-                        AGROFORESTAL
-                    </option>
+        <div class="input-group">
 
-                    <option value="BDT'S">
-                        BDT'S
-                    </option>
-
-                    <option value="1RA">
-                        1RA
-                    </option>
-
-                    <option value="2DA">
-                        2DA
-                    </option>
-
-                </select>
-
-            <div class="input-group">
-
-                <label>
-                    No. DE INFOGRAFÍAS
-                </label>
-
-                <input
-                    type="number"
-                    name="num_infografias"
-                    min="0"
-                    placeholder="Ingrese el número de infografías"
-                >
-
-            </div>
-
-            <div class="input-group">
-
-                <label>
-                    INFOGRAFÍAS GENERADAS
-                </label>
+            <label>
+                INFOGRAFÍAS GENERADAS
+            </label>
 
             <input
                 type="number"
@@ -601,6 +603,8 @@
         </div>
 
     </div>
+
+</div>
 
     <div class="card">
 
