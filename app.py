@@ -34,7 +34,9 @@ ADMIN_CORREO = 'diazedgar1701@gmail.com'
 
 app.permanent_session_lifetime = timedelta(days=7)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xenda.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    'DATABASE_URL'
+)
 
 db = SQLAlchemy(app)
 
