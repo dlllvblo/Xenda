@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import unicodedata
 import os
+from zoneinfo import ZoneInfo
 
 from google.oauth2.service_account import Credentials
 
@@ -130,7 +131,7 @@ class Registro(db.Model):
 
     fecha = db.Column(
         db.DateTime,
-        default=datetime.now
+        default=datetime.now(ZoneInfo('America/Mexico_City'))
     )
 
 
@@ -713,7 +714,7 @@ def registros():
 
 with app.app_context():
 
-    db.drop_all()
+    
 
     db.create_all()
 
