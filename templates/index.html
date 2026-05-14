@@ -568,6 +568,34 @@
 
         </div>
 
+        <div
+            class="input-group"
+            id="propiedad-container"
+            style="display: none;"
+        >
+
+            <label>
+                Tipo de Propiedad
+            </label>
+
+            <select name="tipo_propiedad">
+
+                <option value="">
+                    Seleccione una opción
+                </option>
+
+                <option value="PROPIEDAD PRIVADA">
+                    PROPIEDAD PRIVADA
+                </option>
+
+                <option value="PROPIEDAD SOCIAL">
+                    PROPIEDAD SOCIAL
+                </option>
+
+            </select>
+
+</div>
+
         <div class="input-group">
 
             <label>
@@ -848,63 +876,26 @@ document.addEventListener('DOMContentLoaded', function() {
 const actividadSelect =
     document.getElementById('actividad');
 
-const tipoSelect =
-    document.getElementById('tipo');
+const propiedadContainer =
+    document.getElementById('propiedad-container');
 
 actividadSelect.addEventListener(
     'change',
     function() {
 
-        const actividad =
-            actividadSelect.value;
+        if (
+            actividadSelect.value === 'MEDICIÓN'
+        ) {
 
-        tipoSelect.innerHTML = '';
-
-        if (actividad === 'MEDICIÓN') {
-
-            tipoSelect.innerHTML = `
-
-                <option value="">
-                    Seleccione una opción
-                </option>
-
-                <option value="PROPIEDAD PRIVADA">
-                    PROPIEDAD PRIVADA
-                </option>
-
-                <option value="PROPIEDAD SOCIAL">
-                    PROPIEDAD SOCIAL
-                </option>
-
-            `;
+            propiedadContainer.style.display =
+                'flex';
 
         }
 
         else {
 
-            tipoSelect.innerHTML = `
-
-                <option value="">
-                    Seleccione una opción
-                </option>
-
-                <option value="AGROFORESTAL">
-                    BDT'S AGROFORESTAL
-                </option>
-
-                <option value="BDT'S">
-                    BDT'S CONSTRUCCIÓN
-                </option>
-
-                <option value="1RA">
-                    1ERA
-                </option>
-
-                <option value="2DA">
-                    2NDA
-                </option>
-
-            `;
+            propiedadContainer.style.display =
+                'none';
 
         }
 
