@@ -633,22 +633,52 @@ def index():
 
     )
 
+#=========================================
+# ENTIDADES POR TRAMO
+#=========================================
+
+@app.route('/entidades/<tramo>')
+
+def entidades_por_tramo(tramo):
+
+    entidades = catalogo[
+
+        catalogo['TRAMO'] == tramo
+
+    ][
+        'ENTIDAD_FEDERATIVA'
+    ].dropna().unique()
+
+    entidades = sorted(entidades)
+
+    return jsonify(
+        list(entidades)
+    )
+
 
 # =========================================
 # MUNICIPIOS
 # =========================================
 
-@app.route('/municipios/<entidad>')
+@app.route('/municipios/<tramo>/<entidad>')
 
-def municipios(entidad):
+def municipios(tramo, entidad):
 
     entidad = normalizar(entidad)
 
     municipios = catalogo[
 
-        catalogo[
-            'ENTIDAD_NORMALIZADA'
-        ] == entidad
+        (
+            catalogo['TRAMO'] == tramo
+        )
+
+        &
+
+        (
+            catalogo[
+                'ENTIDAD_NORMALIZADA'
+            ] == entidad
+        )
 
     ][
         'MUNICIPIO'
@@ -660,20 +690,25 @@ def municipios(entidad):
         list(municipios)
     )
 
-
 # =========================================
 # NUCLEOS
 # =========================================
 
-@app.route('/nucleos/<entidad>/<municipio>')
+@app.route('/nucleos/<tramo>/<entidad>/<municipio>')
 
-def nucleos(entidad, municipio):
+def nucleos(tramo, entidad, municipio):
 
     entidad = normalizar(entidad)
 
     municipio = normalizar(municipio)
 
     nucleos = catalogo[
+
+        (
+            catalogo['TRAMO'] == tramo
+        )
+
+        &
 
         (
             catalogo[
@@ -698,7 +733,6 @@ def nucleos(entidad, municipio):
     return jsonify(
         list(nucleos)
     )
-
 
 # =========================================
 # REGISTROS
