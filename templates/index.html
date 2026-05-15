@@ -453,7 +453,10 @@
 
                 <label>Tramo *</label>
 
-                <select name="tramo" required>
+                <select 
+                    name="tramo" 
+                    id="tramo"
+                    required>
 
                     <option value="">
                         Seleccione un tramo
@@ -480,6 +483,7 @@
                     name="entidad"
                     id="entidad"
                     required
+                    disabled
                 >
 
                     <option value="">
@@ -506,6 +510,7 @@
                     name="municipio"
                     id="municipio"
                     required
+                    disabled
                 >
 
                     <option value="">
@@ -524,6 +529,7 @@
                     name="nucleo"
                     id="nucleo"
                     required
+                    disabled
                 >
 
                     <option value="">
@@ -868,9 +874,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     const tramoSelect =
-        document.querySelector(
-            'select[name="tramo"]'
-        );
+        document.getElementById('tramo');
 
     const entidadSelect =
         document.getElementById('entidad');
@@ -903,6 +907,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<option value="">Seleccione un núcleo agrario</option>';
 
             if (!tramo) return;
+
+            entidadSelect.disabled = false;
+
+            municipioSelect.disabled = true;
+
+            nucleoSelect.disabled = true;
 
             const response =
                 await fetch(
@@ -949,6 +959,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<option value="">Seleccione un núcleo agrario</option>';
 
             if (!tramo || !entidad) return;
+
+            municipioSelect.disabled = false;
+
+            nucleoSelect.disabled = true;
 
             const response =
                 await fetch(
@@ -999,6 +1013,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 !entidad ||
                 !municipio
             ) return;
+
+            nucleoSelect.disabled = false;
 
             const response =
                 await fetch(
