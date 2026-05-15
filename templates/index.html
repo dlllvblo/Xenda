@@ -593,6 +593,7 @@
                 name="tipo"
                 id="tipo"   
                 required
+                disabled
             >
 
                 <option value="">
@@ -656,6 +657,7 @@
             <input
                 type="number"
                 name="num_infografias"
+                disabled
                 min="0"
                 placeholder="Ingrese el número de infografías"
             >
@@ -671,6 +673,7 @@
             <input
                 type="number"
                 name="infografias_generadas"
+                disabled
                 min="0"
                 placeholder="Ingrese el número generado"
             >
@@ -686,6 +689,7 @@
             <input
                 type="number"
                 name="infografias_validadas"
+                disabled
                 min="0"
                 placeholder="Ingrese el número validado"
             >
@@ -737,6 +741,7 @@
                 <input
                     type="number"
                     name="mediciones_agroforestales"
+                    disabled
                     min="0"
                     placeholder="Ingrese el número de mediciones realizadas"
                 >
@@ -752,6 +757,7 @@
                 <input
                     type="number"
                     name="mediciones_bdts"
+                    disabled
                     min="0"
                     placeholder="Ingrese el número de mediciones realizadas"
                 >
@@ -767,6 +773,7 @@
              <input
                 type="number"
                 name="planos"
+                disabled
                 min="0"
                 placeholder="Ingrese el número de planos"
             >
@@ -782,6 +789,7 @@
             <input
                 type="number"
                 name="planos_generados"
+                disabled
                 min="0"
                 placeholder="Ingrese el número generado"
             >
@@ -797,6 +805,7 @@
                 <input
                     type="number"
                     name="planos_validados"
+                    disabled
                     min="0"
                     placeholder="Ingrese el número validado"
                 >
@@ -934,8 +943,36 @@ actividadSelect.addEventListener(
     'change',
     function() {
 
+        const actividadSeleccionada =
+            actividadSelect.value;
+
+        const camposBloqueados =
+            document.querySelectorAll(
+                '#tipo, input[type="number"], select[name="estatus_infografias"]'
+            );
+
+        if (actividadSeleccionada) {
+
+            camposBloqueados.forEach(campo => {
+
+                campo.disabled = false;
+
+            });
+
+        }
+
+        else {
+
+            camposBloqueados.forEach(campo => {
+
+                campo.disabled = true;
+
+            });
+
+        }
+
         if (
-            actividadSelect.value === 'MEDICIÓN'
+            actividadSeleccionada === 'MEDICIÓN'
         ) {
 
             propiedadContainer.style.display =
