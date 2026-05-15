@@ -48,17 +48,16 @@
         }
 
         .topbar {
-            
 
             background:
                 linear-gradient(
                     135deg,
-                    #6E152E,
-                    #9f2241,
-                    #6E152E
-                    
-                    
+                    rgba(110,21,46,0.78),
+                    rgba(159,34,65,0.78),
+                    rgba(110,21,46,0.78)
                 );
+
+            backdrop-filter: blur(4px);
 
             color: white;
 
@@ -73,48 +72,10 @@
         }
 
         .topbar-content {
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            width: 100%;
-
-            gap: 20px;
-        }
-
-        .topbar-logos {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            width: 100%;
-
-            margin-bottom: 20px;
-        }
-
-        .topbar-content {
 
             display: flex;
 
             flex-direction: column;
-        }
-
-        .topbar-left,
-        .topbar-right {
-            display:flex;
-            align-items:center;
-        }
-
-        .topbar-left {
-
-            justify-content: flex-start;
-
-            flex: 1;
         }
 
         .topbar-center {
@@ -124,20 +85,6 @@
             flex: 1;
         }
 
-        .topbar-right {
-
-            justify-content: flex-end;
-
-            flex: 1;
-        }
-
-        .topbar-logo {
-            width: 220px;
-
-            height: auto;
-
-            object-fit: contain;
-        }
         
         .topbar h1 {
 
@@ -369,28 +316,6 @@
     <div class="topbar">
         
         <div class="topbar-content">
-
-            <div class="topbar-logos">
-
-                <div class="topbar-left">
-
-                    <img
-                        src="/static/logo_sedatu_ran-sf.png"
-                        class="topbar-logo"
-                    >
-
-                </div>
-
-                <div class="topbar-right">
-
-                    <img
-                        src="/static/gob_mex2-sf.png"
-                        class="topbar-logo"
-                    >
-
-                </div>
-
-            </div>
 
             <div class="topbar-center">
 
