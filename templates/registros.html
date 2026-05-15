@@ -29,7 +29,13 @@
         <th>Observaciones</th>
         <th>Usuario</th>
         <th>Fecha y hora</th>
-        <th>Acción</th>
+        {% if session['usuario'] == 'diazedgar1701@gmail.com' %}
+
+            <th>
+                Acción
+            </th>
+
+        {% endif %}
 
     </tr>
 
@@ -49,20 +55,17 @@
         <td>{{ r.observaciones }}</td>
         <td>{{ r.usuario }}</td>
         <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
-        <td>
+        {% if session['usuario'] == 'diazedgar1701@gmail.com' %}
 
-            {% if session['usuario'] == 'diazedgar1701@gmail.com' %}
+            <td>
 
-            <a
-                href="/eliminar_registro/{{ r.id }}"
-                onclick="return confirm('¿Eliminar registro?')"
-            >
-                Eliminar
-            </a>
+                <a href="/eliminar_registro/{{ r.id }}">
+                    Eliminar
+                </a>
 
-            {% endif %}
+            </td>
 
-        </td>
+        {% endif %}
 
     </tr>
 
