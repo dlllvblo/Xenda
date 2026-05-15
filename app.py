@@ -37,7 +37,7 @@ app.permanent_session_lifetime = timedelta(days=7)
 
 database_url = os.getenv('DATABASE_URL')
 
-if database_url.startswith('postgres://'):
+if database_url and database_url.startswith('postgres://'):
 
     database_url = database_url.replace(
         'postgres://',
@@ -237,7 +237,9 @@ def exportar_excel_mensual():
             'MEDICIONES_AGROFORESTALES': r.mediciones_agroforestales,
             'MEDICIONES_BDTS': r.mediciones_bdts,
             'PLANOS': r.planos,
-            'INFOGRAFIAS': r.infografias,
+            'NUM_INFOGRAFIAS': r.num_infografias,
+            'INFOGRAFIAS_GENERADAS': r.infografias_generadas,
+            'INFOGRAFIAS_VALIDADAS': r.infografias_validadas,
             'OBSERVACIONES': r.observaciones
 
         })
@@ -566,6 +568,10 @@ def index():
 
     )
 
+    frente = request.form.get('frente')
+
+    frente = int(frente) if frente else None
+
     if request.method == 'POST':
 
         nuevo = Registro(
@@ -582,7 +588,7 @@ def index():
 
             nucleo=request.form['nucleo'],
 
-            frente=request.form['frente'],
+            frente=frente,
 
             actividad=request.form['actividad'],
 
