@@ -208,8 +208,9 @@
             background:
                 linear-gradient(
                     135deg,
+                    #a42145,
                     #6E152E,
-                    #a42145
+                   
 
                     
                 );
@@ -338,65 +339,88 @@
 
                 <label>Dirección *</label>
 
-                <select name="direccion" required>
+                <select 
+                    name="direccion"
+                    id="direccion"
+                    required
+                >
 
                     <option value="">
                         Seleccione una dirección
                     </option>
 
                     <option value="PLANEACIÓN">
-                        PLANEACIÓN / GEOG. JORGE DANIEL LAZCANO SÁNCHEZ
+                        PLANEACIÓN
                     </option>
 
                     <option value="TOPOGRAFÍA">
-                        TOPOGRAFÍA CENTRO / GEOG. RODRIGO SANDOVAL PIÑA
+                        TOPOGRAFÍA CENTRO
                     </option>
 
                     <option value="TOPOGRAFÍA OCCIDENTE">
-                        TOPOGRAFÍA OCCIDENTE / ING. MARTÍN FLORES BAILÓN
+                        TOPOGRAFÍA OCCIDENTE
                     </option>
 
                     <option value="TOPOGRAFÍA NORTE">
-                        TOPOGRAFÍA NORTE / ING. LUIS HUMBERTO QUIROZ ESCAMILLA
+                        TOPOGRAFÍA NORTE
                     </option>
 
                     <option value="TOPOGRAFÍA OCCIDENTE PACÍFICO">
-                        TOPOGRAFÍA OCCIDENTE PACÍFICO / ARQ. MIGUEL ÁNGEL SÁNCHEZ CORTES
+                        TOPOGRAFÍA OCCIDENTE PACÍFICO
                     </option>
 
                     <option value="TOPOGRAFÍA NORTE ORIENTE">
-                        TOPOGRAFÍA NORTE ORIENTE / ING. AGUSTIN TAPIA VIVEROS
+                        TOPOGRAFÍA NORTE ORIENTE
                     </option>
 
                     <option value="PRODUCTOS Y SISTEMAS GEOESPACIALES">
-                        PRODUCTOS Y SISTEMAS GEOESPACIALES / MTRA. VICTORIA ERIKA VELÁSQUEZ ALFARO
+                        PRODUCTOS Y SISTEMAS GEOESPACIALES
                     </option>
 
                     <option value="BDT'S CONSTRUCCIÓN">
-                        BDT'S CONSTRUCCIÓN / ARQ. RAÚL IVAN PÉREZ JUÁREZ
+                        BDT'S CONSTRUCCIÓN
                     </option>
 
                     <option value="BDT'S AGROFORESTALES">
-                        BDT'S AGROFORESTALES / ING. EDUARDO MORALES DAMASO
+                        BDT'S AGROFORESTALES
                     </option>
 
                     <option value="MEDICIONES">
-                        MEDICIONES / ING. MAURO JOEL LÓPEZ FRANCO
+                        MEDICIONES
                     </option>
 
                     <option value="TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN">
-                        TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN / ING. JAVIER RODRÍGUEZ HERNÁNDEZ
+                        TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN
                     </option>
 
                     <option value="CARTOGRAFÍA">
-                        CARTOGRAFÍA / MTRA. THANIA LORENA COLIN ESPINOZA
+                        CARTOGRAFÍA
                     </option>
 
                     <option value="GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL">
-                        GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL / ING. JOSÉ GILBERTO MUÑIZ ROMERO
+                        GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL
                     </option>
 
                 </select>
+                
+                <div
+                    id="responsable-container"
+                    style="
+                        display: none;
+                        margin-top: 12px;
+                        padding: 12px;
+                        background: #f3f4f6;
+                        border-radius: 12px;
+                        font-weight: bold;
+                        color: #245C4F;
+                    "
+                >
+
+                    Responsable:
+
+                    <span id="responsable-texto"></span>
+
+                </div>
 
             </div>
 
@@ -896,6 +920,91 @@ actividadSelect.addEventListener(
         else {
 
             propiedadContainer.style.display =
+                'none';
+
+        }
+
+    }
+);
+
+const direccionSelect =
+    document.getElementById('direccion');
+
+const responsableContainer =
+    document.getElementById(
+        'responsable-container'
+    );
+
+const responsableTexto =
+    document.getElementById(
+        'responsable-texto'
+    );
+
+const responsables = {
+
+    'PLANEACIÓN':
+        'GEOG. JORGE DANIEL LAZCANO SÁNCHEZ',
+
+    'TOPOGRAFÍA':
+        'GEOG. RODRIGO SANDOVAL PIÑA',
+
+    'TOPOGRAFÍA OCCIDENTE':
+        'ING. MARTÍN FLORES BAILÓN',
+
+    'TOPOGRAFÍA NORTE':
+        'ING. LUIS HUMBERTO QUIROZ ESCAMILLA',
+
+    'TOPOGRAFÍA OCCIDENTE PACÍFICO':
+        'ARQ. MIGUEL ÁNGEL SÁNCHEZ CORTES',
+
+    'TOPOGRAFÍA NORTE ORIENTE':
+        'ING. AGUSTIN TAPIA VIVEROS',
+
+    'PRODUCTOS Y SISTEMAS GEOESPACIALES':
+        'MTRA. VICTORIA ERIKA VELÁSQUEZ ALFARO',
+
+    "BDT'S CONSTRUCCIÓN":
+        'ARQ. RAÚL IVAN PÉREZ JUÁREZ',
+
+    "BDT'S AGROFORESTALES":
+        'ING. EDUARDO MORALES DAMASO',
+
+    'MEDICIONES':
+        'ING. MAURO JOEL LÓPEZ FRANCO',
+
+    'TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN':
+        'ING. JAVIER RODRÍGUEZ HERNÁNDEZ',
+
+    'CARTOGRAFÍA':
+        'MTRA. THANIA LORENA COLIN ESPINOZA',
+
+    'GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL':
+        'ING. JOSÉ GILBERTO MUÑIZ ROMERO'
+
+};
+
+direccionSelect.addEventListener(
+    'change',
+    function() {
+
+        const direccion =
+            direccionSelect.value;
+
+        if (
+            responsables[direccion]
+        ) {
+
+            responsableTexto.textContent =
+                responsables[direccion];
+
+            responsableContainer.style.display =
+                'block';
+
+        }
+
+        else {
+
+            responsableContainer.style.display =
                 'none';
 
         }
