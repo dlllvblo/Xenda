@@ -113,7 +113,7 @@ class Registro(db.Model):
 
     nucleo = db.Column(db.String(200))
 
-    frente = db.Column(db.String(50))
+    frente = db.Column(db.Integer)
 
     actividad = db.Column(db.String(100))
 
@@ -735,9 +735,7 @@ def eliminar_registro(id):
 # =========================================
 
 with app.app_context():
-
-    
-
+    db.drop_all()
     db.create_all()
 
 
