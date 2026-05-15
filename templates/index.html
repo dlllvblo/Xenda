@@ -54,7 +54,8 @@
                 linear-gradient(
                     135deg,
                     #6E152E,
-                    #9f2241
+                    #9f2241,
+                    #6E152E
                     
                     
                 );
@@ -71,9 +72,33 @@
                 0 10px 24px rgba(0,0,0,0.15);
         }
 
+        .topbar.content {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+        }
+
+        .topbar-center {
+            text-align: center;
+
+            flex: 1;
+        }
+
+        .topbar-logo {
+            width: 110px;
+
+            height: auto;
+
+            object-fit: contain;
+        }
+        
         .topbar h1 {
 
-            font-size: 38px;
+            font-size: 40px;
 
             letter-spacing: 2px;
 
@@ -211,7 +236,8 @@
                 linear-gradient(
                     135deg,
                     #a42145,
-                    #6E152E
+                    #6E152E,
+                    #a42145
                    
 
                     
@@ -297,17 +323,33 @@
 <div class="container">
 
     <div class="topbar">
+        
+        <div class="topbar-content">
 
-    <div style="text-align: center;">
+            <img
+                src="C:\Xenda\static\logo_sedatu_ran.jpeg"
+                class="topbar-logo"
+            >
 
-        <h1>XENDA</h1>
+            <div class="topbar-center"
 
-        <p>
-            Sistema de captura para
-            reportes de actividades en campo
-        </p>
+                <h1>XENDA</h1>
 
-    </div>
+                <p>
+                    Sistema de captura para
+                    reportes de actividades en campo
+                </p>
+
+            </div>
+
+            <img
+                src="C:\Xenda\static\logo_derecho.jpg"
+                class="topbar-logo"
+            >
+
+        </div>
+
+    </div>        
 
 </div>
 
