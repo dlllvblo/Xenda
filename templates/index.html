@@ -84,6 +84,26 @@
             gap: 20px;
         }
 
+        .topbar-logos {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            width: 100%;
+
+            margin-bottom: 20px;
+        }
+
+        .topbar-content {
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
         .topbar-left,
         .topbar-right {
             display:flex;
@@ -112,9 +132,9 @@
         }
 
         .topbar-logo {
-            width: 160px;
+            width: 220px;
 
-            height: 160px;
+            height: auto;
 
             object-fit: contain;
         }
@@ -350,12 +370,26 @@
         
         <div class="topbar-content">
 
-            <div class="topbar-left">
+            <div class="topbar-logos">
 
-            <img
-                src="/static/logo_sedatu_ran-sf.png"
-                class="topbar-logo"
-            >
+                <div class="topbar-left">
+
+                    <img
+                        src="/static/logo_sedatu_ran-sf.png"
+                        class="topbar-logo"
+                    >
+
+                </div>
+
+                <div class="topbar-right">
+
+                    <img
+                        src="/static/gob_mex2-sf.png"
+                        class="topbar-logo"
+                    >
+
+                </div>
+
             </div>
 
             <div class="topbar-center">
@@ -366,15 +400,6 @@
                     Sistema de captura para
                     reportes de actividades en campo
                 </p>
-
-            </div>
-
-            <div class="topbar-right">
-
-                <img
-                    src="/static/gob_mex2-sf.png"
-                    class="topbar-logo"
-                >
 
             </div>
 
