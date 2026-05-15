@@ -600,17 +600,15 @@ def index():
 
             planos=(request.form.get('planos') or 0),
 
-            planos_generados=request.form['planos_generados'],
+            planos_generados=(request.form.get('planos_generados') or 0),
 
-            planos_validados=request.form['planos_validados'],
+            planos_validados=(request.form.get('planos_validados') or 0),
 
-            num_infografias=request.form['num_infografias'],
+            num_infografias=(request.form.get('num_infografias') or 0),
 
-            infografias_generadas=request.form['infografias_generadas'],
+            infografias_generadas=(request.form.get('infografias_generadas') or 0),
 
-            infografias_validadas=request.form['infografias_validadas'],
-
-            estatus_infografias=request.form['estatus_infografias'],
+            infografias_validadas=(request.form.get('infografias_validadas') or 0),
 
             tipo_propiedad=request.form.get('tipo_propiedad'),
 
