@@ -491,6 +491,10 @@ def eliminar_usuario(id):
 
 def crear_usuarios():
 
+    if session.get('usuario') != ADMIN_CORREO:
+    
+        return redirect('/login')
+
     correos = ['diazedgar1701@gmail.com']
 
     for correo in correos:
@@ -520,6 +524,10 @@ def crear_usuarios():
 @app.route('/usuarios')
 
 def ver_usuarios():
+
+    if session.get('usuario') != ADMIN_CORREO:
+    
+        return redirect('/login')
 
     usuarios = Usuario.query.all()
 
@@ -741,6 +749,10 @@ def nucleos(tramo, entidad, municipio):
 @app.route('/registros')
 
 def registros():
+
+    if 'usuario' not in session:
+    
+        return redirect('/login')
 
     lista = Registro.query.order_by(
         Registro.fecha.desc()
