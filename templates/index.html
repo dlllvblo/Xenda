@@ -866,74 +866,161 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    const entidadSelect = document.getElementById('entidad');
+    const tramoSelect =
+        document.querySelector(
+            'select[name="tramo"]'
+        );
 
-    const municipioSelect = document.getElementById('municipio');
+    const entidadSelect =
+        document.getElementById('entidad');
 
-    const nucleoSelect = document.getElementById('nucleo');
+    const municipioSelect =
+        document.getElementById('municipio');
 
-    entidadSelect.addEventListener('change', function() {
+    const nucleoSelect =
+        document.getElementById('nucleo');
 
-        const entidad = entidadSelect.value;
 
-        municipioSelect.innerHTML =
-            '<option value=\"\">Cargando municipios...</option>';
+    // =====================================
+    // TRAMOS → ENTIDADES
+    // =====================================
 
-        nucleoSelect.innerHTML =
-            '<option value=\"\">Seleccione un núcleo agrario</option>';
+    tramoSelect.addEventListener(
+        'change',
+        async function() {
 
-        fetch(`/municipios/${encodeURIComponent(entidad)}`)
+            const tramo =
+                tramoSelect.value;
 
-            .then(response => response.json())
+            entidadSelect.innerHTML =
+                '<option value="">Seleccione una entidad</option>';
 
-            .then(data => {
+            municipioSelect.innerHTML =
+                '<option value="">Seleccione un municipio</option>';
 
-                municipioSelect.innerHTML =
-                    '<option value=\"\">Seleccione un municipio</option>';
+            nucleoSelect.innerHTML =
+                '<option value="">Seleccione un núcleo agrario</option>';
 
-                data.forEach(function(municipio) {
+            if (!tramo) return;
 
-                    municipioSelect.innerHTML += `
-                        <option value=\"${municipio}\">
-                            ${municipio}
-                        </option>
-                    `;
-                });
+            const response =
+                await fetch(
+                    `/entidades/${encodeURIComponent(tramo)}`
+                );
 
-            });
+            const entidades =
+                await response.json();
 
-    });
+            entidades.forEach(entidad => {
 
-    municipioSelect.addEventListener('change', function() {
+                entidadSelect.innerHTML += `
 
-        const entidad = entidadSelect.value;
+                    <option value="${entidad}">
+                        ${entidad}
+                    </option>
 
-        const municipio = municipioSelect.value;
-
-        nucleoSelect.innerHTML =
-            '<option value=\"\">Cargando núcleos...</option>';
-
-        fetch(`/nucleos/${encodeURIComponent(entidad)}/${encodeURIComponent(municipio)}`)
-
-            .then(response => response.json())
-
-            .then(data => {
-
-                nucleoSelect.innerHTML =
-                    '<option value=\"\">Seleccione un núcleo agrario</option>';
-
-                data.forEach(function(nucleo) {
-
-                    nucleoSelect.innerHTML += `
-                        <option value=\"${nucleo}\">
-                            ${nucleo}
-                        </option>
-                    `;
-                });
+                `;
 
             });
 
-    });
+        }
+    );
+
+
+    // =====================================
+    // ENTIDADES → MUNICIPIOS
+    // =====================================
+
+    entidadSelect.addEventListener(
+        'change',
+        async function() {
+
+            const tramo =
+                tramoSelect.value;
+
+            const entidad =
+                entidadSelect.value;
+
+            municipioSelect.innerHTML =
+                '<option value="">Seleccione un municipio</option>';
+
+            nucleoSelect.innerHTML =
+                '<option value="">Seleccione un núcleo agrario</option>';
+
+            if (!tramo || !entidad) return;
+
+            const response =
+                await fetch(
+                    `/municipios/${encodeURIComponent(tramo)}/${encodeURIComponent(entidad)}`
+                );
+
+            const municipios =
+                await response.json();
+
+            municipios.forEach(municipio => {
+
+                municipioSelect.innerHTML += `
+
+                    <option value="${municipio}">
+                        ${municipio}
+                    </option>
+
+                `;
+
+            });
+
+        }
+    );
+
+
+    // =====================================
+    // MUNICIPIOS → NUCLEOS
+    // =====================================
+
+    municipioSelect.addEventListener(
+        'change',
+        async function() {
+
+            const tramo =
+                tramoSelect.value;
+
+            const entidad =
+                entidadSelect.value;
+
+            const municipio =
+                municipioSelect.value;
+
+            nucleoSelect.innerHTML =
+                '<option value="">Seleccione un núcleo agrario</option>';
+
+            if (
+                !tramo ||
+                !entidad ||
+                !municipio
+            ) return;
+
+            const response =
+                await fetch(
+                    `/nucleos/${encodeURIComponent(tramo)}/${encodeURIComponent(entidad)}/${encodeURIComponent(municipio)}`
+                );
+
+            const nucleos =
+                await response.json();
+
+            nucleos.forEach(nucleo => {
+
+                nucleoSelect.innerHTML += `
+
+                    <option value="${nucleo}">
+                        ${nucleo}
+                    </option>
+
+                `;
+
+            });
+
+        }
+    );
 
 });
 
