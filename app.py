@@ -330,6 +330,12 @@ catalogo = pd.read_excel('catalogo.xlsx')
 
 catalogo.columns = catalogo.columns.str.strip()
 
+catalogo['TRAMO'] = (
+    catalogo['TRAMO']
+    .astype(str)
+    .str.strip()
+)
+
 catalogo['ENTIDAD_FEDERATIVA'] = (
     catalogo['ENTIDAD_FEDERATIVA']
     .astype(str)
