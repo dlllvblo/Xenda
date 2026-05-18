@@ -98,8 +98,13 @@
 
         {% for t in tramos %}
 
-            <option value="{{ t[0] }}">
-                {{ t[0] }}
+            <option
+                value="{{ t }}"
+                {% if request.args.get('tramo') == t %}
+                    selected
+                {% endif %}
+            >
+                {{ t }}
             </option>
 
         {% endfor %}
@@ -114,7 +119,12 @@
 
         {% for e in entidades %}
 
-            <option value="{{ e[0] }}">
+            <option
+                value="{{ e }}"
+                {% if request.args.get('entidad') == e %}
+                    selected
+                {% endif %}
+            >
                 {{ e }}
             </option>
 
@@ -130,7 +140,12 @@
 
         {% for m in municipios %}
 
-            <option value="{{ m[0] }}">
+            <option
+                value="{{ m }}"
+                {% if request.args.get('municipio') == m %}
+                    selected
+                {% endif %}
+            >
                 {{ m }}
             </option>
 
@@ -148,7 +163,12 @@
 
         {% for u in usuarios %}
 
-            <option value="{{ u[0] }}">
+            <option
+                value="{{ u }}"
+                {% if request.args.get('usuario') == u %}
+                    selected
+                {% endif %}
+            >
                 {{ u }}
             </option>
 
