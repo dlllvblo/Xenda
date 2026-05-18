@@ -31,7 +31,7 @@ from googleapiclient.http import MediaFileUpload
 app = Flask(__name__)
 
 app.secret_key = os.getenv('SECRET_KEY') 
-ADMIN_CORREO = 'diazedgar1701@gmail.com'
+ADMIN_CORREO = os.getenv('ADMIN_CORREO')
 
 app.permanent_session_lifetime = timedelta(days=7)
 
@@ -493,7 +493,7 @@ def eliminar_usuario(id):
 # CREAR USUARIOS
 # =========================================
 
-@app.route('/crear_usuarios')
+@app.route('/xenda_admin_bootstrap_users')
 
 def crear_usuarios():
 
@@ -501,7 +501,7 @@ def crear_usuarios():
     
         return redirect('/login')
 
-    correos = ['diazedgar1701@gmail.com']
+    correos = [ADMIN_CORREO]
 
     for correo in correos:
 
@@ -522,28 +522,6 @@ def crear_usuarios():
     return 'Usuarios creados correctamente'
 
 
-
-# =========================================
-# VER USUARIOS
-# =========================================
-
-@app.route('/usuarios')
-
-def ver_usuarios():
-
-    if session.get('usuario') != ADMIN_CORREO:
-    
-        return redirect('/login')
-
-    usuarios = Usuario.query.all()
-
-    lista = []
-
-    for u in usuarios:
-
-        lista.append(u.correo)
-
-    return '<br>'.join(lista)
 
 
 # =========================================
@@ -752,7 +730,7 @@ def nucleos(tramo, entidad, municipio):
 # REGISTROS
 # =========================================
 
-@app.route('/registros')
+@app.route('/xenda_delete_record/<int:id>')
 
 def registros():
 
@@ -773,7 +751,7 @@ def registros():
 
 def eliminar_registro(id):
 
-    if session.get('usuario') != 'diazedgar1701@gmail.com':
+    if session.get('usuario') != ADMIN_CORREO: 
 
         return 'No autorizado', 403
 
