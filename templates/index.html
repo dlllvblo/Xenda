@@ -557,7 +557,9 @@
                     name="frente"
                     id="frente"
                     min="0"
-                    step="1" 
+                    step="1"
+                    placeholder="Ingrese el número de frente"
+                    class="bloquear-numero"
                 >
 
             </div>
@@ -679,6 +681,7 @@
                 disabled
                 min="0"
                 placeholder="Ingrese el número de infografías"
+                class="bloquear-numero"
             >
 
         </div>
@@ -695,6 +698,7 @@
                 disabled
                 min="0"
                 placeholder="Ingrese el número generado"
+                class="bloquear-numero"
             >
 
         </div>
@@ -711,6 +715,7 @@
                 disabled
                 min="0"
                 placeholder="Ingrese el número validado"
+                class="bloquear-numero"
             >
 
         </div>
@@ -766,6 +771,7 @@
                     disabled
                     min="0"
                     placeholder="Ingrese el número de mediciones realizadas"
+                    class="bloquear-numero"
                 >
 
             </div>
@@ -782,6 +788,7 @@
                     disabled
                     min="0"
                     placeholder="Ingrese el número de mediciones realizadas"
+                    class="bloquear-numero" 
                 >
 
             </div>
@@ -798,6 +805,7 @@
                 disabled
                 min="0"
                 placeholder="Ingrese el número de planos"
+                class="bloquear-numero"
             >
 
         </div>
@@ -814,6 +822,7 @@
                 disabled
                 min="0"
                 placeholder="Ingrese el número generado"
+                class="bloquear-numero"
             >
 
             </div>
@@ -830,6 +839,7 @@
                     disabled
                     min="0"
                     placeholder="Ingrese el número validado"
+                    class="bloquear-numero"
                 >
 
             </div>
@@ -1233,6 +1243,41 @@ frenteInput.addEventListener(
 
     }
 );
+
+const inputsNumericos =
+    document.querySelectorAll(
+        '.bloquear-numero'
+    );
+
+inputsNumericos.forEach(input => {
+
+    input.addEventListener(
+        'wheel',
+        function(e) {
+
+            e.preventDefault();
+
+        }
+    );
+
+    input.addEventListener(
+        'keydown',
+        function(e) {
+
+            if (
+                e.key === 'ArrowUp'
+                ||
+                e.key === 'ArrowDown'
+            ) {
+
+                e.preventDefault();
+
+            }
+
+        }
+    );
+
+});
 
 </script>
 
