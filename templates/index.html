@@ -547,6 +547,7 @@
                 <input
                     type="number"
                     name="frente"
+                    id="frente"
                 >
 
             </div>
@@ -923,7 +924,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const entidades =
                 await response.json();
-                
+
             console.log(entidades);
 
             entidades.forEach(entidad => {
@@ -1181,6 +1182,42 @@ direccionSelect.addEventListener(
 
             responsableContainer.style.display =
                 'none';
+
+        }
+
+    }
+);
+
+const frenteInput =
+    document.getElementById('frente');
+
+frenteInput.addEventListener(
+    'keydown',
+    function(e) {
+
+        const teclasPermitidas = [
+
+            'Backspace',
+            'Delete',
+            'ArrowLeft',
+            'ArrowRight',
+            'Tab'
+
+        ];
+
+        if (
+            teclasPermitidas.includes(e.key)
+        ) {
+            return;
+        }
+
+        if (!/[0-9]/.test(e.key)) {
+
+            alert(
+                'Ingrese números solamente'
+            );
+
+            e.preventDefault();
 
         }
 
