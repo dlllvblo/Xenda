@@ -914,6 +914,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             nucleoSelect.disabled = true;
 
+            console.log(tramo);
+
             const response =
                 await fetch(
                     `/entidades/${encodeURIComponent(tramo)}`
@@ -921,6 +923,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const entidades =
                 await response.json();
+                
+            console.log(entidades);
 
             entidades.forEach(entidad => {
 
