@@ -90,6 +90,12 @@
 
 <form method="GET" class="filtros">
 
+    <select name="tramo">
+
+        <option value="">
+            Todos los tramos
+        </option>
+
         {% for t in tramos %}
 
             <option value="{{ t[0] }}">
@@ -109,7 +115,7 @@
         {% for e in entidades %}
 
             <option value="{{ e[0] }}">
-                {{ e[0] }}
+                {{ e }}
             </option>
 
         {% endfor %}
@@ -125,7 +131,7 @@
         {% for m in municipios %}
 
             <option value="{{ m[0] }}">
-                {{ m[0] }}
+                {{ m }}
             </option>
 
         {% endfor %}
@@ -143,7 +149,7 @@
         {% for u in usuarios %}
 
             <option value="{{ u[0] }}">
-                {{ u[0] }}
+                {{ u }}
             </option>
 
         {% endfor %}
