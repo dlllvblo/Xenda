@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sesiones activas - Xenda</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial;
+
+            background: #f5f7fb;
+
+            padding: 20px;
+        }
+
+        .card {
+
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 20px;
+
+            max-width: 1100px;
+
+            margin: auto;
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+
+            margin-top: 0;
+
+            color: #1d4ed8;
+        }
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+
+            padding: 14px;
+
+            border-bottom: 1px solid #ddd;
+
+            text-align: left;
+        }
+
+        th {
+
+            background: #1d4ed8;
+
+            color: white;
+        }
+
+        tr:nth-child(even) {
+
+            background: #f8fafc;
+        }
+
+        .cerrar {
+
+            color: #b91c1c;
+
+            font-weight: bold;
+
+            text-decoration: none;
+        }
+
+        .cerrar:hover {
+
+            opacity: 0.8;
+        }
+
+        .topbar {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+        }
+
+        .volver {
+
+            text-decoration: none;
+
+            background: #1d4ed8;
+
+            color: white;
+
+            padding: 10px 16px;
+
+            border-radius: 10px;
+        }
+
+        .tabla-responsive {
+
+            overflow-x: auto;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="card">
+
+    <div class="topbar">
+
+        <h1>
+            Sesiones activas
+        </h1>
+
+        <a
+            href="/admin"
+            class="volver"
+        >
+            Volver
+        </a>
+
+    </div>
+
+    <div class="tabla-responsive">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Usuario</th>
+
+                    <th>Inicio de sesión</th>
+
+                    <th>Última actividad</th>
+
+                    <th>Acción</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for s in sesiones %}
+
+                <tr>
+
+                    <td>
+                        {{ s.correo }}
+                    </td>
+
+                    <td>
+                        {{ s.inicio.strftime('%d/%m/%Y %H:%M') }}
+                    </td>
+
+                    <td>
+                        {{ s.ultima_actividad.strftime('%d/%m/%Y %H:%M') }}
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="/cerrar_sesion/{{ s.id }}"
+                            class="cerrar"
+                            onclick="return confirm(
+                                '¿Cerrar esta sesión?'
+                            )"
+                        >
+                            Cerrar sesión
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -17,6 +17,7 @@ import pandas as pd
 import unicodedata
 import os
 from zoneinfo import ZoneInfo
+import uuid 
 
 from google.oauth2.service_account import Credentials
 
@@ -30,6 +31,7 @@ from googleapiclient.http import MediaFileUpload
 # =========================================
 
 app = Flask(__name__)
+
 
 app.secret_key = os.getenv('SECRET_KEY') 
 ADMIN_CORREO = os.getenv('ADMIN_CORREO')
@@ -68,6 +70,77 @@ class Usuario(db.Model):
         nullable=False
     )
 
+# =========================================
+# SESIONES ACTIVAS
+# =========================================
+
+class SesionActiva(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    correo = db.Column(
+        db.String(120),
+        nullable=False
+    )
+
+    token = db.Column(
+        db.String(200),
+        nullable=False,
+        unique=True
+    )
+
+    inicio = db.Column(
+        db.DateTime,
+        default=datetime.now
+    )
+
+    ultima_actividad = db.Column(
+        db.DateTime,
+        default=datetime.now
+    )
+
+# =========================================
+# CONTROL DE SESIONES
+# =========================================
+
+@app.before_request
+
+def actualizar_sesion():
+
+    token = session.get(
+        'session_token'
+    )
+
+    if not token:
+
+        return
+
+    sesion_db = SesionActiva.query.filter_by(
+        token=token
+    ).first()
+
+    # =============================
+    # SESIÓN ELIMINADA POR ADMIN
+    # =============================
+
+    if not sesion_db:
+
+        session.clear()
+
+        return redirect('/login')
+
+    # =============================
+    # ACTUALIZAR ACTIVIDAD
+    # =============================
+
+    sesion_db.ultima_actividad = datetime.now(
+        ZoneInfo('America/Mexico_City')
+    )
+
+    db.session.commit()
 
 # =========================================
 # CONTROL EXPORTACIONES
@@ -451,6 +524,25 @@ def login():
 
             session['usuario'] = usuario.correo
 
+            # =============================
+            # CREAR TOKEN DE SESIÓN
+            # =============================
+
+            session_token = str(uuid.uuid4())
+
+            session['session_token'] = session_token
+
+            nueva_sesion = SesionActiva(
+
+                correo=correo,
+
+                token=session_token
+            )
+
+            db.session.add(nueva_sesion)
+
+            db.session.commit()
+
             return redirect('/')
 
         else:
@@ -550,6 +642,56 @@ def eliminar_usuario(id):
     flash('Usuario eliminado')
 
     return redirect('/admin')
+
+# =========================================
+# SESIONES ACTIVAS
+# =========================================
+
+@app.route('/sesiones')
+
+def sesiones():
+
+    if session.get('usuario') != ADMIN_CORREO:
+
+        return redirect('/login')
+
+    sesiones_activas = SesionActiva.query.order_by(
+
+        SesionActiva.ultima_actividad.desc()
+
+    ).all()
+
+    return render_template(
+
+        'sesiones.html',
+
+        sesiones=sesiones_activas
+    )
+
+
+# =========================================
+# CERRAR SESION REMOTA
+# =========================================
+
+@app.route('/cerrar_sesion/<int:id>')
+
+def cerrar_sesion(id):
+
+    if session.get('usuario') != ADMIN_CORREO:
+
+        return redirect('/login')
+
+    sesion_obj = SesionActiva.query.get_or_404(id)
+
+    db.session.delete(sesion_obj)
+
+    db.session.commit()
+
+    flash(
+        'Sesión cerrada correctamente'
+    )
+
+    return redirect('/sesiones')
 
 # =========================================
 # CREAR USUARIOS
