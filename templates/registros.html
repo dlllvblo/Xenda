@@ -5,6 +5,81 @@
 
     <meta charset="UTF-8">
     <title>Registros - Xenda</title>
+    <style>
+
+        .filtros {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+            flex-wrap: wrap;
+        }
+
+        .filtros select,
+        .filtros button {
+
+            padding: 10px;
+        }
+
+        .tabla-responsive {
+
+            overflow-x: auto;
+
+        }
+
+        body {
+
+            font-family: Arial;
+
+            margin: 20px;
+        }
+
+        .tabla-responsive {
+
+            overflow-x: auto;
+
+            max-height: 80vh;
+        }
+
+        table {
+
+            border-collapse: collapse;
+
+            min-width: 2200px;
+        }
+
+        th,
+        td {
+
+            padding: 10px;
+
+            border: 1px solid #ccc;
+
+            white-space: nowrap;
+        }
+
+        th {
+
+            position: sticky;
+
+            top: 0;
+
+            background: #1d4ed8;
+
+            color: white;
+
+            z-index: 2;
+        }
+
+        tr:nth-child(even) {
+
+            background: #f5f5f5;
+        }
+
+    </style>
 
 </head>
 
@@ -13,78 +88,169 @@
 <h1>Xenda v1.0</h1>
 <h2>Registros capturados</h2>
 
+<form method="GET" class="filtros">
+
+        {% for t in tramos %}
+
+            <option value="{{ t[0] }}">
+                {{ t[0] }}
+            </option>
+
+        {% endfor %}
+
+    </select>
+
+    <select name="entidad">
+
+        <option value="">
+            Todas las entidades
+        </option>
+
+        {% for e in entidades %}
+
+            <option value="{{ e[0] }}">
+                {{ e[0] }}
+            </option>
+
+        {% endfor %}
+
+    </select>
+
+    <select name="municipio">
+
+        <option value="">
+            Todos los municipios
+        </option>
+
+        {% for m in municipios %}
+
+            <option value="{{ m[0] }}">
+                {{ m[0] }}
+            </option>
+
+        {% endfor %}
+
+    </select>
+
+    {% if session['usuario'] == admin_correo %}
+
+    <select name="usuario">
+
+        <option value="">
+            Todos los usuarios
+        </option>
+
+        {% for u in usuarios %}
+
+            <option value="{{ u[0] }}">
+                {{ u[0] }}
+            </option>
+
+        {% endfor %}
+
+    </select>
+
+    {% endif %}
+
+    <button type="submit">
+        Filtrar
+    </button>
+
+</form>
+
+<div class="tabla-responsive">
+
 <table border="1">
 
-    <tr>
+        <tr>
 
-        <th>ID</th>
-        <th>Tramo</th>
-        <th>Entidad</th>
-        <th>Municipio</th>
-        <th>Núcleo</th>
-        <th>Frente</th>
-        <th>Actividad</th>
-        <th>Modalidad</th>
-        <th>Tipo de propiedad</th>
-        <th>Observaciones</th>
-        <th>Usuario</th>
-        <th>Fecha y hora</th>
-        {% if session['usuario'] == admin_correo %}
+            <th>ID</th>
+            <th>Tramo</th>
+            <th>Entidad</th>
+            <th>Municipio</th>
+            <th>Núcleo</th>
+            <th>Frente</th>
+            <th>Actividad</th>
+            <th>Modalidad</th>
+            <th>Tipo de propiedad</th>
+            <th>Mediciones Agroforestales</th>
+            <th>Mediciones BDTS</th>
+            <th>Planos</th>
+            <th>Planos generados</th>
+            <th>Planos validados</th>
+            <th>No. infografías</th>
+            <th>Infografías generadas</th>
+            <th>Infografías validadas</th>
+            <th>Estatus infografías</th>
+            <th>Observaciones</th>
+            <th>Usuario</th>
+            <th>Fecha y hora</th>
+            {% if session['usuario'] == admin_correo %}
 
-            <th>
-                Acción
-            </th>
+                <th>
+                    Acción
+                </th>
 
-        {% endif %}
+            {% endif %}
 
-    </tr>
+        </tr>
 
-    {% for r in registros %}
+        {% for r in registros %}
 
-    <tr>
+        <tr>
 
-        <td>{{ r.id }}</td>
-        <td>{{ r.tramo }}</td>
-        <td>{{ r.entidad }}</td>
-        <td>{{ r.municipio }}</td>
-        <td>{{ r.nucleo }}</td>
-        <td>{{ r.frente }}</td>
-        <td>{{ r.actividad }}</td>
-        <td>{{ r.tipo }}</td>
-        <td>{{ r.tipo_propiedad }}</td>
-        <td>{{ r.observaciones }}</td>
-        {% if session['usuario'] == admin_correo %}
+            <td>{{ r.id }}</td>
+            <td>{{ r.tramo }}</td>
+            <td>{{ r.entidad }}</td>
+            <td>{{ r.municipio }}</td>
+            <td>{{ r.nucleo }}</td>
+            <td>{{ r.frente }}</td>
+            <td>{{ r.actividad }}</td>
+            <td>{{ r.tipo }}</td>
+            <td>{{ r.tipo_propiedad }}</td>
+            <td>{{ r.mediciones_agroforestales }}</td>
+            <td>{{ r.mediciones_bdts }}</td>
+            <td>{{ r.planos }}</td>
+            <td>{{ r.planos_generados }}</td>
+            <td>{{ r.planos_validados }}</td>
+            <td>{{ r.num_infografias }}</td>
+            <td>{{ r.infografias_generadas }}</td>
+            <td>{{ r.infografias_validadas }}</td>
+            <td>{{ r.estatus_infografias }}</td>
+            <td>{{ r.observaciones }}</td>
+            {% if session['usuario'] == admin_correo %}
 
-            <td>{{ r.usuario }}</td>
+                <td>{{ r.usuario }}</td>
 
-        {% else %}
+            {% else %}
 
-            <td>Usuario autorizado</td>
+                <td>Usuario autorizado</td>
 
-        {% endif %}
-        <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
-        {% if session['usuario'] == admin_correo %}
+            {% endif %}
+            <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
+            {% if session['usuario'] == admin_correo %}
 
-            <td>
+                <td>
 
-                <a
-                    href="/xenda_delete_record/{{ r.id }}"
-                    onclick="return confirm(
-                        '¿Seguro que deseas eliminar este registro?'
-                    )"
-                >
-                    Eliminar
-                </a>
+                    <a
+                        href="/xenda_delete_record/{{ r.id }}"
+                        onclick="return confirm(
+                            '¿Seguro que deseas eliminar este registro?'
+                        )"
+                    >
+                        Eliminar
+                    </a>
 
-            </td>
+                </td>
 
-        {% endif %}
+            {% endif %}
 
-    </tr>
+        </tr>
 
-    {% endfor %}
+        {% endfor %}
 
-</table>
+    </table>
+</div>
 
 <br>
 

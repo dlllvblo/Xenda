@@ -311,6 +311,17 @@
                 padding: 20px;
             }
 
+            .acciones-formulario {
+
+                display: flex;
+
+                gap: 10px;
+
+                margin-top: 20px;
+
+                flex-wrap: wrap;
+            }
+
         }
 
     </style>
@@ -863,12 +874,25 @@
 
     <div class="submit-container">
 
-        <button
-            type="submit"
-            class="submit-btn"
-        >
-            GUARDAR REGISTRO
-        </button>
+        <div class="acciones-formulario">
+
+    <button
+        type="submit"
+        name="accion"
+        value="guardar"
+    >
+        Guardar
+    </button>
+
+    <button
+        type="submit"
+        name="accion"
+        value="guardar_otro"
+    >
+        Guardar y crear otro
+    </button>
+
+</div>
 
     </div>
 
