@@ -264,21 +264,44 @@ def exportar_excel_mensual():
         datos.append({
 
             'FECHA': r.fecha,
-            'TRAMO': r.tramo,
-            'ENTIDAD': r.entidad,
-            'MUNICIPIO': r.municipio,
-            'NUCLEO': r.nucleo,
-            'FRENTE': r.frente,
-            'ACTIVIDAD': r.actividad,
-            'MODALIDAD': r.tipo,
-            'MEDICIONES_AGROFORESTALES': r.mediciones_agroforestales,
-            'MEDICIONES_BDTS': r.mediciones_bdts,
-            'PLANOS': r.planos,
-            'NUM_INFOGRAFIAS': r.num_infografias,
-            'INFOGRAFIAS_GENERADAS': r.infografias_generadas,
-            'INFOGRAFIAS_VALIDADAS': r.infografias_validadas,
-            'OBSERVACIONES': r.observaciones
 
+            'TRAMO': r.tramo,
+
+            'ENTIDAD': r.entidad,
+
+            'MUNICIPIO': r.municipio,
+
+            'NUCLEO': r.nucleo,
+
+            'FRENTE': r.frente,
+
+            'ACTIVIDAD': r.actividad,
+
+            'MODALIDAD': r.tipo,
+
+            'TIPO_PROPIEDAD': r.tipo_propiedad,
+
+            'MEDICIONES_AGROFORESTALES': r.mediciones_agroforestales,
+
+            'MEDICIONES_BDTS': r.mediciones_bdts,
+
+            'PLANOS': r.planos,
+
+            'PLANOS_GENERADOS': r.planos_generados,
+
+            'PLANOS_VALIDADOS': r.planos_validados,
+
+            'NUM_INFOGRAFIAS': r.num_infografias,
+
+            'INFOGRAFIAS_GENERADAS': r.infografias_generadas,
+
+            'INFOGRAFIAS_VALIDADAS': r.infografias_validadas,
+
+            'ESTATUS_INFOGRAFIAS': r.estatus_infografias,
+
+            'OBSERVACIONES': r.observaciones,
+
+            'USUARIO': r.usuario
         })
 
     df = pd.DataFrame(datos)
@@ -641,6 +664,8 @@ def index():
 
             infografias_validadas=(request.form.get('infografias_validadas') or 0),
 
+            estatus_infografias=request.form.get('estatus_infografias'),
+
             tipo_propiedad=request.form.get('tipo_propiedad'),
 
             observaciones=request.form['observaciones']
@@ -649,6 +674,14 @@ def index():
         db.session.add(nuevo)
 
         db.session.commit()
+
+        accion = request.form.get(
+            'accion'
+        )
+
+        if accion == 'guardar_otro':
+
+            return redirect('/')
 
         flash(
             'Registro guardado exitosamente'
@@ -777,15 +810,100 @@ def registros():
     
         return redirect('/login')
 
-    lista = Registro.query.order_by(
+    query = Registro.query
+
+    tramo = request.args.get('tramo')
+
+    entidad = request.args.get('entidad')
+
+    municipio = request.args.get('municipio')
+
+    usuario = request.args.get('usuario')
+
+    if tramo:
+
+        query = query.filter(
+            Registro.tramo == tramo
+        )
+
+    if entidad:
+
+        query = query.filter(
+            Registro.entidad == entidad
+        )
+
+    if municipio:
+
+        query = query.filter(
+            Registro.municipio == municipio
+        )
+
+    if usuario:
+
+        query = query.filter(
+            Registro.usuario == usuario
+        )
+
+    lista = query.order_by(
         Registro.fecha.desc()
     ).all()
 
+    tramos = sorted([
+
+    t[0]
+
+    for t in db.session.query(
+        Registro.tramo
+    ).distinct()
+
+    ])
+
+    entidades = sorted([
+
+        e[0]
+
+        for e in db.session.query(
+            Registro.entidad
+        ).distinct()
+
+    ])
+
+    municipios = sorted([
+
+        m[0]
+
+        for m in db.session.query(
+            Registro.municipio
+        ).distinct()
+
+    ])
+
+    usuarios = sorted([
+
+        u[0]
+
+        for u in db.session.query(
+            Registro.usuario
+        ).distinct()
+
+    ])
+
     return render_template(
-        'registros.html',
-        registros=lista,
-        admin_correo=ADMIN_CORREO
-    )
+
+    'registros.html',
+
+    registros=lista,
+
+    admin_correo=ADMIN_CORREO,
+
+    tramos=tramos,
+
+    entidades=entidades,
+
+    municipios=municipios,
+
+    usuarios=usuarios
+)
 
 @app.route('/xenda_delete_record/<int:id>')
 
@@ -938,6 +1056,46 @@ def descargar_eliminados():
     return send_file(
         nombre_archivo,
         as_attachment=True
+    )
+
+# =========================================
+# DASHBOARD
+# =========================================
+
+@app.route('/dashboard')
+
+def dashboard():
+
+    if 'usuario' not in session:
+
+        return redirect('/login')
+
+    total_registros = Registro.query.count()
+
+    total_infografias = db.session.query(
+        db.func.sum(
+            Registro.num_infografias
+        )
+    ).scalar() or 0
+
+    total_planos = db.session.query(
+        db.func.sum(
+            Registro.planos
+        )
+    ).scalar() or 0
+
+    total_mediciones = db.session.query(
+        db.func.sum(
+            Registro.mediciones_agroforestales
+        )
+    ).scalar() or 0
+
+    return render_template(
+        'dashboard.html',
+        total_registros=total_registros,
+        total_infografias=total_infografias,
+        total_planos=total_planos,
+        total_mediciones=total_mediciones
     )
 
 # =========================================
