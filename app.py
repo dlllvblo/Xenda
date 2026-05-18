@@ -146,6 +146,44 @@ class Registro(db.Model):
 
     db.DateTime) 
 
+# =========================================
+# REGISTROS ELIMINADOS
+# =========================================
+
+class RegistroEliminado(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    id_original = db.Column(db.Integer)
+
+    usuario_original = db.Column(db.String(200))
+
+    eliminado_por = db.Column(db.String(200))
+
+    fecha_eliminacion = db.Column(db.DateTime)
+
+    tramo = db.Column(db.String(100))
+
+    entidad = db.Column(db.String(100))
+
+    municipio = db.Column(db.String(100))
+
+    nucleo = db.Column(db.String(200))
+
+    frente = db.Column(db.Integer)
+
+    actividad = db.Column(db.String(100))
+
+    tipo = db.Column(db.String(100))
+
+    tipo_propiedad = db.Column(db.String(100))
+
+    observaciones = db.Column(db.Text)
+
+    fecha_original = db.Column(db.DateTime)
 
 # =========================================
 # NORMALIZAR TEXTO
@@ -759,6 +797,41 @@ def eliminar_registro(id):
 
     registro = Registro.query.get_or_404(id)
 
+    eliminado = RegistroEliminado(
+
+        id_original=registro.id,
+
+        usuario_original=registro.usuario,
+
+        eliminado_por=session['usuario'],
+
+        fecha_eliminacion=datetime.now(
+            ZoneInfo('America/Mexico_City')
+        ),
+
+        tramo=registro.tramo,
+
+        entidad=registro.entidad,
+
+        municipio=registro.municipio,
+
+        nucleo=registro.nucleo,
+
+        frente=registro.frente,
+
+        actividad=registro.actividad,
+
+        tipo=registro.tipo,
+
+        tipo_propiedad=registro.tipo_propiedad,
+
+        observaciones=registro.observaciones,
+
+        fecha_original=registro.fecha
+    )
+
+    db.session.add(eliminado)
+
     db.session.delete(registro)
 
     db.session.commit()
@@ -802,6 +875,70 @@ def descargar_usuarios():
         as_attachment=True
     )
 
+# =========================================
+# DESCARGAR REGISTROS ELIMINADOS
+# =========================================
+
+@app.route('/descargar_eliminados')
+
+def descargar_eliminados():
+
+    if session.get('usuario') != ADMIN_CORREO:
+
+        return 'No autorizado', 403
+
+    eliminados = RegistroEliminado.query.order_by(
+        RegistroEliminado.fecha_eliminacion.desc()
+    ).all()
+
+    datos = []
+
+    for r in eliminados:
+
+        datos.append({
+
+            'ID_ORIGINAL': r.id_original,
+
+            'USUARIO_ORIGINAL': r.usuario_original,
+
+            'ELIMINADO_POR': r.eliminado_por,
+
+            'FECHA_ELIMINACION': r.fecha_eliminacion,
+
+            'TRAMO': r.tramo,
+
+            'ENTIDAD': r.entidad,
+
+            'MUNICIPIO': r.municipio,
+
+            'NUCLEO': r.nucleo,
+
+            'FRENTE': r.frente,
+
+            'ACTIVIDAD': r.actividad,
+
+            'TIPO': r.tipo,
+
+            'TIPO_PROPIEDAD': r.tipo_propiedad,
+
+            'OBSERVACIONES': r.observaciones,
+
+            'FECHA_ORIGINAL': r.fecha_original
+        })
+
+    df = pd.DataFrame(datos)
+
+    nombre_archivo = 'registros_eliminados.xlsx'
+
+    df.to_excel(
+        nombre_archivo,
+        index=False
+    )
+
+    return send_file(
+        nombre_archivo,
+        as_attachment=True
+    )
 
 # =========================================
 # CREAR TABLAS
