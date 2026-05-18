@@ -70,6 +70,24 @@
             margin-bottom: 10px;
         }
 
+        .top-actions {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: end;
+
+            gap: 20px;
+
+            margin-bottom: 20px;
+        }
+
+        .top-actions a {
+
+            color: inherit; 
+        }
+
     </style>
 
 </head>
@@ -95,6 +113,8 @@
 
     {% endwith %}
 
+    <div class="top-actions">
+
     <form method="POST">
 
         <input
@@ -110,8 +130,6 @@
 
     </form>
 
-    <br>
-
     <a href="/descargar_usuarios">
 
         <button type="button">
@@ -121,6 +139,8 @@
         </button>
 
     </a>
+
+    </div>
 
     <table>
 
