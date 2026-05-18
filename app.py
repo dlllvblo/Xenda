@@ -5,7 +5,8 @@ from flask import (
     redirect,
     flash,
     session,
-    jsonify
+    jsonify,
+    send_file 
 )
 
 from flask_sqlalchemy import SQLAlchemy
@@ -534,17 +535,17 @@ def index():
 
     exportar_excel_mensual()
 
-#    if (
-#        not registro_habilitado()
-#        and
-#        session.get('usuario') != ADMIN_CORREO
-#):
-#
-#        session.clear()
-#
-#        return render_template(
-#            'cerrado.html'
-#    )
+    if (
+        not registro_habilitado()
+        and
+        session.get('usuario') != ADMIN_CORREO
+):
+
+        session.clear()
+
+        return render_template(
+            'cerrado.html'
+    )
 
     if 'usuario' not in session:
 
@@ -763,6 +764,43 @@ def eliminar_registro(id):
     db.session.commit()
 
     return redirect('/registros')
+
+# =========================================
+# DESCARGAR USUARIOS
+# =========================================
+
+@app.route('/descargar_usuarios')
+
+def descargar_usuarios():
+
+    if session.get('usuario') != ADMIN_CORREO:
+
+        return 'No autorizado', 403
+
+    usuarios = Usuario.query.all()
+
+    datos = []
+
+    for u in usuarios:
+
+        datos.append({
+
+            'CORREO': u.correo
+        })
+
+    df = pd.DataFrame(datos)
+
+    nombre_archivo = 'usuarios_xenda.xlsx'
+
+    df.to_excel(
+        nombre_archivo,
+        index=False
+    )
+
+    return send_file(
+        nombre_archivo,
+        as_attachment=True
+    )
 
 
 # =========================================
