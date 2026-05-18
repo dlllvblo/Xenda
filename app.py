@@ -326,7 +326,7 @@ def exportar_excel_mensual():
 # CARGAR CATALOGO
 # =========================================
 
-catalogo = pd.read_excel('catalogo.xlsx')
+catalogo = pd.read_excel('catalogo_1.xlsx')
 
 catalogo.columns = catalogo.columns.str.strip()
 
