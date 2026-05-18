@@ -93,13 +93,23 @@ class SesionActiva(db.Model):
     )
 
     inicio = db.Column(
+
         db.DateTime,
-        default=datetime.now
+
+        default=lambda:
+            datetime.now(
+                ZoneInfo('America/Mexico_City')
+            )
     )
 
     ultima_actividad = db.Column(
+
         db.DateTime,
-        default=datetime.now
+
+        default=lambda:
+            datetime.now(
+                ZoneInfo('America/Mexico_City')
+            )
     )
 
 # =========================================
@@ -160,8 +170,13 @@ class Exportacion(db.Model):
     )
 
     fecha_exportacion = db.Column(
+
         db.DateTime,
-        default=datetime.now
+
+        default=lambda:
+            datetime.now(
+                ZoneInfo('America/Mexico_City')
+            )
     )
 
 
@@ -285,7 +300,9 @@ def normalizar(texto):
 
 def registro_habilitado():
 
-    dia = datetime.now().day
+    dia = datetime.now(
+        ZoneInfo('America/Mexico_City')
+    ).day
 
     return (
         (10 <= dia <= 14)
@@ -300,7 +317,9 @@ def registro_habilitado():
 
 def exportar_excel_mensual():
 
-    ahora = datetime.now()
+    ahora = datetime.now(
+        ZoneInfo('America/Mexico_City')
+    )
 
     dia = ahora.day
 
@@ -562,6 +581,22 @@ def login():
 @app.route('/logout')
 
 def logout():
+
+    token = session.get(
+        'session_token'
+    )
+
+    if token:
+
+        sesion_db = SesionActiva.query.filter_by(
+            token=token
+        ).first()
+
+        if sesion_db:
+
+            db.session.delete(sesion_db)
+
+            db.session.commit()
 
     session.clear()
 
