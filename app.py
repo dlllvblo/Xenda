@@ -30,7 +30,7 @@ from googleapiclient.http import MediaFileUpload
 
 app = Flask(__name__)
 
-app.secret_key = 'RAN-DGCAT_2026'
+app.secret_key = os.getenv('SECRET_KEY') 
 ADMIN_CORREO = 'diazedgar1701@gmail.com'
 
 app.permanent_session_lifetime = timedelta(days=7)
@@ -128,8 +128,6 @@ class Registro(db.Model):
     planos_generados = db.Column(db.Integer)
 
     planos_validados = db.Column(db.Integer)
-
-    #infografias = db.Column(db.Integer)
 
     num_infografias = db.Column(db.Integer)
 
@@ -383,7 +381,9 @@ def login():
             correo=correo
         ).first()
 
-        if usuario and password == 'RAN-DGCAT_2026':
+        APP_PASSWORD = os.getenv('APP_PASSWORD')
+
+        if usuario and password == APP_PASSWORD: 
 
             session.permanent = True
 
