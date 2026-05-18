@@ -146,9 +146,7 @@ def actualizar_sesion():
     # ACTUALIZAR ACTIVIDAD
     # =============================
 
-    sesion_db.ultima_actividad = datetime.now(
-        ZoneInfo('America/Mexico_City')
-    )
+    sesion_db.ultima_actividad = datetime.now(ZoneInfo('America/Mexico_City'))
 
     db.session.commit()
 
@@ -230,9 +228,7 @@ class Registro(db.Model):
 
     observaciones = db.Column(db.Text)
 
-    fecha = db.Column(
-
-    db.DateTime) 
+    fecha = db.Column(db.DateTime(timezone=True)) 
 
 # =========================================
 # REGISTROS ELIMINADOS
@@ -251,7 +247,7 @@ class RegistroEliminado(db.Model):
 
     eliminado_por = db.Column(db.String(200))
 
-    fecha_eliminacion = db.Column(db.DateTime)
+    fecha_eliminacion = db.Column(db.DateTime(timezone=True))
 
     tramo = db.Column(db.String(100))
 
@@ -271,7 +267,7 @@ class RegistroEliminado(db.Model):
 
     observaciones = db.Column(db.Text)
 
-    fecha_original = db.Column(db.DateTime)
+    fecha_original = db.Column(db.DateTime(timezone=True))
 
 # =========================================
 # NORMALIZAR TEXTO
@@ -1100,10 +1096,8 @@ def eliminar_registro(id):
 
         eliminado_por=session['usuario'],
 
-        fecha_eliminacion=datetime.now(
-            ZoneInfo('America/Mexico_City')
-        ),
-
+        fecha_eliminacion=datetime.now(ZoneInfo('America/Mexico_City')),
+                                       
         tramo=registro.tramo,
 
         entidad=registro.entidad,
