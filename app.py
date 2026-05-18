@@ -730,10 +730,10 @@ def nucleos(tramo, entidad, municipio):
 # REGISTROS
 # =========================================
 
-@app.route('/xenda_delete_record/<int:id>')
+@app.route('/registros')
 
 def registros():
-
+    
     if 'usuario' not in session:
     
         return redirect('/login')
@@ -744,14 +744,15 @@ def registros():
 
     return render_template(
         'registros.html',
-        registros=lista
+        registros=lista,
+        admin_correo=ADMIN_CORREO
     )
 
-@app.route('/eliminar_registro/<int:id>')
+@app.route('/xenda_delete_record/<int:id>')
 
 def eliminar_registro(id):
 
-    if session.get('usuario') != ADMIN_CORREO: 
+    if session.get('usuario') != ADMIN_CORREO:
 
         return 'No autorizado', 403
 
