@@ -30,7 +30,8 @@
         }
 
         input {
-            width: 100%;
+            width: 320px;
+            max-width: 100%;
             padding: 12px;
             margin-top: 10px;
             margin-bottom: 10px;
@@ -39,7 +40,7 @@
         }
 
         button {
-            background: #1d4ed8;
+            background: #691B4F;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -74,20 +75,36 @@
 
             display: flex;
 
-            justify-content: flex-start;
+            justify-content: space-between;
 
             align-items: end;
 
             gap: 20px;
 
-            flex-wrap: wrap; 
+            margin-bottom: 25px;
 
-            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-agregar {
+
+            flex: 1;
+
+            min-width: 280px;
+        }
+
+        .acciones-admin {
+
+            display: flex;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
         }
 
         .top-actions a {
 
-            color: inherit; 
+            color: inherit;
         }
 
     </style>
@@ -117,7 +134,7 @@
 
     <div class="top-actions">
 
-    <form method="POST">
+    <form method="POST" class="form-agregar">
 
         <input
             type="email"
@@ -127,32 +144,39 @@
         >
 
         <button type="submit">
+
             Agregar usuario
+
         </button>
 
     </form>
 
-    <a href="/descargar_usuarios">
+    <div class="acciones-admin">
 
-        <button type="button">
+        <a href="/descargar_usuarios">
 
-            Descargar usuarios
+            <button type="button">
 
-        </button>
+                Descargar usuarios
 
-    </a>
+            </button>
 
-    <a href="/descargar_eliminados">
+        </a>
 
-        <button type="button">
+        <a href="/descargar_eliminados">
 
-            Descargar registros eliminados
+            <button type="button">
 
-        </button>
+                Descargar registros eliminados
 
-    </a>
+            </button>
+
+        </a>
 
     </div>
+
+</div>
+
 
     <table>
 
