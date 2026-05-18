@@ -29,7 +29,7 @@
         <th>Observaciones</th>
         <th>Usuario</th>
         <th>Fecha y hora</th>
-        {% if session['usuario'] == 'diazedgar1701@gmail.com' %}
+        {% if session['usuario'] == admin_correo %}
 
             <th>
                 Acción
@@ -53,13 +53,26 @@
         <td>{{ r.tipo }}</td>
         <td>{{ r.tipo_propiedad }}</td>
         <td>{{ r.observaciones }}</td>
-        <td>{{ r.usuario }}</td>
+        {% if session['usuario'] == admin_correo %}
+
+            <td>{{ r.usuario }}</td>
+
+        {% else %}
+
+            <td>Usuario autorizado</td>
+
+        {% endif %}
         <td>{{ r.fecha.strftime('%d/%m/%Y') }}</td>
-        {% if session['usuario'] == 'diazedgar1701@gmail.com' %}
+        {% if session['usuario'] == admin_correo %}
 
             <td>
 
-                <a href="/xenda_delete_record/{{ r.id }}">
+                <a
+                    href="/xenda_delete_record/{{ r.id }}"
+                    onclick="return confirm(
+                        '¿Seguro que deseas eliminar este registro?'
+                    )"
+                >
                     Eliminar
                 </a>
 
