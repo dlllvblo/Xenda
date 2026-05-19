@@ -1172,15 +1172,18 @@ def descargar_usuarios():
 
     df = pd.DataFrame(datos)
 
-    nombre_archivo = 'usuarios_xenda.xlsx'
+    ruta_archivo = os.path.join(
+    '/tmp',
+    'registros_xenda.xlsx'
+    )
 
     df.to_excel(
-        nombre_archivo,
+        ruta_archivo,
         index=False
     )
 
     return send_file(
-        nombre_archivo,
+        ruta_archivo,
         as_attachment=True
     )
 
@@ -1237,15 +1240,18 @@ def descargar_eliminados():
 
     df = pd.DataFrame(datos)
 
-    nombre_archivo = 'registros_eliminados.xlsx'
+    ruta_archivo = os.path.join(
+        '/tmp',
+        'registros_eliminados.xlsx'
+    )
 
     df.to_excel(
-        nombre_archivo,
+        ruta_archivo,
         index=False
     )
 
     return send_file(
-        nombre_archivo,
+        ruta_archivo,
         as_attachment=True
     )
 
@@ -1314,15 +1320,18 @@ def descargar_registros():
 
     df = pd.DataFrame(datos)
 
-    nombre_archivo = 'registros_xenda.xlsx'
+    ruta_archivo = os.path.join(
+    '/tmp',
+    'registros_xenda.xlsx'
+    )
 
     df.to_excel(
-        nombre_archivo,
+        ruta_archivo,
         index=False
     )
 
     return send_file(
-        nombre_archivo,
+        ruta_archivo,
         as_attachment=True
     )
 
