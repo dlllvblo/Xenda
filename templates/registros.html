@@ -277,15 +277,7 @@
             <td>{{ r.infografias_validadas }}</td>
             <td>{{ r.estatus_infografias }}</td>
             <td>{{ r.observaciones }}</td>
-            {% if session['usuario'] == admin_correo %}
-
-                <td>{{ r.usuario }}</td>
-
-            {% else %}
-
-                <td>Usuario autorizado</td>
-
-            {% endif %}
+            <td>{{ r.usuario }}</td>
             <td>{{ r.fecha.strftime('%d/%m/%Y %H:%M:%S') }}</td>
             {% if session['usuario'] == admin_correo %}
 
