@@ -169,6 +169,26 @@
             opacity: 0.7;
         }
 
+        .link-correo {
+
+            color: #0F9D58;
+
+            text-decoration: underline;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition: opacity 0.2s ease;
+
+            font-weight: bold;
+        }
+
+        .link-correo:hover {
+
+            opacity: 0.7;
+        }
+
     </style>
 
 </head>
@@ -258,12 +278,12 @@
         </a>
 
         <a
-            href="mailto:{{
-                usuarios
-                | map(attribute='correo')
-                | join(',')
-            }}"
-            class="link-admin"
+
+            href="https://mail.google.com/mail/?view=cm&fs=1&to={{ usuarios | map(attribute='correo') | join(',') }}"
+
+            target="_blank"
+
+            class="link-correo"
         >
 
             Enviar correo
