@@ -1248,6 +1248,83 @@ def descargar_eliminados():
     )
 
 # =========================================
+# DESCARGAR REGISTROS 
+# =========================================
+
+@app.route('/descargar_registros')
+
+def descargar_registros():
+
+    if session.get('usuario') != ADMIN_CORREO:
+
+        return 'No autorizado', 403
+
+    registros = Registro.query.order_by(
+        Registro.fecha.desc()
+    ).all()
+
+    datos = []
+
+    for r in registros:
+
+        datos.append({
+
+            'FECHA': r.fecha,
+
+            'TRAMO': r.tramo,
+
+            'ENTIDAD': r.entidad,
+
+            'MUNICIPIO': r.municipio,
+
+            'NUCLEO': r.nucleo,
+
+            'FRENTE': r.frente,
+
+            'ACTIVIDAD': r.actividad,
+
+            'MODALIDAD': r.tipo,
+
+            'TIPO_PROPIEDAD': r.tipo_propiedad,
+
+            'MEDICIONES_AGROFORESTALES': r.mediciones_agroforestales,
+
+            'MEDICIONES_BDTS': r.mediciones_bdts,
+
+            'PLANOS': r.planos,
+
+            'PLANOS_GENERADOS': r.planos_generados,
+
+            'PLANOS_VALIDADOS': r.planos_validados,
+
+            'NUM_INFOGRAFIAS': r.num_infografias,
+
+            'INFOGRAFIAS_GENERADAS': r.infografias_generadas,
+
+            'INFOGRAFIAS_VALIDADAS': r.infografias_validadas,
+
+            'ESTATUS_INFOGRAFIAS': r.estatus_infografias,
+
+            'OBSERVACIONES': r.observaciones,
+
+            'USUARIO': r.usuario
+        })
+
+    df = pd.DataFrame(datos)
+
+    nombre_archivo = 'registros_xenda.xlsx'
+
+    df.to_excel(
+        nombre_archivo,
+        index=False
+    )
+
+    return send_file(
+        nombre_archivo,
+        as_attachment=True
+    )
+
+# =========================================
 # DASHBOARD
 # =========================================
 
