@@ -14,7 +14,7 @@
         Dashboard Xenda
     </title>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">    </script>
 
     <style>
 
@@ -35,7 +35,7 @@
                 linear-gradient(
                     135deg,
                     #691B4F,
-                    #2E073F
+                    #245C4F
                 );
 
             min-height: 100vh;
@@ -47,9 +47,11 @@
 
         h1 {
 
+            font-size: 42px;
+
             margin-bottom: 30px;
 
-            font-size: 40px;
+            color: #dec9a2;
         }
 
         .grid {
@@ -69,39 +71,78 @@
 
         .card {
 
-            background: rgba(255,255,255,0.08);
+            background:
+                rgba(255,255,255,0.08);
 
-            backdrop-filter: blur(10px);
+            border:
+                1px solid rgba(255,255,255,0.08);
 
-            border-radius: 20px;
+            backdrop-filter: blur(14px);
+
+            border-radius: 24px;
 
             padding: 25px;
 
-            box-shadow:
-                0 8px 20px rgba(0,0,0,0.25);
+            transition: 0.25s ease;
 
-            transition: 0.2s ease;
+            box-shadow:
+                0 8px 30px rgba(0,0,0,0.25);
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .card::before {
+
+            content: '';
+
+            position: absolute;
+
+            width: 140px;
+
+            height: 140px;
+
+            background:
+                rgba(255,255,255,0.04);
+
+            border-radius: 50%;
+
+            top: -50px;
+
+            right: -50px;
         }
 
         .card:hover {
 
-            transform: translateY(-4px);
+            transform:
+                translateY(-6px)
+                scale(1.01);
+
+            box-shadow:
+                0 14px 40px rgba(0,0,0,0.35);
         }
 
         .card h2 {
 
-            font-size: 15px;
+            font-size: 14px;
 
             opacity: 0.8;
 
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
         }
 
-        .card .numero {
+        .numero {
 
-            font-size: 42px;
+            font-size: 52px;
 
             font-weight: bold;
+
+            color: #dec9a2;
         }
 
         .charts {
@@ -121,21 +162,53 @@
 
         .chart-box {
 
-            background: rgba(255,255,255,0.08);
+            background:
+                rgba(255,255,255,0.08);
 
-            backdrop-filter: blur(10px);
+            border:
+                1px solid rgba(255,255,255,0.08);
 
-            border-radius: 20px;
+            backdrop-filter: blur(14px);
 
-            padding: 20px;
+            border-radius: 24px;
+
+            padding: 25px;
 
             box-shadow:
-                0 8px 20px rgba(0,0,0,0.25);
+                0 8px 30px rgba(0,0,0,0.25);
         }
 
         .chart-box h3 {
 
             margin-bottom: 20px;
+
+            color: #dec9a2;
+        }
+
+        #detallePanel {
+
+            min-height: 420px;
+
+            overflow-y: auto;
+        }
+
+        #detallePanel h2 {
+
+            color: #dec9a2;
+
+            margin-bottom: 20px;
+        }
+
+        #detallePanel ul {
+
+            margin-top: 10px;
+
+            margin-left: 20px;
+        }
+
+        #detallePanel li {
+
+            margin-bottom: 6px;
         }
 
         table {
@@ -144,35 +217,102 @@
 
             border-collapse: collapse;
 
-            background: rgba(255,255,255,0.08);
+            background:
+                rgba(255,255,255,0.08);
 
-            backdrop-filter: blur(10px);
-
-            border-radius: 20px;
+            border-radius: 24px;
 
             overflow: hidden;
+
+            backdrop-filter: blur(14px);
         }
 
         th {
 
-            background: rgba(255,255,255,0.1);
+            background:
+                rgba(255,255,255,0.1);
+
+            color: #dec9a2;
+
+            text-transform: uppercase;
+
+            font-size: 13px;
+
+            letter-spacing: 1px;
         }
 
         th,
         td {
 
-            padding: 14px;
+            padding: 15px;
 
             text-align: left;
 
             border-bottom:
-                1px solid rgba(255,255,255,0.1);
+                1px solid rgba(255,255,255,0.08);
+        }
+
+        tr {
+
+            transition: 0.2s ease;
         }
 
         tr:hover {
 
             background:
                 rgba(255,255,255,0.05);
+        }
+
+        .badge {
+
+            background: #a42145;
+
+            padding: 6px 10px;
+
+            border-radius: 999px;
+
+            font-size: 12px;
+
+            display: inline-block;
+        }
+
+        .topbar {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 30px;
+
+            flex-wrap: wrap;
+
+            gap: 15px;
+        }
+
+        .btn-volver {
+
+            background: #dec9a2;
+
+            color: #404040;
+
+            text-decoration: none;
+
+            padding: 12px 18px;
+
+            border-radius: 12px;
+
+            font-weight: bold;
+
+            transition: 0.2s ease;
+        }
+
+        .btn-volver:hover {
+
+            transform: translateY(-2px);
+
+            background: #BC945A;
         }
 
         @media (max-width: 768px) {
@@ -191,6 +331,23 @@
 
                 font-size: 28px;
             }
+
+            .numero {
+
+                font-size: 38px;
+            }
+
+            .chart-box {
+
+                padding: 18px;
+            }
+
+            table {
+
+                display: block;
+
+                overflow-x: auto;
+            }
         }
 
     </style>
@@ -199,9 +356,20 @@
 
 <body>
 
-    <h1>
-        Dashboard Xenda
-    </h1>
+    <div class="topbar">
+
+        <h1>
+            Dashboard Xenda
+        </h1>
+
+        <a
+            href="/"
+            class="btn-volver"
+        >
+            Volver al sistema
+        </a>
+
+    </div>
 
     <!-- KPIs -->
 
@@ -283,82 +451,151 @@
 
     </div>
 
-    <!-- TABLA -->
+    <!-- PANEL DETALLE -->
 
-    <table>
+    <div class="charts">
 
-        <thead>
+        <div
+            class="chart-box"
+            id="detallePanel"
+        >
 
-            <tr>
+            <h2>
+                Selecciona un tramo
+            </h2>
 
-                <th>Fecha</th>
+            <p>
+                Haz click sobre cualquier barra
+                para visualizar información detallada.
+            </p>
 
-                <th>Usuario</th>
+        </div>
 
-                <th>Tramo</th>
+        <div class="chart-box">
 
-                <th>Municipio</th>
+            <h3>
+                Últimos movimientos
+            </h3>
 
-                <th>Actividad</th>
+            <table>
 
-            </tr>
+                <thead>
 
-        </thead>
+                    <tr>
 
-        <tbody>
+                        <th>
+                            Fecha
+                        </th>
 
-            {% for r in recientes %}
+                        <th>
+                            Usuario
+                        </th>
 
-            <tr>
+                        <th>
+                            Tramo
+                        </th>
 
-                <td>
-                    {{ r.fecha.strftime('%d/%m/%Y %H:%M') }}
-                </td>
+                        <th>
+                            Municipio
+                        </th>
 
-                <td>
-                    {{ r.usuario }}
-                </td>
+                        <th>
+                            Actividad
+                        </th>
 
-                <td>
-                    {{ r.tramo }}
-                </td>
+                    </tr>
 
-                <td>
-                    {{ r.municipio }}
-                </td>
+                </thead>
 
-                <td>
-                    {{ r.actividad }}
-                </td>
+                <tbody>
 
-            </tr>
+                    {% for r in recientes %}
 
-            {% endfor %}
+                    <tr>
 
-        </tbody>
+                        <td>
+                            {{ r.fecha.strftime('%d/%m/%Y %H:%M') }}
+                        </td>
 
-    </table>
+                        <td>
+                            {{ r.usuario }}
+                        </td>
 
-    <script id="tramos-labels-data" type="application/json">
-        {{ tramos_labels | tojson }}
-    </script>
-    <script id="tramos-values-data" type="application/json">
-        {{ tramos_values | tojson }}
-    </script>
-    <script id="usuarios-labels-data" type="application/json">
-        {{ usuarios_labels | tojson }}
-    </script>
-    <script id="usuarios-values-data" type="application/json">
-        {{ usuarios_values | tojson }}
-    </script>
+                        <td>
+
+                            <span class="badge">
+
+                                {{ r.tramo }}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+                            {{ r.municipio }}
+                        </td>
+
+                        <td>
+                            {{ r.actividad }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
 
     <script>
 
-        // =================================
-        // TRAMOS
-        // =================================
+        // =====================================
+        // DATOS FLASK
+        // =====================================
 
-        new Chart(
+        const tramosLabels =
+            JSON.parse('{{ tramos_labels | tojson | safe }}');
+
+        const tramosValues =
+            JSON.parse('{{ tramos_values | tojson | safe }}');
+
+        const usuariosLabels =
+            JSON.parse('{{ usuarios_labels | tojson | safe }}');
+
+        const usuariosValues =
+            JSON.parse('{{ usuarios_values | tojson | safe }}');
+
+        const detalleTramos =
+            JSON.parse('{{ detalle_tramos | tojson | safe }}');
+
+        // =====================================
+        // COLORES
+        // =====================================
+
+        const colores = [
+
+            '#a42145',
+
+            '#6E152E',
+
+            '#245C4F',
+
+            '#BC945A',
+
+            '#691B4F',
+
+            '#dec9a2'
+        ];
+
+        // =====================================
+        // GRÁFICA TRAMOS
+        // =====================================
+
+        const tramosChart = new Chart(
 
             document.getElementById(
                 'tramosChart'
@@ -370,28 +607,139 @@
 
                 data: {
 
-                    labels: JSON.parse(
-                        document.getElementById('tramos-labels-data').textContent
-                    ),
+                    labels: tramosLabels,
 
                     datasets: [{
 
-                        label:
-                            'Registros',
+                        label: 'Registros',
 
-                        data: JSON.parse(
-                            document.getElementById('tramos-values-data').textContent
-                        ),
+                        data: tramosValues,
 
-                        borderWidth: 1
+                        backgroundColor: colores,
+
+                        borderRadius: 14,
+
+                        borderSkipped: false,
+
+                        hoverBackgroundColor: '#dec9a2'
                     }]
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    plugins: {
+
+                        legend: {
+
+                            display: false
+                        }
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            ticks: {
+
+                                color: 'white'
+                            },
+
+                            grid: {
+
+                                color:
+                                    'rgba(255,255,255,0.08)'
+                            }
+                        },
+
+                        x: {
+
+                            ticks: {
+
+                                color: 'white'
+                            },
+
+                            grid: {
+
+                                display: false
+                            }
+                        }
+                    },
+
+                    onClick: function(event, elements) {
+
+                        if (elements.length > 0) {
+
+                            const index =
+                                elements[0].index;
+
+                            const tramo =
+                                tramosLabels[index];
+
+                            const detalle =
+                                detalleTramos[tramo];
+
+                            let municipiosHTML = '';
+
+                            detalle.municipios.forEach(
+
+                                function(municipio) {
+
+                                    municipiosHTML +=
+                                        '<li>' +
+                                        municipio +
+                                        '</li>';
+                                }
+                            );
+
+                            let usuariosHTML = '';
+
+                            detalle.usuarios.forEach(
+
+                                function(usuario) {
+
+                                    usuariosHTML +=
+                                        '<li>' +
+                                        usuario +
+                                        '</li>';
+                                }
+                            );
+
+                            document.getElementById(
+                                'detallePanel'
+                            ).innerHTML =
+
+                                '<h2>' + tramo + '</h2>' +
+
+                                '<p><b>Total registros:</b> ' +
+                                detalle.total +
+                                '</p>' +
+
+                                '<br>' +
+
+                                '<p><b>Municipios involucrados:</b></p>' +
+
+                                '<ul>' +
+                                municipiosHTML +
+                                '</ul>' +
+
+                                '<br>' +
+
+                                '<p><b>Usuarios activos:</b></p>' +
+
+                                '<ul>' +
+                                usuariosHTML +
+                                '</ul>';
+                        }
+                    }
                 }
             }
         );
 
-        // =================================
-        // USUARIOS
-        // =================================
+        // =====================================
+        // GRÁFICA USUARIOS
+        // =====================================
 
         new Chart(
 
@@ -405,18 +753,32 @@
 
                 data: {
 
-                    labels: JSON.parse(
-                        document.getElementById('usuarios-labels-data').textContent
-                    ),
+                    labels: usuariosLabels,
 
                     datasets: [{
 
-                        data: JSON.parse(
-                            document.getElementById('usuarios-values-data').textContent
-                        ),
+                        data: usuariosValues,
 
-                        borderWidth: 1
+                        backgroundColor: colores,
+
+                        borderWidth: 0
                     }]
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    plugins: {
+
+                        legend: {
+
+                            labels: {
+
+                                color: 'white'
+                            }
+                        }
+                    }
                 }
             }
         );
@@ -424,4 +786,5 @@
     </script>
 
 </body>
+
 </html>
