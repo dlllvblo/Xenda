@@ -43,7 +43,7 @@
                     rgba(188,148,90,0.75),
                     rgba(36,92,79,0.90)                    
                 ),
-                url('/static/fondo.jpeg');
+                url('/static/fondo_vmovil.png');
 
             background-size: cover;
 
@@ -223,9 +223,18 @@
 
             body {
 
-                background-size: contain;
+                background:
 
-                background-position: top center;
+                    linear-gradient(
+                        rgba(188,148,90,0.75),
+                        rgba(36,92,79,0.90)
+                    ),
+
+                    url('/static/fondo_vmovil.png');
+
+                background-size: cover;
+
+                background-position: center top;
 
                 background-repeat: no-repeat;
 
@@ -233,11 +242,9 @@
 
                 padding: 16px;
 
-                align-items: center;
-
                 justify-content: flex-start;
 
-                padding-top: 180px;
+                padding-top: 90px;
             }
 
             .login-card {
@@ -251,7 +258,6 @@
 
                 line-height: 1.2;
             }
-
         }
 
     </style>
