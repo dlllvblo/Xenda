@@ -1355,32 +1355,125 @@ def dashboard():
 
         return redirect('/login')
 
+    # =====================================
+    # KPIs
+    # =====================================
+
     total_registros = Registro.query.count()
 
     total_infografias = db.session.query(
+
         db.func.sum(
             Registro.num_infografias
         )
+
     ).scalar() or 0
 
     total_planos = db.session.query(
+
         db.func.sum(
             Registro.planos
         )
+
     ).scalar() or 0
 
     total_mediciones = db.session.query(
+
         db.func.sum(
             Registro.mediciones_agroforestales
         )
+
     ).scalar() or 0
 
+    usuarios_activos = db.session.query(
+        Registro.usuario
+    ).distinct().count()
+
+    # =====================================
+    # REGISTROS POR TRAMO
+    # =====================================
+
+    tramos_data = db.session.query(
+
+        Registro.tramo,
+
+        db.func.count(
+            Registro.id
+        )
+
+    ).group_by(
+        Registro.tramo
+    ).all()
+
+    tramos_labels = [
+        t[0]
+        for t in tramos_data
+    ]
+
+    tramos_values = [
+        t[1]
+        for t in tramos_data
+    ]
+
+    # =====================================
+    # ACTIVIDAD POR USUARIO
+    # =====================================
+
+    usuarios_data = db.session.query(
+
+        Registro.usuario,
+
+        db.func.count(
+            Registro.id
+        )
+
+    ).group_by(
+        Registro.usuario
+    ).all()
+
+    usuarios_labels = [
+        u[0]
+        for u in usuarios_data
+    ]
+
+    usuarios_values = [
+        u[1]
+        for u in usuarios_data
+    ]
+
+    # =====================================
+    # REGISTROS RECIENTES
+    # =====================================
+
+    recientes = Registro.query.order_by(
+
+        Registro.fecha.desc()
+
+    ).limit(10).all()
+
     return render_template(
+
         'dashboard.html',
+
         total_registros=total_registros,
+
         total_infografias=total_infografias,
+
         total_planos=total_planos,
-        total_mediciones=total_mediciones
+
+        total_mediciones=total_mediciones,
+
+        usuarios_activos=usuarios_activos,
+
+        tramos_labels=tramos_labels,
+
+        tramos_values=tramos_values,
+
+        usuarios_labels=usuarios_labels,
+
+        usuarios_values=usuarios_values,
+
+        recientes=recientes
     )
 
 # =========================================
