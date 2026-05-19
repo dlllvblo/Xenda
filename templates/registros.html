@@ -81,8 +81,6 @@
 
         .btn-limpiar {
 
-            background: #404040;
-
             color: white;
 
             text-decoration: none;
@@ -98,6 +96,25 @@
             justify-content: center;
 
             font-size: 14px;
+
+            border: none;
+
+            cursor: pointer;
+        }
+
+        .btn-filtrar {
+
+            background: #691B4F;
+        }
+
+        .btn-filtrar:hover {
+
+            opacity: 0.9;
+        }
+
+        .btn-limpiar {
+
+            background: #404040;
         }
 
         .btn-limpiar:hover {
@@ -204,7 +221,9 @@
 
     {% endif %}
 
-    <button type="submit">
+    <button type="submit"
+        class="btn-limpiar btn-filtrar"
+    >
         Filtrar
     </button>
 
