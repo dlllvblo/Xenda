@@ -558,19 +558,19 @@
         // =====================================
 
         const tramosLabels =
-            JSON.parse('{{ tramos_labels | tojson | safe }}');
+            {{ tramos_labels | tojson | safe }};
 
         const tramosValues =
-            JSON.parse('{{ tramos_values | tojson | safe }}');
+            {{ tramos_values | tojson | safe }};
 
         const usuariosLabels =
-            JSON.parse('{{ usuarios_labels | tojson | safe }}');
+            {{ usuarios_labels | tojson | safe }};
 
         const usuariosValues =
-            JSON.parse('{{ usuarios_values | tojson | safe }}');
+            {{ usuarios_values | tojson | safe }};
 
         const detalleTramos =
-            JSON.parse('{{ detalle_tramos | tojson | safe }}');
+            {{ detalle_tramos_json | safe }};
 
         // =====================================
         // COLORES
