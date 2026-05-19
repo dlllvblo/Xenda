@@ -176,6 +176,8 @@
 
             box-shadow:
                 0 8px 30px rgba(0,0,0,0.25);
+
+            overflow: auto;
         }
 
         .chart-box h3 {
@@ -214,6 +216,8 @@
         table {
 
             width: 100%;
+
+            min-width: 700px;
 
             border-collapse: collapse;
 
@@ -551,26 +555,57 @@
 
     </div>
 
+    <script
+            id="dashboard-data"
+            type="application/json"
+            >
+
+            {
+                "tramosLabels":
+                    {{ tramos_labels | tojson | safe }},
+
+                "tramosValues":
+                    {{ tramos_values | tojson | safe }},
+
+                "usuariosLabels":
+                    {{ usuarios_labels | tojson | safe }},
+
+                "usuariosValues":
+                    {{ usuarios_values | tojson | safe }},
+
+                "detalleTramos":
+                    {{ detalle_tramos | tojson | safe }}
+            }
+
+        </script>
+
     <script>
 
         // =====================================
         // DATOS FLASK
         // =====================================
 
+        const dashboardData = JSON.parse(
+
+            document.getElementById(
+                'dashboard-data'
+            ).textContent
+        );
+
         const tramosLabels =
-            {{ tramos_labels | tojson | safe }};
+            dashboardData.tramosLabels;
 
         const tramosValues =
-            {{ tramos_values | tojson | safe }};
+            dashboardData.tramosValues;
 
         const usuariosLabels =
-            {{ usuarios_labels | tojson | safe }};
+            dashboardData.usuariosLabels;
 
         const usuariosValues =
-            {{ usuarios_values | tojson | safe }};
+            dashboardData.usuariosValues;
 
         const detalleTramos =
-            {{ detalle_tramos_json | safe }};
+            dashboardData.detalleTramos;
 
         // =====================================
         // COLORES
@@ -693,19 +728,6 @@
                                 }
                             );
 
-                            let usuariosHTML = '';
-
-                            detalle.usuarios.forEach(
-
-                                function(usuario) {
-
-                                    usuariosHTML +=
-                                        '<li>' +
-                                        usuario +
-                                        '</li>';
-                                }
-                            );
-
                             document.getElementById(
                                 'detallePanel'
                             ).innerHTML =
@@ -722,15 +744,9 @@
 
                                 '<ul>' +
                                 municipiosHTML +
-                                '</ul>' +
-
-                                '<br>' +
-
-                                '<p><b>Usuarios activos:</b></p>' +
-
-                                '<ul>' +
-                                usuariosHTML +
                                 '</ul>';
+
+                            
                         }
                     }
                 }
