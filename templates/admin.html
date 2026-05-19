@@ -150,20 +150,7 @@
 
 <div class="card">
 
-    <h1>Administración de Usuarios</h1>
-
-    <div class="admin-links">
-        <a href="/registros">
-            <button type="button">
-                Ver registros
-            </button>
-        </a>
-        <a href="/sesiones">
-            <button type="button">
-                Ver sesiones
-            </button>
-        </a>
-    </div>        
+    <h1>Administración de Usuarios</h1>       
 
     {% with messages = get_flashed_messages() %}
 
@@ -202,21 +189,21 @@
 
     <div class="acciones-admin">
 
-        <a href="/descargar_usuarios">
+        <a href="/registros">
 
             <button type="button">
 
-                Descargar usuarios
+                Ver registros
 
             </button>
 
         </a>
 
-        <a href="/descargar_eliminados">
+        <a href="/sesiones">
 
             <button type="button">
 
-                Descargar registros eliminados
+                Ver sesiones
 
             </button>
 
