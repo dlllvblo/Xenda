@@ -8,22 +8,23 @@ from flask import (
     jsonify,
     send_file 
 )
-
 from flask_sqlalchemy import SQLAlchemy
-
 from datetime import datetime, timedelta
-
 import pandas as pd
 import unicodedata
 import os
-from zoneinfo import ZoneInfo
 import uuid 
-
 from google.oauth2.service_account import Credentials
-
 from googleapiclient.discovery import build
-
 from googleapiclient.http import MediaFileUpload
+
+# =========================================
+# HORA CDMX
+# =========================================
+
+def hora_cdmx():
+
+    return datetime.utcnow() - timedelta(hours=6)
 
 
 # =========================================
@@ -96,20 +97,14 @@ class SesionActiva(db.Model):
 
         db.DateTime,
 
-        default=lambda:
-            datetime.now(
-                ZoneInfo('America/Mexico_City')
-            )
+        default=hora_cdmx
     )
 
     ultima_actividad = db.Column(
 
         db.DateTime,
 
-        default=lambda:
-            datetime.now(
-                ZoneInfo('America/Mexico_City')
-            )
+        default=hora_cdmx
     )
 
 # =========================================
@@ -146,7 +141,7 @@ def actualizar_sesion():
     # ACTUALIZAR ACTIVIDAD
     # =============================
 
-    sesion_db.ultima_actividad = datetime.now(ZoneInfo('America/Mexico_City'))
+    sesion_db.ultima_actividad = hora_cdmx()
 
     db.session.commit()
 
@@ -171,10 +166,7 @@ class Exportacion(db.Model):
 
         db.DateTime,
 
-        default=lambda:
-            datetime.now(
-                ZoneInfo('America/Mexico_City')
-            )
+        default=hora_cdmx
     )
 
 
@@ -296,9 +288,7 @@ def normalizar(texto):
 
 def registro_habilitado():
 
-    dia = datetime.now(
-        ZoneInfo('America/Mexico_City')
-    ).day
+    dia = hora_cdmx().day
 
     return (
         (10 <= dia <= 14)
@@ -313,9 +303,7 @@ def registro_habilitado():
 
 def exportar_excel_mensual():
 
-    ahora = datetime.now(
-        ZoneInfo('America/Mexico_City')
-    )
+    ahora = hora_cdmx()
 
     dia = ahora.day
 
@@ -805,7 +793,7 @@ def index():
 
             usuario=session['usuario'],
 
-            fecha=datetime.now(ZoneInfo('America/Mexico_City')),
+            fecha=hora_cdmx(),
 
             tramo=request.form['tramo'],
 
@@ -1096,7 +1084,7 @@ def eliminar_registro(id):
 
         eliminado_por=session['usuario'],
 
-        fecha_eliminacion=datetime.now(ZoneInfo('America/Mexico_City')),
+        fecha_eliminacion=hora_cdmx(),
                                        
         tramo=registro.tramo,
 
