@@ -116,10 +116,10 @@
 
 <form method="GET" class="filtros">
 
-    <select name="tramo">
+    <select name="tramo" id="tramo">
 
         <option value="">
-            Todos los tramos
+            Todos los Tramos
         </option>
 
         {% for t in tramos %}
@@ -137,10 +137,10 @@
 
     </select>
 
-    <select name="entidad">
+    <select name="entidad" id="entidad">
 
         <option value="">
-            Todas las entidades
+            Todos los Estados
         </option>
 
         {% for e in entidades %}
@@ -158,10 +158,10 @@
 
     </select>
 
-    <select name="municipio">
+    <select name="municipio" id="municipio">
 
         <option value="">
-            Todos los municipios
+            Todos los Municipios
         </option>
 
         {% for m in municipios %}
@@ -181,10 +181,10 @@
 
     {% if session['usuario'] == admin_correo %}
 
-    <select name="usuario">
+    <select name="usuario" id="usuario">
 
         <option value="">
-            Todos los usuarios
+            Todos los Usuarios
         </option>
 
         {% for u in usuarios %}
@@ -219,7 +219,7 @@
 
 <div class="tabla-responsive">
 
-<table border="1">
+<table>
 
         <tr>
 
@@ -316,6 +316,109 @@
 <a href="/">
     Volver al formulario
 </a>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    const tramoSelect =
+        document.getElementById('tramo');
+
+    const entidadSelect =
+        document.getElementById('entidad');
+
+    const municipioSelect =
+        document.getElementById('municipio');
+
+
+    // =====================================
+    // TRAMOS → ENTIDADES
+    // =====================================
+
+    tramoSelect.addEventListener(
+        'change',
+        async function() {
+
+            const tramo =
+                tramoSelect.value;
+
+            entidadSelect.innerHTML =
+                '<option value="">Todos</option>';
+
+            municipioSelect.innerHTML =
+                '<option value="">Todos</option>';
+
+            if (!tramo) return;
+
+            const response =
+                await fetch(
+                    `/entidades/${encodeURIComponent(tramo)}`
+                );
+
+            const entidades =
+                await response.json();
+
+            entidades.forEach(entidad => {
+
+                entidadSelect.innerHTML += `
+
+                    <option value="${entidad}">
+                        ${entidad}
+                    </option>
+
+                `;
+
+            });
+
+        }
+    );
+
+
+    // =====================================
+    // ENTIDADES → MUNICIPIOS
+    // =====================================
+
+    entidadSelect.addEventListener(
+        'change',
+        async function() {
+
+            const tramo =
+                tramoSelect.value;
+
+            const entidad =
+                entidadSelect.value;
+
+            municipioSelect.innerHTML =
+                '<option value="">Todos</option>';
+
+            if (!tramo || !entidad) return;
+
+            const response =
+                await fetch(
+                    `/municipios/${encodeURIComponent(tramo)}/${encodeURIComponent(entidad)}`
+                );
+
+            const municipios =
+                await response.json();
+
+            municipios.forEach(municipio => {
+
+                municipioSelect.innerHTML += `
+
+                    <option value="${municipio}">
+                        ${municipio}
+                    </option>
+
+                `;
+
+            });
+
+        }
+    );
+
+});
+
+</script>
 
 </body>
 </html>
