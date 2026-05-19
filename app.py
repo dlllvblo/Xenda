@@ -1496,12 +1496,6 @@ def dashboard():
     # JSON DASHBOARD
     # =====================================
 
-    import json
-
-    detalle_tramos_json = json.dumps(
-        detalle_tramos
-    )
-
     return render_template(
 
         'dashboard.html',
@@ -1526,7 +1520,7 @@ def dashboard():
 
         recientes=recientes,
 
-        detalle_tramos_json=detalle_tramos_json
+        detalle_tramos=detalle_tramos
     )
 
 # =========================================
