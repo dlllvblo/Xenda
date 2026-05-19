@@ -1451,6 +1451,57 @@ def dashboard():
 
     ).limit(10).all()
 
+    # =====================================
+    # DETALLES POR TRAMO
+    # =====================================
+
+    detalle_tramos = {}
+
+    for tramo in tramos_labels:
+
+        registros_tramo = Registro.query.filter_by(
+            tramo=tramo
+        ).all()
+
+        municipios = sorted(list(set([
+
+            str(r.municipio)
+
+            for r in registros_tramo
+
+            if r.municipio
+
+        ])))
+
+        usuarios = sorted(list(set([
+
+            str(r.usuario)
+
+            for r in registros_tramo
+
+            if r.usuario
+
+        ])))
+
+        detalle_tramos[tramo] = {
+
+            'total': len(registros_tramo),
+
+            'municipios': municipios,
+
+            'usuarios': usuarios
+        }
+
+    # =====================================
+    # JSON DASHBOARD
+    # =====================================
+
+    import json
+
+    detalle_tramos_json = json.dumps(
+        detalle_tramos
+    )
+
     return render_template(
 
         'dashboard.html',
@@ -1473,7 +1524,9 @@ def dashboard():
 
         usuarios_values=usuarios_values,
 
-        recientes=recientes
+        recientes=recientes,
+
+        detalle_tramos_json=detalle_tramos_json
     )
 
 # =========================================
