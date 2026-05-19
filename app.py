@@ -339,7 +339,9 @@ def exportar_excel_mensual():
 
         datos.append({
 
-            'FECHA': r.fecha,
+            'FECHA': r.fecha.strftime(
+                '%d/%m/%Y %H:%M:%S'
+            ) if r.fecha else '',
 
             'TRAMO': r.tramo,
 
@@ -1215,7 +1217,9 @@ def descargar_eliminados():
 
             'ELIMINADO_POR': r.eliminado_por,
 
-            'FECHA_ELIMINACION': r.fecha_eliminacion,
+            'FECHA_ELIMINACION': r.fecha_eliminacion.strftime(
+                '%d/%m/%Y %H:%M:%S'
+            ) if r.fecha_eliminacion else '',
 
             'TRAMO': r.tramo,
 
@@ -1235,7 +1239,9 @@ def descargar_eliminados():
 
             'OBSERVACIONES': r.observaciones,
 
-            'FECHA_ORIGINAL': r.fecha_original
+            'FECHA_ORIGINAL': r.fecha_original.strftime(
+                '%d/%m/%Y %H:%M:%S'
+            ) if r.fecha_original else '',
         })
 
     df = pd.DataFrame(datos)
@@ -1277,7 +1283,9 @@ def descargar_registros():
 
         datos.append({
 
-            'FECHA': r.fecha,
+            'FECHA': r.fecha.strftime(
+                '%d/%m/%Y %H:%M:%S'
+            ) if r.fecha else '',
 
             'TRAMO': r.tramo,
 
