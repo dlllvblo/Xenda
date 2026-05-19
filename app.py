@@ -663,6 +663,36 @@ def eliminar_usuario(id):
     return redirect('/admin')
 
 # =========================================
+# REINICIAR REGISTROS
+# =========================================
+
+@app.route('/reiniciar_registros')
+
+def reiniciar_registros():
+
+    if session.get('usuario') != ADMIN_CORREO:
+
+        return 'No autorizado', 403
+
+    # =====================================
+    # BORRAR SOLO REGISTROS
+    # =====================================
+
+    Registro.query.delete()
+
+    RegistroEliminado.query.delete()
+
+    Exportacion.query.delete()
+
+    db.session.commit()
+
+    flash(
+        'Registros reiniciados correctamente'
+    )
+
+    return redirect('/admin')
+
+# =========================================
 # SESIONES ACTIVAS
 # =========================================
 
@@ -1262,8 +1292,6 @@ def dashboard():
 # =========================================
 
 with app.app_context():
-
-    #db.drop_all()
     
     db.create_all()
 

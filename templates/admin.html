@@ -151,6 +151,24 @@
             text-align: center;
         }
 
+        .link-admin {
+
+            color: #691B4F;
+
+            text-decoration: underline;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition: opacity 0.2s ease;
+        }
+
+        .link-admin:hover {
+
+            opacity: 0.7;
+        }
+
     </style>
 
 </head>
@@ -230,6 +248,19 @@
         <a href="/descargar_eliminados">
 
             Descargar registros eliminados
+
+        </a>
+
+        <a
+            href="mailto:{{
+                usuarios
+                | map(attribute='correo')
+                | join(',')
+            }}"
+            class="link-admin"
+        >
+
+            Enviar correo
 
         </a>
 
