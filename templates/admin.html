@@ -107,6 +107,22 @@
             color: inherit;
         }
 
+        .admin-links {
+
+            display: flex;
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+
+            flex-wrap: wrap;
+        }
+
+        .admin-links a {
+
+            color: inherit;
+        }
+
     </style>
 
 </head>
@@ -115,6 +131,19 @@
 <div class="card">
 
     <h1>Administración de Usuarios</h1>
+
+    <div class="admin-links">
+        <a href="/registros">
+            <button type="button">
+                Ver registros
+            </button>
+        </a>
+        <a href="/sesiones">
+            <button type="button">
+                Ver sesiones
+            </button>
+        </a>
+    </div>        
 
     {% with messages = get_flashed_messages() %}
 
