@@ -1262,9 +1262,27 @@ def dashboard():
 # =========================================
 
 with app.app_context():
+
+    db.drop_all()
     
     db.create_all()
 
+    admin = Usuario.query.filter_by(
+        correo=ADMIN_CORREO
+    ).first()
+
+    if not admin:
+
+        nuevo_admin = Usuario(
+
+            correo=ADMIN_CORREO
+        )
+
+        db.session.add(nuevo_admin)
+
+        db.session.commit()
+
+        print('ADMIN CREADO')
 
 # =========================================
 # INICIO
