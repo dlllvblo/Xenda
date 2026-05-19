@@ -859,7 +859,9 @@ def index():
 
             tipo_propiedad=request.form.get('tipo_propiedad'),
 
-            observaciones=request.form['observaciones']
+            observaciones=request.form[
+                'observaciones'
+                ].upper() 
         )
 
         db.session.add(nuevo)
