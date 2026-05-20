@@ -262,6 +262,15 @@
             <th>Estatus infografías</th>
             <th>Observaciones</th>
             <th>Usuario</th>
+
+            {% if session['usuario'] == admin_correo %}
+
+                <th>Latitud</th>
+                <th>Longitud</th>
+                <th>Precisión GPS</th>
+
+            {% endif %}
+
             <th>Fecha y hora</th>
             {% if session['usuario'] == admin_correo %}
 
@@ -297,6 +306,15 @@
             <td>{{ r.estatus_infografias }}</td>
             <td>{{ r.observaciones }}</td>
             <td>{{ r.usuario }}</td>
+
+            {% if session['usuario'] == admin_correo %}
+
+                <td>{{ r.latitud }}</td>
+                <td>{{ r.longitud }}</td>
+                <td>{{ r.precision_gps }}</td>
+
+            {% endif %}
+
             <td>{{ r.fecha.strftime('%d/%m/%Y %H:%M:%S') }}</td>
             {% if session['usuario'] == admin_correo %}
 

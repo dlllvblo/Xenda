@@ -220,6 +220,12 @@ class Registro(db.Model):
 
     observaciones = db.Column(db.Text)
 
+    latitud = db.Column(db.Float)
+
+    longitud = db.Column(db.Float)
+
+    precision_gps = db.Column(db.Float)
+
     fecha = db.Column(db.DateTime(timezone=True)) 
 
 # =========================================
@@ -822,6 +828,13 @@ def index():
     if request.method == 'POST':
 
         nuevo = Registro(
+            latitud=request.form.get('latitud'),
+
+            longitud=request.form.get('longitud'),
+
+            precision_gps=request.form.get(
+                'precision_gps'
+            ),
 
             usuario=session['usuario'],
 

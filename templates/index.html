@@ -944,6 +944,10 @@
             autocapitalize="characters"
         ></textarea>
 
+        <input type="hidden" name="latitud" id="latitud">
+        <input type="hidden" name="longitud" id="longitud">
+        <input type="hidden" name="precision_gps" id="precision_gps">
+
     </div>
 
     <div class="submit-container">
@@ -1380,6 +1384,75 @@ inputsNumericos.forEach(input => {
     );
 
 });
+
+// =====================================
+// GEOLOCALIZACIÓN
+// =====================================
+
+function obtenerUbicacion() {
+
+    if (!navigator.geolocation) {
+
+        console.log(
+            "Geolocalización no soportada"
+        );
+
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(posicion) {
+
+            document.getElementById(
+                "latitud"
+            ).value =
+                posicion.coords.latitude;
+
+            document.getElementById(
+                "longitud"
+            ).value =
+                posicion.coords.longitude;
+
+            document.getElementById(
+                "precision_gps"
+            ).value =
+                posicion.coords.accuracy;
+
+            console.log(
+                "Ubicación obtenida"
+            );
+
+            console.log(
+                posicion.coords.latitude,
+                posicion.coords.longitude
+            );
+
+        },
+
+        function(error) {
+
+            console.log(
+                "Error GPS:",
+                error.message
+            );
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+
+    );
+
+}
+
+window.addEventListener(
+    'load',
+    obtenerUbicacion
+);
 
 </script>
 
