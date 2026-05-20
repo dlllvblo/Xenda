@@ -674,31 +674,41 @@ def eliminar_usuario(id):
 # REINICIAR REGISTROS
 # =========================================
 
-@app.route('/reiniciar_registros')
-
+@app.route(
+    '/reiniciar_registros',
+    methods=['GET', 'POST']
+)
 def reiniciar_registros():
-
     if session.get('usuario') != ADMIN_CORREO:
-
         return 'No autorizado', 403
+    if request.method == 'POST':
+        Registro.query.delete()
+        RegistroEliminado.query.delete()
+        Exportacion.query.delete()
+        db.session.commit()
+        flash('Registros reiniciados correctamente')
+        return redirect('/admin')
+    return '''
+        <h2>
+            ¿Seguro que deseas reiniciar TODOS los registros?
+        </h2>
 
-    # =====================================
-    # BORRAR SOLO REGISTROS
-    # =====================================
+        <p>
+            Esta acción no se puede deshacer.
+        </p>
 
-    Registro.query.delete()
+        <form method="POST">
 
-    RegistroEliminado.query.delete()
+            <button type="submit">
+                Sí, reiniciar registros
+            </button>
 
-    Exportacion.query.delete()
+            <a href="/admin">
+                Cancelar
+            </a>
 
-    db.session.commit()
-
-    flash(
-        'Registros reiniciados correctamente'
-    )
-
-    return redirect('/admin')
+        </form>
+    '''
 
 # =========================================
 # SESIONES ACTIVAS
