@@ -828,12 +828,23 @@ def index():
     if request.method == 'POST':
 
         nuevo = Registro(
-            latitud=request.form.get('latitud'),
+            
+            latitud=(
+                float(request.form.get('latitud'))
+                if request.form.get('latitud')
+                else None
+            ),
 
-            longitud=request.form.get('longitud'),
+            longitud=(
+                float(request.form.get('longitud'))
+                if request.form.get('longitud')
+                else None
+            ),
 
-            precision_gps=request.form.get(
-                'precision_gps'
+            precision_gps=(
+                float(request.form.get('precision_gps'))
+                if request.form.get('precision_gps')
+                else None
             ),
 
             usuario=session['usuario'],
