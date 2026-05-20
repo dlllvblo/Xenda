@@ -904,14 +904,6 @@ def index():
 
         db.session.commit()
 
-        accion = request.form.get(
-            'accion'
-        )
-
-        if accion == 'guardar_otro':
-
-            return redirect('/')
-
         flash(
             'Registro guardado exitosamente'
         )
