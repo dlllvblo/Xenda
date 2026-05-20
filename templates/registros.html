@@ -265,8 +265,7 @@
 
             {% if session['usuario'] == admin_correo %}
 
-                <th>Latitud</th>
-                <th>Longitud</th>
+                <th>Ubicación</th>
                 <th>Precisión GPS</th>
 
             {% endif %}
@@ -309,8 +308,24 @@
 
             {% if session['usuario'] == admin_correo %}
 
-                <td>{{ r.latitud }}</td>
-                <td>{{ r.longitud }}</td>
+                <td>
+
+                    {% if r.latitud and r.longitud %}
+
+                        <a
+                            href="https://www.google.com/maps?q={{ r.latitud }},{{ r.longitud }}"
+                            target="_blank"
+                        >
+                            Ver ubicación
+                        </a>
+
+                    {% else %}
+
+                        Sin ubicación
+
+                    {% endif %}
+
+                </td>
                 <td>{{ r.precision_gps }}</td>
 
             {% endif %}
@@ -342,9 +357,27 @@
 
 <br>
 
-<a href="/">
-    Volver al formulario
-</a>
+<div
+    style="
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    "
+>
+
+    <a href="/">
+        Volver al formulario
+    </a>
+
+    {% if session['usuario'] == admin_correo %}
+
+        <a href="/dashboard">
+            Ver dashboard
+        </a>
+
+    {% endif %}
+
+</div>
 
 <script>
 
