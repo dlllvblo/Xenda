@@ -244,9 +244,9 @@
 
             <th>ID</th>
             <th>Tramo</th>
-            <th>Entidad</th>
+            <th>Entidad Federativa</th>
             <th>Municipio</th>
-            <th>Núcleo</th>
+            <th>Núcleo Agrario</th>
             <th>Frente</th>
             <th>Actividad</th>
             <th>Modalidad</th>
@@ -369,13 +369,9 @@
         Volver al formulario
     </a>
 
-    {% if session['usuario'] == admin_correo %}
-
-        <a href="/dashboard">
-            Ver dashboard
-        </a>
-
-    {% endif %}
+    <a href="/dashboard">
+        Ver dashboard
+    </a>
 
 </div>
 
