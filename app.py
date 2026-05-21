@@ -13,7 +13,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 import unicodedata
 import os
-import uuid 
+import uuid
+import requests
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -1513,7 +1514,7 @@ def dashboard():
         'dashboard.html',
 
         total_registros=total_registros,
-        
+
         total_infografias=total_infografias,
 
         total_planos=total_planos,
@@ -1559,6 +1560,35 @@ def mapa_registros():
 
         registros=registros
     )
+
+# =========================================
+# WHATSAPP AUTOMATICO
+# =========================================
+
+def enviar_whatsapp(mensaje):
+
+    telefono = '5217223944292'
+
+    apikey = os.getenv(
+        'CALLMEBOT_APIKEY'
+    )
+
+    url = (
+
+        'https://api.callmebot.com/whatsapp.php'
+
+        f'?phone={telefono}'
+
+        f'&text={mensaje}'
+
+        f'&apikey={apikey}'
+    )
+
+    requests.get(url)
+
+enviar_whatsapp(
+    'XENDA prueba automatica'
+)
 
 # =========================================
 # CREAR TABLAS
