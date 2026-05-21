@@ -52,56 +52,65 @@
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 
         {
-
             attribution:
                 '&copy; OpenStreetMap contributors'
         }
 
     ).addTo(mapa);
 
-    const registros = [
+</script>
 
-        {% for r in registros %}
+{% for r in registros %}
 
-        {
+<script>
 
-            lat: {{ r.latitud }},
+    L.circleMarker(
 
-            lon: {{ r.longitud }},
+    [
 
-            usuario:
-                `{{ r.usuario }}`,
+        Number('{{ r.latitud }}'),
 
-            tramo:
-                `{{ r.tramo }}`,
+        Number('{{ r.longitud }}')
 
-            municipio:
-                `{{ r.municipio }}`
+    ],
 
-        },
+    {
 
-        {% endfor %}
+        radius: 7,
 
-    ];
+        color: '#691B4F',
 
-    registros.forEach(function(r) {
+        fillColor: '#a42145',
 
-        L.marker([r.lat, r.lon])
+        fillOpacity: 0.9,
 
-            .addTo(mapa)
+        weight: 2
 
-            .bindPopup(
+    }
 
-                `
-                <b>${r.usuario}</b><br>
-                ${r.tramo}<br>
-                ${r.municipio}
-                `
-            );
+)
 
-    });
+.addTo(mapa)
+
+.bindPopup(
+
+    `
+    <b>{{ r.usuario }}</b><br>
+
+    <b>Tramo:</b>
+    {{ r.tramo }}<br>
+
+    <b>Municipio:</b>
+    {{ r.municipio }}<br>
+
+    <b>Actividad:</b>
+    {{ r.actividad }}
+    `
+);
 
 </script>
+
+{% endfor %}
 
 </body>
 
