@@ -1513,7 +1513,7 @@ def dashboard():
         'dashboard.html',
 
         total_registros=total_registros,
-
+        
         total_infografias=total_infografias,
 
         total_planos=total_planos,
@@ -1528,7 +1528,9 @@ def dashboard():
 
         recientes=recientes,
 
-        detalle_tramos=detalle_tramos
+        detalle_tramos=detalle_tramos,
+
+        admin_correo=ADMIN_CORREO
     )
 
 # =========================================

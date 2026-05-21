@@ -277,18 +277,26 @@
 
         </a>
 
-        <a
+        <button
 
-            href="https://mail.google.com/mail/?view=cm&fs=1&to={{ usuarios | map(attribute='correo') | join(',') }}"
+            type="button"
 
-            target="_blank"
+            onclick="avisarWhatsApp()"
 
-            class="link-correo"
+            style="
+                background: #25D366;
+                color: white;
+                padding: 12px 18px;
+                border-radius: 10px;
+                border: none;
+                font-weight: bold;
+                cursor: pointer;
+            "
         >
 
-            Enviar correo
+            📲 Avisar apertura de periodo
 
-        </a>
+        </button>
 
     </div>
 
@@ -332,6 +340,37 @@
     </table>
 
 </div>
+
+<script>
+
+function avisarWhatsApp() {
+
+    const mensaje = `
+
+✅ XENDA
+
+El periodo de captura será habilitado
+mañana a partir de las 00:00 hrs.
+
+Favor de preparar actividades y reportes.
+
+`;
+
+    navigator.clipboard.writeText(
+        mensaje
+    );
+
+    alert(
+        'Mensaje copiado. Se abrirá WhatsApp Web.'
+    );
+
+    window.open(
+        'https://web.whatsapp.com/',
+        '_blank'
+    );
+}
+
+</script>
 
 </body>
 </html>
