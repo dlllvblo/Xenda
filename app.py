@@ -15,6 +15,7 @@ import unicodedata
 import os
 import uuid
 import requests
+from apscheduler.schedulers.background import BackgroundScheduler  
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -1561,34 +1562,100 @@ def mapa_registros():
         registros=registros
     )
 
-# =========================================
-# WHATSAPP AUTOMATICO
-# =========================================
-
-def enviar_whatsapp(mensaje):
-
-    telefono = '5217223944292'
-
-    apikey = os.getenv(
-        'CALLMEBOT_APIKEY'
-    )
-
-    url = (
-
-        'https://api.callmebot.com/whatsapp.php'
-
-        f'?phone={telefono}'
-
-        f'&text={mensaje}'
-
-        f'&apikey={apikey}'
-    )
-
-    requests.get(url)
-
-enviar_whatsapp(
-    'XENDA prueba automatica'
-)
+## =========================================
+## WHATSAPP AUTOMATICO
+## =========================================
+#
+#def enviar_whatsapp(mensaje):
+#
+#    telefono = '5217223944292'
+#
+#    apikey = os.getenv(
+#        'CALLMEBOT_APIKEY'
+#    )
+#
+#    url = (
+#
+#        'https://api.callmebot.com/whatsapp.php'
+#
+#        f'?phone={telefono}'
+#
+#        f'&text={mensaje}'
+#
+#        f'&apikey={apikey}'
+#    )
+#
+#    requests.get(url)
+#
+## =========================================
+## AVISOS AUTOMATICOS
+## =========================================
+#
+#def aviso_apertura():
+#
+#    mensaje = '''
+#
+#XENDA - AVISO IMPORTANTE
+#
+#El periodo de captura estará disponible
+#a partir de las 00:00 hrs de mañana.
+#
+#Favor de preparar y validar actividades pendientes.
+#
+#'''
+#
+#    enviar_whatsapp(mensaje)
+#
+#def aviso_cierre():
+#
+#    mensaje = '''
+#
+#XENDA - AVISO IMPORTANTE
+#
+#El periodo de captura finalizará hoy
+#a las 23:59 hrs.
+#
+#Favor de concluir y validar registros pendientes.
+#
+#'''
+#
+#    enviar_whatsapp(mensaje)
+#
+## =========================================
+## SCHEDULER
+## =========================================
+#
+#scheduler = BackgroundScheduler()
+#
+## Apertura
+#scheduler.add_job(
+#
+#    aviso_apertura,
+#
+#    'cron',
+#
+#    day='9,24',
+#
+#    hour=18,
+#
+#    minute=0
+#)
+#
+## Cierre
+#scheduler.add_job(
+#
+#    aviso_cierre,
+#
+#    'cron',
+#
+#    day='14,29',
+#
+#    hour=12,
+#
+#    minute=0
+#)
+#
+#scheduler.start()
 
 # =========================================
 # CREAR TABLAS
