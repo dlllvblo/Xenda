@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Mapa General Xenda
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet/dist/leaflet.css"
+    >
+
+    <style>
+
+        body {
+
+            margin: 0;
+
+            font-family: Arial;
+        }
+
+        #mapa {
+
+            width: 100%;
+
+            height: 100vh;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div id="mapa"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+    const mapa = L.map('mapa').setView(
+        [23.6345, -102.5528],
+        5
+    );
+
+    L.tileLayer(
+
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+
+        {
+
+            attribution:
+                '&copy; OpenStreetMap contributors'
+        }
+
+    ).addTo(mapa);
+
+    const registros = [
+
+        {% for r in registros %}
+
+        {
+
+            lat: {{ r.latitud }},
+
+            lon: {{ r.longitud }},
+
+            usuario:
+                `{{ r.usuario }}`,
+
+            tramo:
+                `{{ r.tramo }}`,
+
+            municipio:
+                `{{ r.municipio }}`
+
+        },
+
+        {% endfor %}
+
+    ];
+
+    registros.forEach(function(r) {
+
+        L.marker([r.lat, r.lon])
+
+            .addTo(mapa)
+
+            .bindPopup(
+
+                `
+                <b>${r.usuario}</b><br>
+                ${r.tramo}<br>
+                ${r.municipio}
+                `
+            );
+
+    });
+
+</script>
+
+</body>
+
+</html>

@@ -1532,6 +1532,33 @@ def dashboard():
     )
 
 # =========================================
+# MAPA GENERAL
+# =========================================
+
+@app.route('/mapa_registros')
+
+def mapa_registros():
+
+    if session.get('usuario') != ADMIN_CORREO:
+
+        return 'No autorizado', 403
+
+    registros = Registro.query.filter(
+
+        Registro.latitud.isnot(None),
+
+        Registro.longitud.isnot(None)
+
+    ).all()
+
+    return render_template(
+
+        'mapa_registros.html',
+
+        registros=registros
+    )
+
+# =========================================
 # CREAR TABLAS
 # =========================================
 
