@@ -1568,7 +1568,7 @@ def mapa_registros():
 #
 #def enviar_whatsapp(mensaje):
 #
-#    telefono = '5217223944292'
+#    telefono = '521XXXXXXXXXX'
 #
 #    apikey = os.getenv(
 #        'CALLMEBOT_APIKEY'
