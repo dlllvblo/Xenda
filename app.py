@@ -837,6 +837,18 @@ def index():
 
     if request.method == 'POST':
 
+        if (
+            not request.form.get('latitud')
+            or
+            not request.form.get('longitud')
+        ):
+
+            flash(
+                'Debe permitir acceso a ubicación'
+            )
+
+            return redirect('/')
+
         nuevo = Registro(
             
             latitud=(

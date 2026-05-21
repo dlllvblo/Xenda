@@ -1380,6 +1380,35 @@ window.addEventListener(
     obtenerUbicacion
 );
 
+document.querySelector('form').addEventListener(
+
+    'submit',
+
+    function(e) {
+
+        const latitud =
+            document.getElementById(
+                'latitud'
+            ).value;
+
+        const longitud =
+            document.getElementById(
+                'longitud'
+            ).value;
+
+        if (!latitud || !longitud) {
+
+            alert(
+                'Debes permitir el acceso a ubicación para registrar información.'
+            );
+
+            e.preventDefault();
+
+        }
+
+    }
+);
+
 </script>
 
 </body>
