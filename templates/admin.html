@@ -294,7 +294,28 @@
             "
         >
 
-            📲 Avisar apertura de periodo
+            Avisar apertura de periodo
+
+        </button>
+
+        <button
+
+            type="button"
+
+            onclick="avisarCierreWhatsApp()"
+
+            style="
+                background: #a42145;
+                color: white;
+                padding: 12px 18px;
+                border-radius: 10px;
+                border: none;
+                font-weight: bold;
+                cursor: pointer;
+            "
+        >
+
+            Avisar cierre de periodo
 
         </button>
 
@@ -347,7 +368,7 @@ function avisarWhatsApp() {
 
     const mensaje = `
 
-✅ XENDA
+XENDA - *AVISO IMPORTANTE*
 
 El periodo de captura será habilitado
 mañana a partir de las 00:00 hrs.
@@ -365,7 +386,38 @@ Favor de preparar actividades y reportes.
     );
 
     window.open(
-        'https://web.whatsapp.com/',
+        'https://wa.me/',
+        '_blank'
+    );
+}
+
+</script>
+
+<script>
+
+function avisarCierreWhatsApp() {
+
+    const mensaje = `
+
+XENDA - *AVISO IMPORTANTE*
+
+El periodo de captura finalizará hoy
+a las 23:59 hrs.
+
+Favor de concluir registros pendientes.
+
+`;
+
+    navigator.clipboard.writeText(
+        mensaje
+    );
+
+    alert(
+        'Mensaje copiado. Se abrirá WhatsApp Web.'
+    );
+
+    window.open(
+        'https://wa.me/',
         '_blank'
     );
 }
