@@ -1442,32 +1442,6 @@ def dashboard():
     ]
 
     # =====================================
-    # ACTIVIDAD POR USUARIO
-    # =====================================
-
-    usuarios_data = db.session.query(
-
-        Registro.usuario,
-
-        db.func.count(
-            Registro.id
-        )
-
-    ).group_by(
-        Registro.usuario
-    ).all()
-
-    usuarios_labels = [
-        u[0]
-        for u in usuarios_data
-    ]
-
-    usuarios_values = [
-        u[1]
-        for u in usuarios_data
-    ]
-
-    # =====================================
     # REGISTROS RECIENTES
     # =====================================
 
@@ -1539,10 +1513,6 @@ def dashboard():
         tramos_labels=tramos_labels,
 
         tramos_values=tramos_values,
-
-        usuarios_labels=usuarios_labels,
-
-        usuarios_values=usuarios_values,
 
         recientes=recientes,
 

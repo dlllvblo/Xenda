@@ -234,6 +234,23 @@
         Limpiar filtros
     </a>
 
+    {% if session['usuario'] == admin_correo %}
+
+        <a
+            href="/mapa_registros"
+            class="btn-limpiar btn-filtrar"
+            style="
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            "
+        >
+            Ver mapa general
+        </a>
+
+    {% endif %}
+
 </form>
 
 <div class="tabla-responsive">

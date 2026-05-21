@@ -436,16 +436,6 @@
 
         </div>
 
-        <div class="chart-box">
-
-            <h3>
-                Actividad por usuario
-            </h3>
-
-            <canvas id="usuariosChart"></canvas>
-
-        </div>
-
     </div>
 
     <!-- PANEL DETALLE -->
@@ -560,12 +550,6 @@
                 "tramosValues":
                     {{ tramos_values | tojson | safe }},
 
-                "usuariosLabels":
-                    {{ usuarios_labels | tojson | safe }},
-
-                "usuariosValues":
-                    {{ usuarios_values | tojson | safe }},
-
                 "detalleTramos":
                     {{ detalle_tramos | tojson | safe }}
             }
@@ -591,14 +575,28 @@
         const tramosValues =
             dashboardData.tramosValues;
 
-        const usuariosLabels =
-            dashboardData.usuariosLabels;
-
-        const usuariosValues =
-            dashboardData.usuariosValues;
-
         const detalleTramos =
             dashboardData.detalleTramos;
+
+
+        const nombresTramos = {
+
+            'TAP': 'Tramo AIFA-Pachuca',
+
+            'TMQ': 'Tramo México-Querétaro',
+
+            'TQI': 'Tramo Querétaro-Irapuato',
+
+            'TSNL': 'Tramo Saltillo-Nuevo Laredo',
+
+            'TIGDL': 'Tramo Irapuato-Guadalajara',
+
+            'TQSLP': 'Tramo Querétaro-San Luis Potosí',
+
+            'TSLPS': 'Tramo San Luis Potosí-Saltillo',
+
+            'TMLM': 'Tramo Mazatlán-Los Mochis'
+        };
 
         // =====================================
         // COLORES
@@ -725,7 +723,7 @@
                                 'detallePanel'
                             ).innerHTML =
 
-                                '<h2>' + tramo + '</h2>' +
+                                '<h2>' + nombresTramos[tramo] + '</h2>' +
 
                                 '<p><b>Total registros:</b> ' +
                                 detalle.total +
@@ -740,52 +738,6 @@
                                 '</ul>';
 
                             
-                        }
-                    }
-                }
-            }
-        );
-
-        // =====================================
-        // GRÁFICA USUARIOS
-        // =====================================
-
-        new Chart(
-
-            document.getElementById(
-                'usuariosChart'
-            ),
-
-            {
-
-                type: 'doughnut',
-
-                data: {
-
-                    labels: usuariosLabels,
-
-                    datasets: [{
-
-                        data: usuariosValues,
-
-                        backgroundColor: colores,
-
-                        borderWidth: 0
-                    }]
-                },
-
-                options: {
-
-                    responsive: true,
-
-                    plugins: {
-
-                        legend: {
-
-                            labels: {
-
-                                color: 'white'
-                            }
                         }
                     }
                 }
