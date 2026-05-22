@@ -1,32 +1,169 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="es">
 <head>
-
     <meta charset="UTF-8">
-    <title>No disponible</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periodo cerrado – Xenda</title>
+    <style>
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0c0c0c;
+            color: #cccccc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .ventana {
+            width: 100%;
+            max-width: 580px;
+            border: 1px solid #444;
+        }
+
+        .titlebar {
+            background: #691B4F;
+            padding: 6px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .titlebar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .titlebar-icon {
+            font-size: 13px;
+        }
+
+        .titlebar-text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 12px;
+            color: white;
+        }
+
+        .titlebar-buttons {
+            display: flex;
+        }
+
+        .tbtn {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 12px;
+            color: white;
+            width: 28px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: default;
+        }
+
+        .tbtn:hover { background: rgba(255,255,255,0.15); }
+        .tbtn.close:hover { background: #e81123; }
+
+        .terminal-body {
+            background: #0c0c0c;
+            padding: 16px 20px 28px;
+            min-height: 320px;
+        }
+
+        .line {
+            font-size: 14px;
+            line-height: 1.7;
+            animation: appear 0.1s ease both;
+            white-space: pre;
+        }
+
+        .line:nth-child(1)  { animation-delay: 0.1s; }
+        .line:nth-child(2)  { animation-delay: 0.5s; }
+        .line:nth-child(3)  { animation-delay: 0.9s; }
+        .line:nth-child(4)  { animation-delay: 1.3s; }
+        .line:nth-child(5)  { animation-delay: 1.7s; }
+        .line:nth-child(6)  { animation-delay: 2.1s; }
+        .line:nth-child(7)  { animation-delay: 2.5s; }
+        .line:nth-child(8)  { animation-delay: 2.9s; }
+        .line:nth-child(9)  { animation-delay: 3.3s; }
+        .line:nth-child(10) { animation-delay: 3.7s; }
+        .line:nth-child(11) { animation-delay: 4.0s; }
+        .line:nth-child(12) { animation-delay: 4.3s; }
+
+        @keyframes appear {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .dir  { color: #cccccc; }
+        .ok   { color: #13a10e; }
+        .err  { color: #c50f1f; }
+        .warn { color: #c19c00; }
+        .val  { color: #BC945A; }
+        .blank { color: transparent; }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: #cccccc;
+            vertical-align: middle;
+            animation: blink 1.2s step-end infinite;
+            animation-delay: 4.6s;
+            opacity: 0;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
+
+    </style>
 </head>
-
 <body>
 
-<h1>Xenda</h1>
+    <div class="ventana">
 
-<h2>Periodo cerrado</h2>
+        <div class="titlebar">
+            <div class="titlebar-left">
+                <span class="titlebar-icon"></span>
+                <span class="titlebar-text">Símbolo del sistema</span>
+            </div>
+            <div class="titlebar-buttons">
+                <div class="tbtn">─</div>
+                <div class="tbtn">□</div>
+                <div class="tbtn close">✕</div>
+            </div>
+        </div>
 
-<p>
+        <div class="terminal-body">
 
-    Horarios de registro:
+            <div class="line dir">Microsoft Windows [Versión 10.0.19045.4170]</div>
+            <div class="line dir">(c) Microsoft Corporation. Todos los derechos reservados.</div>
+            <div class="line blank">.</div>
+            <div class="line dir">C:\XENDA&gt; acceso --modulo=registro</div>
+            <div class="line blank">.</div>
+            <div class="line ok">Verificando credenciales... OK</div>
+            <div class="line err">Error 503: Módulo de registro no disponible.</div>
+            <div class="line blank">.</div>
+            <div class="line warn">MOTIVO    : PERIODO_CERRADO</div>
+            <div class="line warn">APERTURA  : días <span class="val">10</span> y <span class="val">25</span> de cada mes — 00:00 hrs</div>
+            <div class="line warn">CIERRE    : días <span class="val">14</span> y <span class="val">29</span> de cada mes — 23:59 hrs</div>
+            <div class="line blank">.</div>
+            <div class="line dir">C:\XENDA&gt; <span class="cursor"></span></div>
 
-    <br><br>
+        </div>
 
-    - Se abre los días 10 y 25 de cada mes a las 00:00 horas.
-
-    <br>
-
-    - Se cierra los días 14 y 29 de cada mes a las 23:59 horas.
-
-</p>
+    </div>
 
 </body>
 </html>
