@@ -15,7 +15,7 @@
         body {
             font-family: 'Courier New', monospace;
             background: #0c0c0c;
-            color: #cccccc;
+            color: #000000;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -74,7 +74,7 @@
         .tbtn.close:hover { background: #e81123; }
 
         .terminal-body {
-            background: #0c0c0c;
+            background: #ffffff;
             padding: 16px 20px 28px;
             min-height: 320px;
         }
@@ -104,18 +104,18 @@
             to   { opacity: 1; }
         }
 
-        .dir  { color: #cccccc; }
-        .ok   { color: #13a10e; }
-        .err  { color: #c50f1f; }
-        .warn { color: #c19c00; }
-        .val  { color: #BC945A; }
+        .dir   { color: #000000; }
+        .ok    { color: #000000; }
+        .err   { color: #c50f1f; }
+        .warn  { color: #000000; }
+        .val   { color: #000000; }
         .blank { color: transparent; }
 
         .cursor {
             display: inline-block;
             width: 8px;
             height: 14px;
-            background: #cccccc;
+            background: #000000;
             vertical-align: middle;
             animation: blink 1.2s step-end infinite;
             animation-delay: 4.6s;
@@ -135,7 +135,7 @@
 
         <div class="titlebar">
             <div class="titlebar-left">
-                <span class="titlebar-icon"></span>
+                <span class="titlebar-icon">💻</span>
                 <span class="titlebar-text">Símbolo del sistema</span>
             </div>
             <div class="titlebar-buttons">
@@ -156,8 +156,8 @@
             <div class="line err">Error 503: Módulo de registro no disponible.</div>
             <div class="line blank">.</div>
             <div class="line warn">MOTIVO    : PERIODO_CERRADO</div>
-            <div class="line warn">APERTURA  : días <span class="val">10</span> y <span class="val">25</span> de cada mes — 00:00 hrs</div>
-            <div class="line warn">CIERRE    : días <span class="val">14</span> y <span class="val">29</span> de cada mes — 23:59 hrs</div>
+            <div class="line warn">APERTURA  : días 10 y 25 de cada mes — 00:00 hrs</div>
+            <div class="line warn">CIERRE    : días 14 y 29 de cada mes — 23:59 hrs</div>
             <div class="line blank">.</div>
             <div class="line dir">C:\XENDA&gt; <span class="cursor"></span></div>
 
