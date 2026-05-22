@@ -15,6 +15,8 @@ import unicodedata
 import os
 import uuid
 import requests
+import geopandas as gpd
+from shapely.geometry import Point
 from apscheduler.schedulers.background import BackgroundScheduler  
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
@@ -55,6 +57,63 @@ app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
 db = SQLAlchemy(app)
 
+# =========================================
+# GEODATA
+# =========================================
+
+municipios_gdf = gpd.read_file(
+    'geodata/municipios/mun25cw.shp'
+)
+
+estados_gdf = gpd.read_file(
+    'geodata/estados/dest23gw.shp'
+)
+
+# =========================================
+# OBTENER UBICACION
+# =========================================
+
+def obtener_ubicacion(latitud, longitud):
+
+    punto = Point(
+        longitud,
+        latitud
+    )
+
+    municipio = 'No identificado'
+
+    estado = 'No identificado'
+
+    municipio_resultado = municipios_gdf[
+
+        municipios_gdf.contains(punto)
+
+    ]
+
+    if not municipio_resultado.empty:
+
+        municipio = municipio_resultado.iloc[0][
+            'NOMMUN'
+        ]
+
+    estado_resultado = estados_gdf[
+
+        estados_gdf.contains(punto)
+
+    ]
+
+    if not estado_resultado.empty:
+
+        estado = estado_resultado.iloc[0][
+            'NOMGEO'
+        ]
+
+    return {
+
+        'municipio': municipio,
+
+        'estado': estado
+    }
 
 # =========================================
 # MODELO USUARIOS
@@ -1554,6 +1613,27 @@ def mapa_registros():
         Registro.longitud.isnot(None)
 
     ).all()
+
+    for r in registros:
+    
+        if r.latitud and r.longitud:
+
+            ubicacion = obtener_ubicacion(
+
+                r.latitud,
+
+                r.longitud
+            )
+
+            r.estado_geo = ubicacion['estado']
+
+            r.municipio_geo = ubicacion['municipio']
+
+        else:
+
+            r.estado_geo = 'Sin coordenadas'
+
+            r.municipio_geo = 'Sin coordenadas'
 
     return render_template(
 
