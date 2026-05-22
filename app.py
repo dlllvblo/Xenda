@@ -105,10 +105,12 @@ def obtener_ubicacion(latitud, longitud):
     ]
 
     if not estado_resultado.empty:
+        estado = limpiar_texto(
 
-        estado = estado_resultado.iloc[0][
-            'NOMGEO'
-        ]
+            estado_resultado.iloc[0][
+                'NOMGEO'
+            ]
+        )        
 
     nucleo_resultado = nucleos_gdf[
 
@@ -118,9 +120,12 @@ def obtener_ubicacion(latitud, longitud):
 
     if not nucleo_resultado.empty:
 
-        nucleo = nucleo_resultado.iloc[0][
-            'Name'
-        ]
+        nucleo = limpiar_texto(
+
+            nucleo_resultado.iloc[0][
+                'Name'
+            ]
+        )
 
     return {
 
@@ -362,6 +367,23 @@ def normalizar(texto):
 
     return texto
 
+def limpiar_texto(texto):
+    
+    if not texto:
+
+        return texto
+
+    try:
+
+        return str(texto).encode(
+            'latin1'
+        ).decode(
+            'utf-8'
+        )
+
+    except:
+
+        return str(texto)
 
 # =========================================
 # CONTROL DE PERIODOS
