@@ -78,9 +78,9 @@
 
         radius: 5,
 
-        color: '{{"#e53935" if r.tramo == "TAP" else "#8e24aa" if r.tramo == "TMQ" else "#3949ab" if r.tramo == "TQI" else "#1e88e5" if r.tramo == "TSNL" else "#00897b" if r.tramo == "TQSLP" else "#43a047" if r.tramo == "TSLPS" else "#fdd835" if r.tramo == "TMLM" else "#fb8c00" if r.tramo == "TIGDL" else "#616161"}}',
+        color: '{{"#e53935" if r.tramo == "AIFA-PACHUCA" else "#8e24aa" if r.tramo == "MÉXICO-QUERÉTARO" else "#3949ab" if r.tramo == "QUERÉTARO-IRAPUATO" else "#1e88e5" if r.tramo == "SALTILLO-NUEVO LAREDO" else "#00897b" if r.tramo == "QUERÉTARO-SAN LUIS POTOSÍ" else "#43a047" if r.tramo == "SAN LUIS POTOSÍ-SALTILLO" else "#fdd835" if r.tramo == "MAZATLÁN-LOS MOCHIS" else "#fb8c00" if r.tramo == "IRAPUATO-GUADALAJARA" else "#616161"}}',
 
-            fillColor: '{{"#ef5350" if r.tramo == "TAP" else "#ab47bc" if r.tramo == "TMQ" else "#5c6bc0" if r.tramo == "TQI" else "#42a5f5" if r.tramo == "TSNL" else "#26a69a" if r.tramo == "TQSLP" else "#66bb6a" if r.tramo == "TSLPS" else "#ffee58" if r.tramo == "TMLM" else "#ffa726" if r.tramo == "TIGDL" else "#9e9e9e"}}',
+            fillColor: '{{"#ef5350" if r.tramo == "AIFA-PACHUCA" else "#ab47bc" if r.tramo == "MÉXICO-QUERÉTARO" else "#5c6bc0" if r.tramo == "QUERÉTARO-IRAPUATO" else "#42a5f5" if r.tramo == "SALTILLO-NUEVO LAREDO" else "#26a69a" if r.tramo == "QUERÉTARO-SAN LUIS POTOSÍ" else "#66bb6a" if r.tramo == "SAN LUIS POTOSÍ-SALTILLO" else "#ffee58" if r.tramo == "MAZATLÁN-LOS MOCHIS" else "#ffa726" if r.tramo == "IRAPUATO-GUADALAJARA" else "#9e9e9e"}}',
 
         fillOpacity: 0.6,
 
@@ -95,6 +95,7 @@
 .bindPopup(
 
     `
+    <b>Usuario:</b>
     <b>{{ r.usuario }}</b><br>
 
     <b>Actividad:</b>
@@ -103,7 +104,10 @@
     <b>Tramo:</b>
     {{ r.tramo }}<br>
 
-    <b>Municipio catálogo:</b>
+    <b>Núcleo Agrario:</b>
+    {{ r.nucleo }}<br>
+
+    <b>Municipio:</b>
     {{ r.municipio }}<br>
 
     <b>Municipio GIS:</b>

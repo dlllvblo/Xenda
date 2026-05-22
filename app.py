@@ -62,11 +62,34 @@ db = SQLAlchemy(app)
 # =========================================
 
 municipios_gdf = gpd.read_file(
-    'geodata/municipios/mun25cw.shp'
+    'geodata/municipios/mun25cw.shp',
+    encoding='latin1'
 )
 
 estados_gdf = gpd.read_file(
-    'geodata/estados/dest23gw.shp'
+    'geodata/estados/dest23gw.shp',
+    encoding='latin1'
+)
+
+municipios_gdf = municipios_gdf.to_crs(
+    epsg=4326
+)
+
+estados_gdf = estados_gdf.to_crs(
+    epsg=4326
+)
+
+# =========================================
+# NUCLEOS AGRARIOS
+# =========================================
+
+nucleos_gdf = gpd.read_file(
+
+    'geodata/nucleos_agrarios/perimetrales.gpkg'
+)
+
+nucleos_gdf = nucleos_gdf.to_crs(
+    epsg=4326
 )
 
 # =========================================
@@ -83,6 +106,8 @@ def obtener_ubicacion(latitud, longitud):
     municipio = 'No identificado'
 
     estado = 'No identificado'
+
+    nucleo = 'No identificado'
 
     municipio_resultado = municipios_gdf[
 
@@ -108,11 +133,25 @@ def obtener_ubicacion(latitud, longitud):
             'NOMGEO'
         ]
 
+    nucleo_resultado = nucleos_gdf[
+
+        nucleos_gdf.contains(punto)
+
+    ]
+
+    if not nucleo_resultado.empty:
+
+        nucleo = nucleo_resultado.iloc[0][
+            'Name'
+        ]
+
     return {
 
         'municipio': municipio,
 
-        'estado': estado
+        'estado': estado,
+
+        'nucleo': nucleo
     }
 
 # =========================================
@@ -1628,6 +1667,8 @@ def mapa_registros():
             r.estado_geo = ubicacion['estado']
 
             r.municipio_geo = ubicacion['municipio']
+
+            r.nucleo_geo = ubicacion['nucleo']
 
         else:
 
