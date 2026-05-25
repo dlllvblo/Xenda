@@ -1496,7 +1496,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         flash.style.color = '#854d0e';
         flash.textContent = 'Sin internet. Registro guardado en el dispositivo y se enviará cuando haya conexión.';
         document.querySelector('.container').prepend(flash);
-
+        window.scrollTo({top: 0, behavior: 'smooth'});
         return;
     }
 
