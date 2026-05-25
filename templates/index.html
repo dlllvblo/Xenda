@@ -1505,6 +1505,13 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         flash.textContent = 'Sin internet. Registro guardado en el dispositivo y se enviará cuando haya conexión.';
         document.querySelector('.container').prepend(flash);
         window.scrollTo({top: 0, behavior: 'smooth'});
+        setTimeout(function() {
+            flash.style.transition = 'opacity 0.5s ease';
+            flash.style.opacity = '0';
+            setTimeout(function() {
+                flash.remove();
+            }, 500);
+        }, 3000);
         return;
     }
 
@@ -1542,6 +1549,14 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         flash.style.color = '#854d0e';
         flash.textContent = 'Sin internet. Registro guardado en el dispositivo y se enviará cuando haya conexión.';
         document.querySelector('.container').prepend(flash);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(function() {
+            flash.style.transition = 'opacity 0.5s ease';
+            flash.style.opacity = '0';
+            setTimeout(function() {
+                flash.remove();
+            }, 500);
+        }, 3000);
 
     }
 
