@@ -1388,6 +1388,13 @@ function obtenerUbicacion() {
             flash.style.color = '#854d0e';
             flash.textContent = 'Registro sin ubicación GPS. Se guardará sin coordenadas.';
             document.querySelector('.container').prepend(flash);
+            setTimeout(function() {
+                flash.style.transition = 'opacity 0.5s ease';
+                flash.style.opacity = '0';
+                setTimeout(function() {
+                    flash.remove();
+                }, 500);
+            }, 3000);
 
         },
 
@@ -1503,7 +1510,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         flash.style.background = '#fef9c3';
         flash.style.color = '#854d0e';
         flash.textContent = 'Sin internet. Registro guardado en el dispositivo y se enviará cuando haya conexión.';
-        document.querySelector('.container').prepend(flash);
+        document.querySelector('form').insertAdjacentElement('beforebegin', flash);
         window.scrollTo({top: 0, behavior: 'smooth'});
         setTimeout(function() {
             flash.style.transition = 'opacity 0.5s ease';
@@ -1548,7 +1555,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         flash.style.background = '#fef9c3';
         flash.style.color = '#854d0e';
         flash.textContent = 'Sin internet. Registro guardado en el dispositivo y se enviará cuando haya conexión.';
-        document.querySelector('.container').prepend(flash);
+        document.querySelector('form').insertAdjacentElement('beforebegin', flash);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(function() {
             flash.style.transition = 'opacity 0.5s ease';
