@@ -950,6 +950,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.history.replaceState({}, '', '/');
 
+        setTimeout(function() {
+            flash.style.transition = 'opacity 0.5s ease';
+            flash.style.opacity = '0';
+            setTimeout(function() {
+                flash.remove();
+            }, 500);
+        }, 3000);
+
     }
 
     const tramoSelect =
