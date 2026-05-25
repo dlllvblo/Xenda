@@ -1915,7 +1915,10 @@ def mapa_registros():
 
 @app.route('/manifest.json')
 def manifest():
-    return send_file('manifest.json', mimetype='application/manifest+json')
+    return send_file(
+        os.path.join(os.path.dirname(__file__), 'manifest.json'),
+        mimetype='application/manifest+json'
+    )
 
 # =========================================
 # SERVICE WORKER PWA
