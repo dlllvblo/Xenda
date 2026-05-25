@@ -1497,7 +1497,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         });
 
         if (response.ok) {
-            window.location.href = '/';
+            window.location.href = '/?guardado=1';
         } else {
             throw new Error('Error del servidor');
         }
