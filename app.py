@@ -898,7 +898,7 @@ def crear_usuarios():
 
 @app.route('/', methods=['GET', 'POST'])
 
-
+def index():
 
     exportar_excel_mensual()
 
