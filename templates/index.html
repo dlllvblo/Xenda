@@ -935,6 +935,23 @@ const CATALOGO = {{ catalogo_json | safe }};
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    // =====================================
+    // FLASH POST GUARDADO
+    // =====================================
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get('guardado') === '1') {
+
+        const flash = document.createElement('div');
+        flash.className = 'flash';
+        flash.textContent = 'Registro guardado exitosamente';
+        document.querySelector('.container').prepend(flash);
+
+        window.history.replaceState({}, '', '/');
+
+    }
+
     const tramoSelect =
         document.getElementById('tramo');
 
