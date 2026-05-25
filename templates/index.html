@@ -1391,10 +1391,7 @@ if ('serviceWorker' in navigator) {
         .catch(err => console.log('Error:', err));
 }
 
-// =====================================
 // ENVÍO OFFLINE
-// =====================================
-
 document.querySelector('form').addEventListener('submit', async function(e) {
 
     if (!navigator.onLine) {
@@ -1417,23 +1414,47 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         flash.textContent = 'Sin internet. Registro guardado en el dispositivo y se enviará cuando haya conexión.';
         document.querySelector('.container').prepend(flash);
 
+        return;
+    }
+
+    // Con internet intenta enviar, si falla lo guarda local
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    try {
+
+        const response = await fetch('/', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        });
+
+        if (response.ok) {
+            window.location.href = '/';
+        } else {
+            throw new Error('Error del servidor');
+        }
+
+    } catch (err) {
+
+        const db = await abrirDB();
+        const tx = db.transaction('pendientes', 'readwrite');
+        tx.objectStore('pendientes').add({
+            formData: Object.fromEntries(formData),
+            fecha: new Date().toISOString()
+        });
+
+        const flash = document.createElement('div');
+        flash.className = 'flash';
+        flash.style.background = '#fef9c3';
+        flash.style.color = '#854d0e';
+        flash.textContent = 'Sin internet. Registro guardado en el dispositivo y se enviará cuando haya conexión.';
+        document.querySelector('.container').prepend(flash);
+
     }
 
 });
-
-function abrirDB() {
-    return new Promise((resolve, reject) => {
-        const req = indexedDB.open('xenda-offline', 1);
-        req.onupgradeneeded = function(e) {
-            e.target.result.createObjectStore(
-                'pendientes',
-                { keyPath: 'id', autoIncrement: true }
-            );
-        };
-        req.onsuccess = e => resolve(e.target.result);
-        req.onerror = e => reject(e);
-    });
-}
 
 </script>
 
