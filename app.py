@@ -552,6 +552,251 @@ def exportar_excel_mensual():
 
     ).execute()
 
+    # =========================================
+    # GENERAR REPORTE HTML
+    # =========================================
+
+    def generar_reporte_html(df, mes_label):
+
+        import json
+
+        total_registros = len(df)
+        total_infografias = int(df['NUM_INFOGRAFIAS'].sum())
+        infografias_generadas = int(df['INFOGRAFIAS_GENERADAS'].sum())
+        infografias_validadas = int(df['INFOGRAFIAS_VALIDADAS'].sum())
+        total_planos = int(df['PLANOS_GENERADOS'].sum())
+        total_mediciones = int(df['MEDICIONES_AGROFORESTALES'].sum() + df['MEDICIONES_BDTS'].sum())
+
+        pct_validadas = round(
+            (infografias_validadas / infografias_generadas * 100)
+            if infografias_generadas > 0 else 0
+        )
+
+        por_tramo = df.groupby('TRAMO').size().to_dict()
+        tramo_labels = list(por_tramo.keys())
+        tramo_values = list(por_tramo.values())
+
+        por_actividad = df.groupby('ACTIVIDAD').size().to_dict()
+        act_labels = list(por_actividad.keys())
+        act_values = list(por_actividad.values())
+
+        avance_tramo = df.groupby('TRAMO').agg(
+            generadas=('INFOGRAFIAS_GENERADAS', 'sum'),
+            validadas=('INFOGRAFIAS_VALIDADAS', 'sum')
+        ).reset_index()
+
+        color_map = {
+            'TQI':   '#7F77DD',
+            'TAP':   '#1D9E75',
+            'TIGDL': '#BA7517',
+            'TIGDS': '#D85A30',
+            'TIGD':  '#378ADD',
+        }
+        default_colors = ['#888780', '#D4537E', '#639922', '#E24B4A']
+
+        def color_tramo(tramo, idx=0):
+            return color_map.get(tramo, default_colors[idx % len(default_colors)])
+
+        filas_registros = ''
+        for _, r in df.iterrows():
+
+            obs = (
+                f'<div style="margin-top:8px;background:#FFF3EE;border-left:3px solid #D85A30;'
+                f'border-radius:4px;padding:6px 10px;font-size:12px;color:#712B13;">'
+                f'&#9888; {r["OBSERVACIONES"]}</div>'
+            ) if pd.notna(r.get('OBSERVACIONES')) and str(r.get('OBSERVACIONES', '')).strip() else ''
+
+            estatus = r.get('ESTATUS_INFOGRAFIAS', '')
+            badge_est = ''
+            if pd.notna(estatus) and str(estatus).strip():
+                badge_est = (
+                    f'<span style="background:#FAECE7;color:#712B13;font-size:11px;'
+                    f'padding:2px 8px;border-radius:12px;">{estatus}</span>'
+                )
+
+            c = color_tramo(r['TRAMO'])
+            filas_registros += f'''
+            <div style="background:#fff;border:0.5px solid #e0e0e0;border-radius:12px;padding:14px 16px;margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                <div>
+                  <span style="background:{c}22;color:{c};font-size:11px;font-weight:500;padding:3px 10px;border-radius:12px;margin-right:6px;">{r['TRAMO']}</span>
+                  <span style="font-size:14px;font-weight:500;">{r['NUCLEO']}</span>
+                </div>
+                <span style="font-size:12px;color:#888;">{r['FECHA']}</span>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+                <span style="background:#f0f0f0;color:#555;font-size:11px;padding:2px 8px;border-radius:12px;">{r['ACTIVIDAD']} &middot; {r['MODALIDAD']}</span>
+                {badge_est}
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:12px;">
+                <div><span style="color:#999;display:block;">Entidad</span><b>{r['ENTIDAD']}</b></div>
+                <div><span style="color:#999;display:block;">Municipio</span><b>{r['MUNICIPIO']}</b></div>
+                <div><span style="color:#999;display:block;">Frente</span><b>{r['FRENTE']}</b></div>
+                <div><span style="color:#999;display:block;">Infograf&iacute;as</span><b>{int(r['NUM_INFOGRAFIAS'])}</b></div>
+                <div><span style="color:#999;display:block;">Generadas</span><b>{int(r['INFOGRAFIAS_GENERADAS'])}</b></div>
+                <div><span style="color:#999;display:block;">Validadas</span><b>{int(r['INFOGRAFIAS_VALIDADAS'])}</b></div>
+              </div>
+              {obs}
+            </div>'''
+
+        barras_tramo = ''
+        for _, row in avance_tramo.iterrows():
+            pct = round(
+                (row['validadas'] / row['generadas'] * 100)
+                if row['generadas'] > 0 else 0
+            )
+            c = color_tramo(row['TRAMO'])
+            barras_tramo += f'''
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <span style="min-width:80px;font-size:13px;background:{c}22;color:{c};padding:3px 10px;border-radius:12px;">{row['TRAMO']}</span>
+              <div style="flex:1;height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden;">
+                <div style="width:{pct}%;height:100%;background:{c};border-radius:4px;"></div>
+              </div>
+              <span style="font-size:12px;color:#888;min-width:36px;text-align:right;">{pct}%</span>
+            </div>'''
+
+        tramo_colors = [color_tramo(t, i) for i, t in enumerate(tramo_labels)]
+        act_colors = ['#534AB7', '#1D9E75', '#BA7517', '#D85A30', '#378ADD']
+
+        html = f'''<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Xenda &middot; {mes_label}</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f7f7f5; color: #1a1a1a; padding: 2rem; max-width: 860px; margin: 0 auto; }}
+  .header {{ border-bottom: 1px solid #e0e0e0; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
+  .metrics {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }}
+  .metric {{ background: #f0f0ee; border-radius: 8px; padding: 14px 16px; }}
+  .metric-label {{ font-size: 12px; color: #888; margin-bottom: 6px; }}
+  .metric-value {{ font-size: 26px; font-weight: 500; }}
+  .metric-sub {{ font-size: 11px; color: #aaa; margin-top: 4px; }}
+  .grid2 {{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.5rem; }}
+  .card {{ background: #fff; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 1rem 1.25rem; }}
+  .section-title {{ font-size: 12px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }}
+  @media (max-width: 560px) {{ .grid2 {{ grid-template-columns: 1fr; }} }}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <p style="font-size:12px;color:#888;margin-bottom:4px;">Xenda &middot; Registros de campo</p>
+  <h1 style="font-size:22px;font-weight:500;">Resumen operativo</h1>
+  <p style="font-size:13px;color:#666;margin-top:4px;">{mes_label} &middot; {total_registros} registros</p>
+</div>
+
+<div class="metrics">
+  <div class="metric">
+    <div class="metric-label">Registros</div>
+    <div class="metric-value">{total_registros}</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Infograf&iacute;as</div>
+    <div class="metric-value">{total_infografias}</div>
+    <div class="metric-sub">{infografias_validadas} validadas</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">% Validaci&oacute;n</div>
+    <div class="metric-value">{pct_validadas}%</div>
+    <div class="metric-sub">de generadas</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Planos</div>
+    <div class="metric-value">{total_planos}</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Mediciones</div>
+    <div class="metric-value">{total_mediciones}</div>
+  </div>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <div class="section-title">Por tramo</div>
+    <div style="position:relative;height:180px;">
+      <canvas id="chartTramo"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="section-title">Por actividad</div>
+    <div style="position:relative;height:180px;">
+      <canvas id="chartAct"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem;">
+  <div class="section-title">Avance infograf&iacute;as por tramo</div>
+  <div style="margin-top:4px;">
+    {barras_tramo}
+  </div>
+</div>
+
+<div class="section-title" style="margin-bottom:12px;">Registros de campo</div>
+{filas_registros}
+
+<p style="font-size:12px;color:#aaa;text-align:center;margin-top:1.5rem;padding-bottom:1rem;">
+  Generado autom&aacute;ticamente &middot; Xenda
+</p>
+
+<script>
+new Chart(document.getElementById('chartTramo'), {{
+  type: 'doughnut',
+  data: {{
+    labels: {json.dumps(tramo_labels)},
+    datasets: [{{ data: {json.dumps(tramo_values)}, backgroundColor: {json.dumps(tramo_colors)}, borderWidth: 0 }}]
+  }},
+  options: {{ responsive: true, maintainAspectRatio: false, cutout: '60%',
+    plugins: {{ legend: {{ position: 'bottom', labels: {{ font: {{ size: 12 }}, padding: 10 }} }} }} }}
+}});
+new Chart(document.getElementById('chartAct'), {{
+  type: 'bar',
+  data: {{
+    labels: {json.dumps(act_labels)},
+    datasets: [{{ data: {json.dumps(act_values)}, backgroundColor: {json.dumps(act_colors[:len(act_labels)])}, borderWidth: 0, borderRadius: 4 }}]
+  }},
+  options: {{ responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+    plugins: {{ legend: {{ display: false }} }},
+    scales: {{ x: {{ ticks: {{ stepSize: 1 }} }}, y: {{ grid: {{ display: false }} }} }} }}
+}});
+</script>
+</body>
+</html>'''
+
+        return html
+
+    # =========================================
+    # SUBIR REPORTE HTML A DRIVE
+    # =========================================
+
+    mes_label = ahora.strftime('%B %Y').capitalize()
+    html_content = generar_reporte_html(df, mes_label)
+
+    nombre_html = f'REPORTE_XENDA_{mes_actual}.html'
+    ruta_html = os.path.join(os.getcwd(), nombre_html)
+
+    with open(ruta_html, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+    file_metadata_html = {
+        'name': nombre_html,
+        'parents': [folder_id]
+    }
+
+    media_html = MediaFileUpload(
+        ruta_html,
+        mimetype='text/html'
+    )
+
+    service.files().create(
+        body=file_metadata_html,
+        media_body=media_html,
+        fields='id'
+    ).execute()
+
     nueva_exportacion = Exportacion(
 
         mes=mes_actual
