@@ -3,6 +3,13 @@
 
 <head>
 
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6E152E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Xenda">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
     <meta charset="UTF-8">
 
     <meta
@@ -924,6 +931,8 @@
 
 <script>
 
+const CATALOGO = {{ catalogo_json | safe }};
+
 document.addEventListener('DOMContentLoaded', function() {
 
     const tramoSelect =
@@ -945,7 +954,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     tramoSelect.addEventListener(
         'change',
-        async function() {
+        function() {
 
             const tramo =
                 tramoSelect.value;
@@ -967,26 +976,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             nucleoSelect.disabled = true;
 
-            console.log(tramo);
-
-            const response =
-                await fetch(
-                    `/entidades/${encodeURIComponent(tramo)}`
-                );
-
-            const entidades =
-                await response.json();
-
-            console.log(entidades);
+            const entidades = [...new Set(
+                CATALOGO
+                    .filter(r => r.TRAMO === tramo)
+                    .map(r => r.ENTIDAD_FEDERATIVA)
+            )].sort();
 
             entidades.forEach(entidad => {
 
                 entidadSelect.innerHTML += `
-
                     <option value="${entidad}">
                         ${entidad}
                     </option>
-
                 `;
 
             });
@@ -1001,7 +1002,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     entidadSelect.addEventListener(
         'change',
-        async function() {
+        function() {
 
             const tramo =
                 tramoSelect.value;
@@ -1021,22 +1022,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             nucleoSelect.disabled = true;
 
-            const response =
-                await fetch(
-                    `/municipios/${encodeURIComponent(tramo)}/${encodeURIComponent(entidad)}`
-                );
-
-            const municipios =
-                await response.json();
+            const municipios = [...new Set(
+                CATALOGO
+                    .filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad)
+                    .map(r => r.MUNICIPIO)
+            )].sort();
 
             municipios.forEach(municipio => {
 
                 municipioSelect.innerHTML += `
-
                     <option value="${municipio}">
                         ${municipio}
                     </option>
-
                 `;
 
             });
@@ -1051,7 +1048,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     municipioSelect.addEventListener(
         'change',
-        async function() {
+        function() {
 
             const tramo =
                 tramoSelect.value;
@@ -1073,22 +1070,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
             nucleoSelect.disabled = false;
 
-            const response =
-                await fetch(
-                    `/nucleos/${encodeURIComponent(tramo)}/${encodeURIComponent(entidad)}/${encodeURIComponent(municipio)}`
-                );
-
-            const nucleos =
-                await response.json();
+            const nucleos = [...new Set(
+                CATALOGO
+                    .filter(r =>
+                        r.TRAMO === tramo &&
+                        r.ENTIDAD_FEDERATIVA === entidad &&
+                        r.MUNICIPIO === municipio
+                    )
+                    .map(r => r.NUCLEO_AGRARIO)
+            )].sort();
 
             nucleos.forEach(nucleo => {
 
                 nucleoSelect.innerHTML += `
-
                     <option value="${nucleo}">
                         ${nucleo}
                     </option>
-
                 `;
 
             });
@@ -1358,10 +1355,14 @@ function obtenerUbicacion() {
 
         function(error) {
 
-            console.log(
-                "Error GPS:",
-                error.message
-            );
+            console.log("Error GPS:", error.message);
+
+            const flash = document.createElement('div');
+            flash.className = 'flash';
+            flash.style.background = '#fef9c3';
+            flash.style.color = '#854d0e';
+            flash.textContent = 'Registro sin ubicación GPS. Se guardará sin coordenadas.';
+            document.querySelector('.container').prepend(flash);
 
         },
 
@@ -1380,34 +1381,59 @@ window.addEventListener(
     obtenerUbicacion
 );
 
-document.querySelector('form').addEventListener(
+// =====================================
+// REGISTRO SERVICE WORKER
+// =====================================
 
-    'submit',
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service_worker.js')
+        .then(reg => console.log('Service worker registrado'))
+        .catch(err => console.log('Error:', err));
+}
 
-    function(e) {
+// =====================================
+// ENVÍO OFFLINE
+// =====================================
 
-        const latitud =
-            document.getElementById(
-                'latitud'
-            ).value;
+document.querySelector('form').addEventListener('submit', async function(e) {
 
-        const longitud =
-            document.getElementById(
-                'longitud'
-            ).value;
+    if (!navigator.onLine) {
 
-        if (!latitud || !longitud) {
+        e.preventDefault();
 
-            alert(
-                'Debes permitir el acceso a ubicación para registrar información.'
-            );
+        const formData = new FormData(this);
 
-            e.preventDefault();
+        const db = await abrirDB();
+        const tx = db.transaction('pendientes', 'readwrite');
+        tx.objectStore('pendientes').add({
+            formData: Object.fromEntries(formData),
+            fecha: new Date().toISOString()
+        });
 
-        }
+        const flash = document.createElement('div');
+        flash.className = 'flash';
+        flash.style.background = '#fef9c3';
+        flash.style.color = '#854d0e';
+        flash.textContent = 'Sin internet. Registro guardado en el dispositivo y se enviará cuando haya conexión.';
+        document.querySelector('.container').prepend(flash);
 
     }
-);
+
+});
+
+function abrirDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open('xenda-offline', 1);
+        req.onupgradeneeded = function(e) {
+            e.target.result.createObjectStore(
+                'pendientes',
+                { keyPath: 'id', autoIncrement: true }
+            );
+        };
+        req.onsuccess = e => resolve(e.target.result);
+        req.onerror = e => reject(e);
+    });
+}
 
 </script>
 

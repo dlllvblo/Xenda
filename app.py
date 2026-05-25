@@ -14,10 +14,8 @@ import pandas as pd
 import unicodedata
 import os
 import uuid
-import requests
 import geopandas as gpd
-from shapely.geometry import Point
-from apscheduler.schedulers.background import BackgroundScheduler  
+from shapely.geometry import Point  
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -945,10 +943,6 @@ def logout():
 
 def admin():
 
-    #if 'usuario' not in session:
-
-    #    return redirect('/login')
-
     if session.get('usuario') != ADMIN_CORREO:
     
         return redirect('/login')
@@ -1179,18 +1173,6 @@ def index():
 
     if request.method == 'POST':
 
-        if (
-            not request.form.get('latitud')
-            or
-            not request.form.get('longitud')
-        ):
-
-            flash(
-                'Debe permitir acceso a ubicación'
-            )
-
-            return redirect('/')
-
         nuevo = Registro(
             
             latitud=(
@@ -1268,7 +1250,11 @@ def index():
 
         'index.html',
 
-        entidades=entidades
+        entidades=entidades,
+
+        catalogo_json=catalogo[
+            ['TRAMO', 'ENTIDAD_FEDERATIVA', 'MUNICIPIO', 'NUCLEO_AGRARIO']
+        ].to_json(orient='records', force_ascii=False)
 
     )
 
@@ -1923,100 +1909,21 @@ def mapa_registros():
         registros=registros
     )
 
-## =========================================
-## WHATSAPP AUTOMATICO
-## =========================================
-#
-#def enviar_whatsapp(mensaje):
-#
-#    telefono = '521XXXXXXXXXX'
-#
-#    apikey = os.getenv(
-#        'CALLMEBOT_APIKEY'
-#    )
-#
-#    url = (
-#
-#        'https://api.callmebot.com/whatsapp.php'
-#
-#        f'?phone={telefono}'
-#
-#        f'&text={mensaje}'
-#
-#        f'&apikey={apikey}'
-#    )
-#
-#    requests.get(url)
-#
-## =========================================
-## AVISOS AUTOMATICOS
-## =========================================
-#
-#def aviso_apertura():
-#
-#    mensaje = '''
-#
-#XENDA - AVISO IMPORTANTE
-#
-#El periodo de captura estará disponible
-#a partir de las 00:00 hrs de mañana.
-#
-#Favor de preparar y validar actividades pendientes.
-#
-#'''
-#
-#    enviar_whatsapp(mensaje)
-#
-#def aviso_cierre():
-#
-#    mensaje = '''
-#
-#XENDA - AVISO IMPORTANTE
-#
-#El periodo de captura finalizará hoy
-#a las 23:59 hrs.
-#
-#Favor de concluir y validar registros pendientes.
-#
-#'''
-#
-#    enviar_whatsapp(mensaje)
-#
-## =========================================
-## SCHEDULER
-## =========================================
-#
-#scheduler = BackgroundScheduler()
-#
-## Apertura
-#scheduler.add_job(
-#
-#    aviso_apertura,
-#
-#    'cron',
-#
-#    day='9,24',
-#
-#    hour=18,
-#
-#    minute=0
-#)
-#
-## Cierre
-#scheduler.add_job(
-#
-#    aviso_cierre,
-#
-#    'cron',
-#
-#    day='14,29',
-#
-#    hour=12,
-#
-#    minute=0
-#)
-#
-#scheduler.start()
+# =========================================
+# MANIFEST PWA
+# =========================================
+
+@app.route('/manifest.json')
+def manifest():
+    return send_file('manifest.json', mimetype='application/manifest+json')
+
+# =========================================
+# SERVICE WORKER PWA
+# =========================================
+
+@app.route('/service_worker.js')
+def service_worker():
+    return send_file('static/service_worker.js', mimetype='application/javascript')
 
 # =========================================
 # CREAR TABLAS
