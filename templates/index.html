@@ -1391,6 +1391,24 @@ if ('serviceWorker' in navigator) {
         .catch(err => console.log('Error:', err));
 }
 
+// =====================================
+// INDEXEDDB
+// =====================================
+
+function abrirDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open('xenda-offline', 1);
+        req.onupgradeneeded = function(e) {
+            e.target.result.createObjectStore(
+                'pendientes',
+                { keyPath: 'id', autoIncrement: true }
+            );
+        };
+        req.onsuccess = e => resolve(e.target.result);
+        req.onerror = e => reject(e);
+    });
+}
+
 // ENVÍO OFFLINE
 document.querySelector('form').addEventListener('submit', async function(e) {
 
