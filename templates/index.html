@@ -1409,6 +1409,54 @@ function abrirDB() {
     });
 }
 
+// =====================================
+// SINCRONIZACIÓN AL RECONECTAR
+// =====================================
+
+async function sincronizarPendientes() {
+
+    if (!navigator.onLine) return;
+
+    const db = await abrirDB();
+    const tx = db.transaction('pendientes', 'readonly');
+    const registros = await new Promise((resolve, reject) => {
+        const req = tx.objectStore('pendientes').getAll();
+        req.onsuccess = e => resolve(e.target.result);
+        req.onerror = e => reject(e);
+    });
+
+    if (registros.length === 0) return;
+
+    for (const registro of registros) {
+
+        try {
+
+            const formData = new FormData();
+            for (const [key, value] of Object.entries(registro.formData)) {
+                formData.append(key, value);
+            }
+
+            const response = await fetch('/', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            });
+
+            if (response.ok) {
+                const txDel = db.transaction('pendientes', 'readwrite');
+                txDel.objectStore('pendientes').delete(registro.id);
+                console.log('Registro sincronizado:', registro.id);
+            }
+
+        } catch (err) {
+            console.log('No se pudo sincronizar:', err);
+        }
+    }
+}
+
+window.addEventListener('load', sincronizarPendientes);
+window.addEventListener('online', sincronizarPendientes);
+
 // ENVÍO OFFLINE
 document.querySelector('form').addEventListener('submit', async function(e) {
 
