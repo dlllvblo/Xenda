@@ -946,7 +946,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const flash = document.createElement('div');
         flash.className = 'flash';
         flash.textContent = 'Registro guardado exitosamente';
-        document.querySelector('.container').prepend(flash);
+        document.querySelector('form').insertAdjacentElement('beforebegin', flash);
 
         window.history.replaceState({}, '', '/');
 
