@@ -823,7 +823,8 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   .pagina {{
     width: 960px;
     min-height: 540px;
-    background: #fff;
+    background: url('/static/contenido_reporte.png') no-repeat center center;
+    background-size: cover;
     margin: 30px auto;
     padding: 40px 48px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.12);
@@ -840,10 +841,8 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   }}
   /* PORTADA */
   .portada-seccion {{
-    background: #245C4F;
-    background-image:
-      radial-gradient(ellipse at 20% 50%, rgba(188,148,90,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(110,21,46,0.15) 0%, transparent 50%);
+    background: url('/static/portada_reporte.png') no-repeat center center;
+    background-size: cover;
     color: white;
     display: flex;
     flex-direction: column;
@@ -865,7 +864,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     padding: 10px 0;
   }}
   .portada-seccion::after {{
-    content: 'Dirección General de Catastro y Asistencia Técnica \00b7  Dirección Técnica';
+    content: 'Direccion General de Catastro y Asistencia Tecnica · Direccion Tecnica';
     display: block;
     width: 100%;
     text-align: center;
@@ -989,7 +988,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   }}
   /* PIE */
   .pagina::after {{
-    content: 'Dirección General de Catastro y Asistencia Técnica &middot; Dirección Técnica &middot; {periodo_label}';
+    content: 'Direccion General de Catastro y Asistencia Tecnica · Direccion Tecnica';
     display: block;
     font-size: 10px;
     color: #999;
@@ -1011,7 +1010,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 <body>
 {secciones_html}
 <p style="text-align:center;font-size:11px;color:#aaa;padding:20px;">
-  Pre-reporte generado autom&aacute;ticamente por Xenda &middot; {periodo_label}
+  Pre-reporte generado autom&aacute;ticamente por Xenda
 </p>
 </body>
 </html>'''
