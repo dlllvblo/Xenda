@@ -897,7 +897,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   .encabezado-logo {{
     width: 160px;
     height: 45px;
-    background: url('/static/encabezado_html1.png') no-repeat right center;
+    background: url('/static/logo_RAN.png') no-repeat right center;
     background-size: contain;
   }}
   /* PORTADA */
