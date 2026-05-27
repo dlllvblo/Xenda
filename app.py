@@ -38,6 +38,8 @@ app = Flask(__name__)
 
 app.secret_key = os.getenv('SECRET_KEY') 
 ADMIN_CORREO = os.getenv('ADMIN_CORREO')
+ADMIN_CORREO_2 = os.getenv('ADMIN_CORREO_2')
+ADMIN_CORREOS = [c for c in [ADMIN_CORREO, ADMIN_CORREO_2] if c]
 
 app.permanent_session_lifetime = timedelta(days=7)
 
@@ -297,6 +299,14 @@ class Registro(db.Model):
     tipo_propiedad = db.Column(db.String(100))
 
     observaciones = db.Column(db.Text)
+
+    trabajo_realizado = db.Column(db.String(100))
+
+    actividades_realizadas = db.Column(db.Text)
+
+    trabajo_programado = db.Column(db.String(100))
+
+    actividades_programadas = db.Column(db.Text) 
 
     latitud = db.Column(db.Float)
 
@@ -943,7 +953,7 @@ def logout():
 
 def admin():
 
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
     
         return redirect('/login')
 
@@ -992,7 +1002,7 @@ def eliminar_usuario(id):
 
         return redirect('/login')
 
-    if session['usuario'] != ADMIN_CORREO:
+    if session['usuario'] not in ADMIN_CORREOS:
 
         return 'Acceso no autorizado'
 
@@ -1015,7 +1025,7 @@ def eliminar_usuario(id):
     methods=['GET', 'POST']
 )
 def reiniciar_registros():
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
         return 'No autorizado', 403
     if request.method == 'POST':
         Registro.query.delete()
@@ -1054,7 +1064,7 @@ def reiniciar_registros():
 
 def sesiones():
 
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
 
         return redirect('/login')
 
@@ -1080,7 +1090,7 @@ def sesiones():
 
 def cerrar_sesion(id):
 
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
 
         return redirect('/login')
 
@@ -1104,7 +1114,7 @@ def cerrar_sesion(id):
 
 def crear_usuarios():
 
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
     
         return redirect('/login')
 
@@ -1144,7 +1154,7 @@ def index():
     if (
         not registro_habilitado()
         and
-        session.get('usuario') != ADMIN_CORREO
+        session.get('usuario') not in ADMIN_CORREOS
 ):
 
         session.clear()
@@ -1233,7 +1243,21 @@ def index():
 
             observaciones=request.form[
                 'observaciones'
-                ].upper() 
+                ].upper(),
+
+            trabajo_realizado=request.form.get('trabajo_realizado'),
+
+            actividades_realizadas=(
+                request.form.get('actividades_realizadas', '').upper()
+                or None
+            ),
+
+            trabajo_programado=request.form.get('trabajo_programado'),
+
+            actividades_programadas=(
+                request.form.get('actividades_programadas', '').upper()
+                or None
+            ),
         )
 
         db.session.add(nuevo)
@@ -1470,7 +1494,7 @@ def registros():
 
 def eliminar_registro(id):
 
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
 
         return 'No autorizado', 403
 
@@ -1523,7 +1547,7 @@ def eliminar_registro(id):
 
 def descargar_usuarios():
 
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
 
         return 'No autorizado', 403
 
@@ -1563,7 +1587,7 @@ def descargar_usuarios():
 
 def descargar_eliminados():
 
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
 
         return 'No autorizado', 403
 
@@ -1635,7 +1659,7 @@ def descargar_eliminados():
 
 def descargar_registros():
 
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
 
         return 'No autorizado', 403
 
@@ -1869,7 +1893,7 @@ def dashboard():
 
 def mapa_registros():
 
-    if session.get('usuario') != ADMIN_CORREO:
+    if session.get('usuario') not in ADMIN_CORREOS:
 
         return 'No autorizado', 403
 
@@ -1936,22 +1960,13 @@ with app.app_context():
     
     db.create_all()
 
-    admin = Usuario.query.filter_by(
-        correo=ADMIN_CORREO
-    ).first()
-
-    if not admin:
-
-        nuevo_admin = Usuario(
-
-            correo=ADMIN_CORREO
-        )
-
-        db.session.add(nuevo_admin)
-
-        db.session.commit()
-
-        print('ADMIN CREADO')
+    for correo_admin in ADMIN_CORREOS:
+        admin = Usuario.query.filter_by(correo=correo_admin).first()
+        if not admin:
+            nuevo_admin = Usuario(correo=correo_admin)
+            db.session.add(nuevo_admin)
+            db.session.commit()
+            print(f'ADMIN CREADO: {correo_admin}')   
 
 # =========================================
 # INICIO

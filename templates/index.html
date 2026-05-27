@@ -890,10 +890,102 @@
             autocapitalize="characters"
         ></textarea>
 
+    </div>
+
+    <div class="card">
+
+        <div class="section-title">
+            Trabajo Realizado
+        </div>
+
+        <div class="grid">
+
+            <div class="input-group">
+
+                <label>Tipo de trabajo realizado</label>
+
+                <select
+                    name="trabajo_realizado"
+                    id="trabajo_realizado"
+                >
+                    <option value="">Seleccione una opción</option>
+                    <option value="CAMPO">Campo</option>
+                    <option value="GABINETE">Gabinete</option>
+                </select>
+
+            </div>
+
+            <div
+                class="input-group"
+                id="actividades_realizadas_container"
+                style="display: none;"
+            >
+
+                <label>Descripción de actividades realizadas</label>
+
+                <textarea
+                    name="actividades_realizadas"
+                    id="actividades_realizadas"
+                    placeholder="Describa las actividades realizadas..."
+                    style="text-transform: uppercase;"
+                    autocapitalize="characters"
+                ></textarea>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="section-title">
+            Trabajo Programado
+        </div>
+
+        <div class="grid">
+
+            <div class="input-group">
+
+                <label>Tipo de trabajo programado</label>
+
+                <select
+                    name="trabajo_programado"
+                    id="trabajo_programado"
+                >
+                    <option value="">Seleccione una opción</option>
+                    <option value="CAMPO">Campo</option>
+                    <option value="GABINETE">Gabinete</option>
+                </select>
+
+            </div>
+
+            <div
+                class="input-group"
+                id="actividades_programadas_container"
+                style="display: none;"
+            >
+
+                <label>Descripción de actividades programadas</label>
+
+                <textarea
+                    name="actividades_programadas"
+                    id="actividades_programadas"
+                    placeholder="Describa las actividades programadas..."
+                    style="text-transform: uppercase;"
+                    autocapitalize="characters"
+                ></textarea>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card" style="display:none;">
         <input type="hidden" name="latitud" id="latitud">
         <input type="hidden" name="longitud" id="longitud">
         <input type="hidden" name="precision_gps" id="precision_gps">
-
     </div>
 
     <div class="submit-container">
@@ -1567,6 +1659,24 @@ document.querySelector('form').addEventListener('submit', async function(e) {
 
     }
 
+});
+
+// =====================================
+// TRABAJO REALIZADO
+// =====================================
+
+document.getElementById('trabajo_realizado').addEventListener('change', function() {
+    const container = document.getElementById('actividades_realizadas_container');
+    container.style.display = this.value ? 'flex' : 'none';
+});
+
+// =====================================
+// TRABAJO PROGRAMADO
+// =====================================
+
+document.getElementById('trabajo_programado').addEventListener('change', function() {
+    const container = document.getElementById('actividades_programadas_container');
+    container.style.display = this.value ? 'flex' : 'none';
 });
 
 </script>
