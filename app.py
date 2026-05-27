@@ -426,6 +426,14 @@ def exportar_excel_mensual():
 
         return
 
+    meses = {
+        'January': 'Enero', 'February': 'Febrero', 'March': 'Marzo',
+        'April': 'Abril', 'May': 'Mayo', 'June': 'Junio',
+        'July': 'Julio', 'August': 'Agosto', 'September': 'Septiembre',
+        'October': 'Octubre', 'November': 'Noviembre', 'December': 'Diciembre'
+    }
+    mes_en = ahora.strftime('%B')
+    mes_label = f"{meses.get(mes_en, mes_en)} {ahora.year}"
     mes_actual = ahora.strftime('%Y_%m')
 
     exportado = Exportacion.query.filter_by(
@@ -584,7 +592,6 @@ def exportar_excel_mensual():
     # SUBIR REPORTE HTML A DRIVE
     # =========================================
 
-    mes_label = ahora.strftime('%B %Y').capitalize()
     html_content = generar_reporte_quincenal_html(registros, mes_label)
 
     nombre_html = f'REPORTE_XENDA_{mes_actual}.html'
@@ -824,7 +831,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     width: 960px;
     min-height: 540px;
     background: url('/static/contenido_reporte.png') no-repeat center center;
-    background-size: cover;
+    background-size: 100% 100%;
     margin: 30px auto;
     padding: 40px 48px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.12);
@@ -842,7 +849,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   /* PORTADA */
   .portada-seccion {{
     background: url('/static/portada_reporte.png') no-repeat center center;
-    background-size: cover;
+    background-size: 100% 100%;
     color: white;
     display: flex;
     flex-direction: column;
@@ -864,7 +871,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     filter: brightness(10);
   }}
   .portada-seccion::after {{
-    content: 'Direccion General de Catastro y Asistencia Tecnica · Direccion Tecnica';
+    content: 'Dirección General de Catastro y Asistencia Técnica · Dirección Técnica';
     display: block;
     width: 100%;
     text-align: center;
@@ -988,7 +995,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   }}
   /* PIE */
   .pagina::after {{
-    content: 'Direccion General de Catastro y Asistencia Tecnica · Direccion Tecnica';
+    content: 'Dirección General de Catastro y Asistencia Técnica · Dirección Técnica';
     display: block;
     font-size: 10px;
     color: #999;
@@ -2191,7 +2198,14 @@ def pre_reporte():
     if not registros:
         return '<h2 style="font-family:sans-serif;padding:40px;">No hay registros en el periodo actual.</h2>'
 
-    periodo_label = ahora.strftime('%B %Y').capitalize()
+    meses = {
+        'January': 'Enero', 'February': 'Febrero', 'March': 'Marzo',
+        'April': 'Abril', 'May': 'Mayo', 'June': 'Junio',
+        'July': 'Julio', 'August': 'Agosto', 'September': 'Septiembre',
+        'October': 'Octubre', 'November': 'Noviembre', 'December': 'Diciembre'
+    }
+    mes_en = ahora.strftime('%B')
+    periodo_label = f"{meses.get(mes_en, mes_en)} {ahora.year}"
 
     html = generar_reporte_quincenal_html(registros, periodo_label)
 
