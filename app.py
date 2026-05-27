@@ -306,7 +306,11 @@ class Registro(db.Model):
 
     trabajo_programado = db.Column(db.String(100))
 
-    actividades_programadas = db.Column(db.Text) 
+    actividades_programadas = db.Column(db.Text)
+
+    estatus_trabajo_realizado = db.Column(db.String(100))
+
+    estatus_trabajo_programado = db.Column(db.String(100))
 
     latitud = db.Column(db.Float)
 
@@ -350,10 +354,6 @@ class RegistroEliminado(db.Model):
     tipo = db.Column(db.String(100))
 
     tipo_propiedad = db.Column(db.String(100))
-
-    estatus_trabajo_realizado = db.Column(db.String(100))
-
-    estatus_trabajo_programado = db.Column(db.String(100))
 
     observaciones = db.Column(db.Text)
 
@@ -1676,20 +1676,19 @@ def descargar_registros():
     datos = []
 
     for r in registros:
-
         datos.append({
 
-            'FECHA': r.fecha.strftime(
-                '%d/%m/%Y %H:%M:%S'
-            ) if r.fecha else '',
+            'ID': r.id,
+
+            'DIRECCIÓN': r.direccion,
 
             'TRAMO': r.tramo,
 
-            'ENTIDAD': r.entidad,
+            'ENTIDAD FEDERATIVA': r.entidad,
 
             'MUNICIPIO': r.municipio,
 
-            'NUCLEO': r.nucleo,
+            'NÚCLEO AGRARIO': r.nucleo,
 
             'FRENTE': r.frente,
 
@@ -1697,30 +1696,44 @@ def descargar_registros():
 
             'MODALIDAD': r.tipo,
 
-            'TIPO_PROPIEDAD': r.tipo_propiedad,
+            'TIPO DE PROPIEDAD': r.tipo_propiedad,
 
-            'MEDICIONES_AGROFORESTALES': r.mediciones_agroforestales,
+            'MEDICIONES AGROFORESTALES': r.mediciones_agroforestales,
 
-            'MEDICIONES_BDTS': r.mediciones_bdts,
+            'MEDICIONES BDTS': r.mediciones_bdts,
 
             'PLANOS': r.planos,
 
-            'PLANOS_GENERADOS': r.planos_generados,
+            'PLANOS GENERADOS': r.planos_generados,
 
-            'PLANOS_VALIDADOS': r.planos_validados,
+            'PLANOS VALIDADOS': r.planos_validados,
 
-            'NUM_INFOGRAFIAS': r.num_infografias,
+            'NO. DE INFOGRAFÍAS': r.num_infografias,
 
-            'INFOGRAFIAS_GENERADAS': r.infografias_generadas,
+            'INFOGRAFÍAS GENERADAS': r.infografias_generadas,
 
-            'INFOGRAFIAS_VALIDADAS': r.infografias_validadas,
+            'INFOGRAFÍAS VALIDADAS': r.infografias_validadas,
 
-            'ESTATUS_INFOGRAFIAS': r.estatus_infografias,
+            'ESTATUS INFOGRAFÍAS': r.estatus_infografias,
 
-            'OBSERVACIONES': r.observaciones,
+            'TRABAJO REALIZADO': r.trabajo_realizado,
 
-            'USUARIO': r.usuario
-        })
+            'ESTATUS TRABAJO REALIZADO': r.estatus_trabajo_realizado,
+
+            'ACTIVIDADES REALIZADAS': r.actividades_realizadas,
+
+            'TRABAJO PROGRAMADO': r.trabajo_programado,
+
+            'ESTATUS TRABAJO PROGRAMADO': r.estatus_trabajo_programado,
+
+            'ACTIVIDADES PROGRAMADAS': r.actividades_programadas,
+
+            'USUARIO': r.usuario,
+
+            'FECHA': r.fecha.strftime(
+                '%d/%m/%Y %H:%M:%S'
+            ) if r.fecha else '',
+        })        
 
     df = pd.DataFrame(datos)
 
