@@ -686,6 +686,14 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 
             secciones_html += f'''
             <div class="pagina">
+                <div class="encabezado-pagina">
+                    <div class="encabezado-texto">
+                        <p class="proyecto">Proyecto ferroviario</p>
+                        <p class="tramo-nombre">TRAMO {tramo_nombre}</p>
+                        <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Social)</span></p>
+                    </div>
+                    <div class="encabezado-logo"></div>
+                </div>
                 <div class="seccion-header verde">
                     ACTIVIDADES REALIZADAS EN CAMPO Y/O GABINETE, PROPIEDAD SOCIAL
                 </div>
@@ -723,6 +731,14 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 
             secciones_html += f'''
             <div class="pagina">
+                <div class="encabezado-pagina">
+                    <div class="encabezado-texto">
+                        <p class="proyecto">Proyecto ferroviario</p>
+                        <p class="tramo-nombre">TRAMO {tramo_nombre}</p>
+                        <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Social)</span></p>
+                    </div>
+                    <div class="encabezado-logo"></div>
+                </div>
                 <div class="seccion-header verde">
                     ACTIVIDADES REALIZADAS EN CAMPO (MEDICIÓN) &ndash; PROPIEDAD SOCIAL
                 </div>
@@ -756,6 +772,14 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 
             secciones_html += f'''
             <div class="pagina">
+                <div class="encabezado-pagina">
+                    <div class="encabezado-texto">
+                        <p class="proyecto">Proyecto ferroviario</p>
+                        <p class="tramo-nombre">TRAMO {tramo_nombre}</p>
+                        <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Privada)</span></p>
+                    </div>
+                    <div class="encabezado-logo"></div>
+                </div>
                 <div class="seccion-header verde">
                     ACTIVIDADES REALIZADAS EN CAMPO Y/O GABINETE, PROPIEDAD PRIVADA
                 </div>
@@ -793,6 +817,14 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 
             secciones_html += f'''
             <div class="pagina">
+                <div class="encabezado-pagina">
+                    <div class="encabezado-texto">
+                        <p class="proyecto">Proyecto ferroviario</p>
+                        <p class="tramo-nombre">TRAMO {tramo_nombre}</p>
+                        <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Privada)</span></p>
+                    </div>
+                    <div class="encabezado-logo"></div>
+                </div>
                 <div class="seccion-header verde">
                     ACTIVIDADES REALIZADAS EN CAMPO (MEDICIÓN) &ndash; PROPIEDAD PRIVADA
                 </div>
@@ -838,13 +870,35 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     position: relative;
   }}
   /* ENCABEZADO */
-  .pagina::before {{
-    content: '';
-    display: block;
-    background: url('/static/logo_sedatu_ran_1.png') no-repeat left center;
+  .encabezado-pagina {{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }}
+  .encabezado-texto p.proyecto {{
+    font-size: 13px;
+    color: #BC945A;
+    font-style: italic;
+    margin-bottom: 2px;
+  }}
+  .encabezado-texto p.tramo-nombre {{
+    font-size: 20px;
+    font-weight: bold;
+    color: #6E152E;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }}
+  .encabezado-texto p.liberacion {{
+    font-size: 13px;
+    color: #245C4F;
+    font-weight: 500;
+  }}
+  .encabezado-logo {{
+    width: 160px;
+    height: 45px;
+    background: url('/static/encabezado_html1.png') no-repeat right center;
     background-size: contain;
-    height: 48px;
-    margin-bottom: 28px;
   }}
   /* PORTADA */
   .portada-seccion {{
@@ -945,7 +999,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     letter-spacing: 0.05em;
   }}
   .seccion-header.verde {{ background: #245C4F; }}
-  .seccion-header.verde2 {{ background: #245C4F; margin-top: 24px; }}
+  .seccion-header.guinda {{ background: #6E152E; margin-top: 24px; }}
   .seccion-body {{
     padding: 0 8px 16px 8px;
     font-size: 13px;
