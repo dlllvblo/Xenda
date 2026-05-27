@@ -659,8 +659,6 @@ def generar_reporte_quincenal_html(registros, periodo_label):
         <div class="pagina portada-seccion">
             <div class="portada-contenido">
                 <p class="portada-subtitulo">Reporte de actividades</p>
-                <p class="portada-inst">Dirección General de Catastro y Asistencia Técnica</p>
-                <p class="portada-inst">Dirección Técnica</p>
                 <div class="portada-divider"></div>
                 <p class="portada-periodo">Proyectos Ferroviarios &ndash; {periodo_label}</p>
                 <p class="portada-tramo">TRAMO {tramo_nombre}</p>
@@ -842,55 +840,93 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   }}
   /* PORTADA */
   .portada-seccion {{
-    background: #6E152E;
+    background: #245C4F;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(188,148,90,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(110,21,46,0.15) 0%, transparent 50%);
     color: white;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     min-height: 540px;
+    padding: 0;
+    overflow: hidden;
   }}
   .portada-seccion::before {{
-    background-image: url('/static/encabezado_html1.png');
+    content: '';
+    display: block;
+    width: 100%;
+    height: 60px;
+    background: url('/static/encabezado_html1.png') no-repeat center center;
+    background-size: contain;
     filter: brightness(10);
+    background-color: rgba(0,0,0,0.25);
+    padding: 10px 0;
+  }}
+  .portada-seccion::after {{
+    content: 'Dirección General de Catastro y Asistencia Técnica \00b7  Dirección Técnica';
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
+    color: #BC945A;
+    background: rgba(0,0,0,0.2);
+    padding: 12px;
+    letter-spacing: 0.05em;
   }}
   .portada-contenido {{
     text-align: center;
-    padding: 40px;
+    padding: 30px 60px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }}
   .portada-subtitulo {{
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 300;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     color: #dec9a2;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }}
   .portada-inst {{
-    font-size: 14px;
-    color: #dec9a2;
-    margin-bottom: 4px;
+    font-size: 13px;
+    color: rgba(222,201,162,0.7);
+    margin-bottom: 3px;
   }}
   .portada-divider {{
-    width: 80px;
+    width: 60px;
     height: 2px;
     background: #BC945A;
     margin: 20px auto;
   }}
   .portada-periodo {{
-    font-size: 16px;
+    font-size: 15px;
     color: #dec9a2;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    font-style: italic;
   }}
   .portada-tramo {{
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     color: white;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }}
   .portada-dir {{
-    font-size: 16px;
+    font-size: 15px;
     color: #BC945A;
     text-transform: uppercase;
     font-weight: 600;
+    letter-spacing: 0.08em;
+    border-top: 1px solid rgba(188,148,90,0.4);
+    padding-top: 12px;
+    margin-top: 8px;
   }}
   /* SECCIONES */
   .seccion-header {{
