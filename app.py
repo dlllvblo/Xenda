@@ -454,6 +454,10 @@ def exportar_excel_mensual():
 
         datos.append({
 
+            'ID': r.id,
+
+            'DIRECCIÓN': r.direccion,
+
             'FECHA': r.fecha.strftime(
                 '%d/%m/%Y %H:%M:%S'
             ) if r.fecha else '',
@@ -491,6 +495,18 @@ def exportar_excel_mensual():
             'INFOGRAFIAS_VALIDADAS': r.infografias_validadas,
 
             'ESTATUS_INFOGRAFIAS': r.estatus_infografias,
+
+            'TRABAJO_REALIZADO': r.trabajo_realizado,
+
+            'ESTATUS_TRABAJO_REALIZADO': r.estatus_trabajo_realizado,
+
+            'ACTIVIDADES_REALIZADAS': r.actividades_realizadas,
+
+            'TRABAJO_PROGRAMADO': r.trabajo_programado,
+
+            'ESTATUS_TRABAJO_PROGRAMADO': r.estatus_trabajo_programado,
+
+            'ACTIVIDADES_PROGRAMADAS': r.actividades_programadas,
 
             'OBSERVACIONES': r.observaciones,
 
@@ -565,227 +581,11 @@ def exportar_excel_mensual():
     ).execute()
 
     # =========================================
-    # GENERAR REPORTE HTML
-    # =========================================
-
-    def generar_reporte_html(df, mes_label):
-
-        import json
-
-        total_registros = len(df)
-        total_infografias = int(df['NUM_INFOGRAFIAS'].sum())
-        infografias_generadas = int(df['INFOGRAFIAS_GENERADAS'].sum())
-        infografias_validadas = int(df['INFOGRAFIAS_VALIDADAS'].sum())
-        total_planos = int(df['PLANOS_GENERADOS'].sum())
-        total_mediciones = int(df['MEDICIONES_AGROFORESTALES'].sum() + df['MEDICIONES_BDTS'].sum())
-
-        pct_validadas = round(
-            (infografias_validadas / infografias_generadas * 100)
-            if infografias_generadas > 0 else 0
-        )
-
-        por_tramo = df.groupby('TRAMO').size().to_dict()
-        tramo_labels = list(por_tramo.keys())
-        tramo_values = list(por_tramo.values())
-
-        por_actividad = df.groupby('ACTIVIDAD').size().to_dict()
-        act_labels = list(por_actividad.keys())
-        act_values = list(por_actividad.values())
-
-        avance_tramo = df.groupby('TRAMO').agg(
-            generadas=('INFOGRAFIAS_GENERADAS', 'sum'),
-            validadas=('INFOGRAFIAS_VALIDADAS', 'sum')
-        ).reset_index()
-
-        color_map = {
-            'TQI':   '#7F77DD',
-            'TAP':   '#1D9E75',
-            'TIGDL': '#BA7517',
-            'TIGDS': '#D85A30',
-            'TIGD':  '#378ADD',
-        }
-        default_colors = ['#888780', '#D4537E', '#639922', '#E24B4A']
-
-        def color_tramo(tramo, idx=0):
-            return color_map.get(tramo, default_colors[idx % len(default_colors)])
-
-        filas_registros = ''
-        for _, r in df.iterrows():
-
-            obs = (
-                f'<div style="margin-top:8px;background:#FFF3EE;border-left:3px solid #D85A30;'
-                f'border-radius:4px;padding:6px 10px;font-size:12px;color:#712B13;">'
-                f'&#9888; {r["OBSERVACIONES"]}</div>'
-            ) if pd.notna(r.get('OBSERVACIONES')) and str(r.get('OBSERVACIONES', '')).strip() else ''
-
-            estatus = r.get('ESTATUS_INFOGRAFIAS', '')
-            badge_est = ''
-            if pd.notna(estatus) and str(estatus).strip():
-                badge_est = (
-                    f'<span style="background:#FAECE7;color:#712B13;font-size:11px;'
-                    f'padding:2px 8px;border-radius:12px;">{estatus}</span>'
-                )
-
-            c = color_tramo(r['TRAMO'])
-            filas_registros += f'''
-            <div style="background:#fff;border:0.5px solid #e0e0e0;border-radius:12px;padding:14px 16px;margin-bottom:10px;">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                <div>
-                  <span style="background:{c}22;color:{c};font-size:11px;font-weight:500;padding:3px 10px;border-radius:12px;margin-right:6px;">{r['TRAMO']}</span>
-                  <span style="font-size:14px;font-weight:500;">{r['NUCLEO']}</span>
-                </div>
-                <span style="font-size:12px;color:#888;">{r['FECHA']}</span>
-              </div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
-                <span style="background:#f0f0f0;color:#555;font-size:11px;padding:2px 8px;border-radius:12px;">{r['ACTIVIDAD']} &middot; {r['MODALIDAD']}</span>
-                {badge_est}
-              </div>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:12px;">
-                <div><span style="color:#999;display:block;">Entidad</span><b>{r['ENTIDAD']}</b></div>
-                <div><span style="color:#999;display:block;">Municipio</span><b>{r['MUNICIPIO']}</b></div>
-                <div><span style="color:#999;display:block;">Frente</span><b>{r['FRENTE']}</b></div>
-                <div><span style="color:#999;display:block;">Infograf&iacute;as</span><b>{int(r['NUM_INFOGRAFIAS'])}</b></div>
-                <div><span style="color:#999;display:block;">Generadas</span><b>{int(r['INFOGRAFIAS_GENERADAS'])}</b></div>
-                <div><span style="color:#999;display:block;">Validadas</span><b>{int(r['INFOGRAFIAS_VALIDADAS'])}</b></div>
-              </div>
-              {obs}
-            </div>'''
-
-        barras_tramo = ''
-        for _, row in avance_tramo.iterrows():
-            pct = round(
-                (row['validadas'] / row['generadas'] * 100)
-                if row['generadas'] > 0 else 0
-            )
-            c = color_tramo(row['TRAMO'])
-            barras_tramo += f'''
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-              <span style="min-width:80px;font-size:13px;background:{c}22;color:{c};padding:3px 10px;border-radius:12px;">{row['TRAMO']}</span>
-              <div style="flex:1;height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden;">
-                <div style="width:{pct}%;height:100%;background:{c};border-radius:4px;"></div>
-              </div>
-              <span style="font-size:12px;color:#888;min-width:36px;text-align:right;">{pct}%</span>
-            </div>'''
-
-        tramo_colors = [color_tramo(t, i) for i, t in enumerate(tramo_labels)]
-        act_colors = ['#534AB7', '#1D9E75', '#BA7517', '#D85A30', '#378ADD']
-
-        html = f'''<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reporte Xenda &middot; {mes_label}</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<style>
-  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-  body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f7f7f5; color: #1a1a1a; padding: 2rem; max-width: 860px; margin: 0 auto; }}
-  .header {{ border-bottom: 1px solid #e0e0e0; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
-  .metrics {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }}
-  .metric {{ background: #f0f0ee; border-radius: 8px; padding: 14px 16px; }}
-  .metric-label {{ font-size: 12px; color: #888; margin-bottom: 6px; }}
-  .metric-value {{ font-size: 26px; font-weight: 500; }}
-  .metric-sub {{ font-size: 11px; color: #aaa; margin-top: 4px; }}
-  .grid2 {{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.5rem; }}
-  .card {{ background: #fff; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 1rem 1.25rem; }}
-  .section-title {{ font-size: 12px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }}
-  @media (max-width: 560px) {{ .grid2 {{ grid-template-columns: 1fr; }} }}
-</style>
-</head>
-<body>
-
-<div class="header">
-  <p style="font-size:12px;color:#888;margin-bottom:4px;">Xenda &middot; Registros de campo</p>
-  <h1 style="font-size:22px;font-weight:500;">Resumen operativo</h1>
-  <p style="font-size:13px;color:#666;margin-top:4px;">{mes_label} &middot; {total_registros} registros</p>
-</div>
-
-<div class="metrics">
-  <div class="metric">
-    <div class="metric-label">Registros</div>
-    <div class="metric-value">{total_registros}</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">Infograf&iacute;as</div>
-    <div class="metric-value">{total_infografias}</div>
-    <div class="metric-sub">{infografias_validadas} validadas</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">% Validaci&oacute;n</div>
-    <div class="metric-value">{pct_validadas}%</div>
-    <div class="metric-sub">de generadas</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">Planos</div>
-    <div class="metric-value">{total_planos}</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">Mediciones</div>
-    <div class="metric-value">{total_mediciones}</div>
-  </div>
-</div>
-
-<div class="grid2">
-  <div class="card">
-    <div class="section-title">Por tramo</div>
-    <div style="position:relative;height:180px;">
-      <canvas id="chartTramo"></canvas>
-    </div>
-  </div>
-  <div class="card">
-    <div class="section-title">Por actividad</div>
-    <div style="position:relative;height:180px;">
-      <canvas id="chartAct"></canvas>
-    </div>
-  </div>
-</div>
-
-<div class="card" style="margin-bottom:1.5rem;">
-  <div class="section-title">Avance infograf&iacute;as por tramo</div>
-  <div style="margin-top:4px;">
-    {barras_tramo}
-  </div>
-</div>
-
-<div class="section-title" style="margin-bottom:12px;">Registros de campo</div>
-{filas_registros}
-
-<p style="font-size:12px;color:#aaa;text-align:center;margin-top:1.5rem;padding-bottom:1rem;">
-  Generado autom&aacute;ticamente &middot; Xenda
-</p>
-
-<script>
-new Chart(document.getElementById('chartTramo'), {{
-  type: 'doughnut',
-  data: {{
-    labels: {json.dumps(tramo_labels)},
-    datasets: [{{ data: {json.dumps(tramo_values)}, backgroundColor: {json.dumps(tramo_colors)}, borderWidth: 0 }}]
-  }},
-  options: {{ responsive: true, maintainAspectRatio: false, cutout: '60%',
-    plugins: {{ legend: {{ position: 'bottom', labels: {{ font: {{ size: 12 }}, padding: 10 }} }} }} }}
-}});
-new Chart(document.getElementById('chartAct'), {{
-  type: 'bar',
-  data: {{
-    labels: {json.dumps(act_labels)},
-    datasets: [{{ data: {json.dumps(act_values)}, backgroundColor: {json.dumps(act_colors[:len(act_labels)])}, borderWidth: 0, borderRadius: 4 }}]
-  }},
-  options: {{ responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-    plugins: {{ legend: {{ display: false }} }},
-    scales: {{ x: {{ ticks: {{ stepSize: 1 }} }}, y: {{ grid: {{ display: false }} }} }} }}
-}});
-</script>
-</body>
-</html>'''
-
-        return html
-
-    # =========================================
     # SUBIR REPORTE HTML A DRIVE
     # =========================================
 
     mes_label = ahora.strftime('%B %Y').capitalize()
-    html_content = generar_reporte_html(df, mes_label)
+    html_content = generar_reporte_quincenal_html(registros, mes_label)
 
     nombre_html = f'REPORTE_XENDA_{mes_actual}.html'
     ruta_html = os.path.join(os.getcwd(), nombre_html)
@@ -819,6 +619,368 @@ new Chart(document.getElementById('chartAct'), {{
 
     db.session.commit()
 
+# =========================================
+# GENERAR PRE-REPORTE QUINCENAL HTML
+# =========================================
+
+def generar_reporte_quincenal_html(registros, periodo_label):
+
+    tramos_nombres = {
+        'TAP':   'AIFA - PACHUCA',
+        'TMQ':   'MÉXICO - QUERÉTARO',
+        'TQI':   'QUERÉTARO - IRAPUATO',
+        'TSNL':  'SALTILLO - NUEVO LAREDO',
+        'TIGDL': 'IRAPUATO - GUADALAJARA',
+        'TQSLP': 'QUERÉTARO - SAN LUIS POTOSÍ',
+        'TSLPS': 'SAN LUIS POTOSÍ - SALTILLO',
+        'TMLM':  'MAZATLÁN - LOS MOCHIS',
+    }
+
+    # Agrupar por dirección y tramo
+    grupos = {}
+    for r in registros:
+        key = (r.direccion or 'SIN DIRECCIÓN', r.tramo or 'SIN TRAMO')
+        if key not in grupos:
+            grupos[key] = []
+        grupos[key].append(r)
+
+    secciones_html = ''
+
+    for (direccion, tramo), regs in sorted(grupos.items()):
+
+        tramo_nombre = tramos_nombres.get(tramo, tramo)
+
+        # Separar por tipo de propiedad
+        social = [r for r in regs if r.tipo_propiedad and 'SOCIAL' in r.tipo_propiedad.upper()]
+        privada = [r for r in regs if r.tipo_propiedad and 'PRIVADA' in r.tipo_propiedad.upper()]
+
+        # ---- PORTADA DE SECCIÓN ----
+        secciones_html += f'''
+        <div class="pagina portada-seccion">
+            <div class="portada-contenido">
+                <p class="portada-subtitulo">Reporte de actividades</p>
+                <p class="portada-inst">Dirección General de Catastro y Asistencia Técnica</p>
+                <p class="portada-inst">Dirección Técnica</p>
+                <div class="portada-divider"></div>
+                <p class="portada-periodo">Proyectos Ferroviarios &ndash; {periodo_label}</p>
+                <p class="portada-tramo">TRAMO {tramo_nombre}</p>
+                <p class="portada-dir">{direccion}</p>
+            </div>
+        </div>
+        '''
+
+        # ---- PROPIEDAD SOCIAL ----
+        if social:
+            r_social = social[0]
+            trabajo_r = r_social.trabajo_realizado or ''
+            estatus_r = r_social.estatus_trabajo_realizado or ''
+            acts_r = r_social.actividades_realizadas or ''
+            trabajo_p = r_social.trabajo_programado or ''
+            estatus_p = r_social.estatus_trabajo_programado or ''
+            acts_p = r_social.actividades_programadas or ''
+
+            secciones_html += f'''
+            <div class="pagina">
+                <div class="seccion-header verde">
+                    ACTIVIDADES REALIZADAS EN CAMPO Y/O GABINETE, PROPIEDAD SOCIAL
+                </div>
+                <div class="seccion-body">
+                    <p><strong>Trabajo de {trabajo_r.lower()}:</strong>
+                        <span class="estatus-badge">{estatus_r}</span>
+                    </p>
+                    <p class="acts-texto">{acts_r.replace(chr(10), '<br>')}</p>
+                </div>
+                <div class="seccion-header guinda">
+                    ACTIVIDADES PROGRAMADAS PARA LA SIGUIENTE QUINCENA EN PROPIEDAD SOCIAL
+                </div>
+                <div class="seccion-body">
+                    <p><strong>Trabajo de {trabajo_p.lower()}:</strong>
+                        <span class="estatus-badge">{estatus_p}</span>
+                    </p>
+                    <p class="acts-texto">{acts_p.replace(chr(10), '<br>')}</p>
+                </div>
+            </div>
+            '''
+
+            # ---- TABLA NÚCLEOS SOCIAL ----
+            filas_tabla = ''
+            for i, r in enumerate(social, 1):
+                filas_tabla += f'''
+                <tr>
+                    <td>{i}</td>
+                    <td>{r.entidad or ''}</td>
+                    <td>{r.municipio or ''}</td>
+                    <td>{r.nucleo or ''}</td>
+                    <td>F{r.frente or ''}</td>
+                    <td>{(r.actividades_realizadas or '').replace(chr(10), '<br>')}</td>
+                </tr>
+                '''
+
+            secciones_html += f'''
+            <div class="pagina">
+                <div class="seccion-header verde">
+                    ACTIVIDADES REALIZADAS EN CAMPO (MEDICIÓN) &ndash; PROPIEDAD SOCIAL
+                </div>
+                <table class="tabla-nucleos">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Entidad Federativa</th>
+                            <th>Municipio</th>
+                            <th>N&uacute;cleo Agrario</th>
+                            <th>Frente</th>
+                            <th>Actividades Realizadas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filas_tabla}
+                    </tbody>
+                </table>
+            </div>
+            '''
+
+        # ---- PROPIEDAD PRIVADA ----
+        if privada:
+            r_privada = privada[0]
+            trabajo_r = r_privada.trabajo_realizado or ''
+            estatus_r = r_privada.estatus_trabajo_realizado or ''
+            acts_r = r_privada.actividades_realizadas or ''
+            trabajo_p = r_privada.trabajo_programado or ''
+            estatus_p = r_privada.estatus_trabajo_programado or ''
+            acts_p = r_privada.actividades_programadas or ''
+
+            secciones_html += f'''
+            <div class="pagina">
+                <div class="seccion-header verde">
+                    ACTIVIDADES REALIZADAS EN CAMPO Y/O GABINETE, PROPIEDAD PRIVADA
+                </div>
+                <div class="seccion-body">
+                    <p><strong>Trabajo de {trabajo_r.lower()}:</strong>
+                        <span class="estatus-badge">{estatus_r}</span>
+                    </p>
+                    <p class="acts-texto">{acts_r.replace(chr(10), '<br>')}</p>
+                </div>
+                <div class="seccion-header guinda">
+                    ACTIVIDADES PROGRAMADAS PARA LA SIGUIENTE QUINCENA EN PROPIEDAD PRIVADA
+                </div>
+                <div class="seccion-body">
+                    <p><strong>Trabajo de {trabajo_p.lower()}:</strong>
+                        <span class="estatus-badge">{estatus_p}</span>
+                    </p>
+                    <p class="acts-texto">{acts_p.replace(chr(10), '<br>')}</p>
+                </div>
+            </div>
+            '''
+
+            # ---- TABLA NÚCLEOS PRIVADA ----
+            filas_tabla_priv = ''
+            for i, r in enumerate(privada, 1):
+                filas_tabla_priv += f'''
+                <tr>
+                    <td>{i}</td>
+                    <td>{r.entidad or ''}</td>
+                    <td>{r.municipio or ''}</td>
+                    <td>{r.nucleo or ''}</td>
+                    <td>F{r.frente or ''}</td>
+                    <td>{(r.actividades_realizadas or '').replace(chr(10), '<br>')}</td>
+                </tr>
+                '''
+
+            secciones_html += f'''
+            <div class="pagina">
+                <div class="seccion-header verde">
+                    ACTIVIDADES REALIZADAS EN CAMPO (MEDICIÓN) &ndash; PROPIEDAD PRIVADA
+                </div>
+                <table class="tabla-nucleos">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Entidad Federativa</th>
+                            <th>Municipio</th>
+                            <th>N&uacute;cleo Agrario</th>
+                            <th>Frente</th>
+                            <th>Actividades Realizadas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filas_tabla_priv}
+                    </tbody>
+                </table>
+            </div>
+            '''
+
+    html = f'''<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-Reporte Quincenal &middot; {periodo_label}</title>
+<style>
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f0f0;
+    color: #1a1a1a;
+  }}
+  .pagina {{
+    width: 960px;
+    min-height: 540px;
+    background: #fff;
+    margin: 30px auto;
+    padding: 40px 48px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    position: relative;
+  }}
+  /* ENCABEZADO */
+  .pagina::before {{
+    content: '';
+    display: block;
+    background: url('/static/encabezado_html1.png') no-repeat left center;
+    background-size: contain;
+    height: 48px;
+    margin-bottom: 28px;
+  }}
+  /* PORTADA */
+  .portada-seccion {{
+    background: #6E152E;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 540px;
+  }}
+  .portada-seccion::before {{
+    background-image: url('/static/encabezado_html1.png');
+    filter: brightness(10);
+  }}
+  .portada-contenido {{
+    text-align: center;
+    padding: 40px;
+  }}
+  .portada-subtitulo {{
+    font-size: 18px;
+    font-weight: 300;
+    margin-bottom: 8px;
+    color: #dec9a2;
+  }}
+  .portada-inst {{
+    font-size: 14px;
+    color: #dec9a2;
+    margin-bottom: 4px;
+  }}
+  .portada-divider {{
+    width: 80px;
+    height: 2px;
+    background: #BC945A;
+    margin: 20px auto;
+  }}
+  .portada-periodo {{
+    font-size: 16px;
+    color: #dec9a2;
+    margin-bottom: 12px;
+  }}
+  .portada-tramo {{
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }}
+  .portada-dir {{
+    font-size: 16px;
+    color: #BC945A;
+    text-transform: uppercase;
+    font-weight: 600;
+  }}
+  /* SECCIONES */
+  .seccion-header {{
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }}
+  .seccion-header.verde {{ background: #245C4F; }}
+  .seccion-header.guinda {{ background: #6E152E; margin-top: 24px; }}
+  .seccion-body {{
+    padding: 0 8px 16px 8px;
+    font-size: 13px;
+    line-height: 1.7;
+  }}
+  .seccion-body p {{ margin-bottom: 8px; }}
+  .acts-texto {{
+    color: #333;
+    padding-left: 16px;
+    border-left: 3px solid #dec9a2;
+    margin-top: 8px;
+  }}
+  .estatus-badge {{
+    display: inline-block;
+    background: #dec9a2;
+    color: #6E152E;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-left: 6px;
+    text-transform: uppercase;
+  }}
+  /* TABLA */
+  .tabla-nucleos {{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 12px;
+  }}
+  .tabla-nucleos th {{
+    background: #245C4F;
+    color: white;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+  }}
+  .tabla-nucleos td {{
+    padding: 9px 8px;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: top;
+  }}
+  .tabla-nucleos tr:nth-child(even) td {{
+    background: #f9f6f0;
+  }}
+  /* PIE */
+  .pagina::after {{
+    content: 'Dirección General de Catastro y Asistencia Técnica &middot; Dirección Técnica &middot; {periodo_label}';
+    display: block;
+    font-size: 10px;
+    color: #999;
+    text-align: right;
+    margin-top: 24px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 8px;
+  }}
+  @media print {{
+    body {{ background: white; }}
+    .pagina {{
+      box-shadow: none;
+      margin: 0;
+      page-break-after: always;
+    }}
+  }}
+</style>
+</head>
+<body>
+{secciones_html}
+<p style="text-align:center;font-size:11px;color:#aaa;padding:20px;">
+  Pre-reporte generado autom&aacute;ticamente por Xenda &middot; {periodo_label}
+</p>
+</body>
+</html>'''
+
+    return html
 
 # =========================================
 # CARGAR CATALOGO
@@ -1970,6 +2132,33 @@ def manifest():
 @app.route('/service_worker.js')
 def service_worker():
     return send_file('static/service_worker.js', mimetype='application/javascript')
+
+# =========================================
+# PRE-REPORTE QUINCENAL
+# =========================================
+
+@app.route('/pre_reporte')
+
+def pre_reporte():
+
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+
+    ahora = hora_cdmx()
+
+    registros = Registro.query.filter(
+        db.extract('year', Registro.fecha) == ahora.year,
+        db.extract('month', Registro.fecha) == ahora.month
+    ).order_by(Registro.direccion, Registro.tramo).all()
+
+    if not registros:
+        return '<h2 style="font-family:sans-serif;padding:40px;">No hay registros en el periodo actual.</h2>'
+
+    periodo_label = ahora.strftime('%B %Y').capitalize()
+
+    html = generar_reporte_quincenal_html(registros, periodo_label)
+
+    return html
 
 # =========================================
 # CREAR TABLAS
