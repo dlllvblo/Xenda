@@ -1371,6 +1371,8 @@ def index():
 
             usuario=session['usuario'],
 
+            direccion=request.form.get('direccion'),
+
             fecha=hora_cdmx(),
 
             tramo=request.form['tramo'],
