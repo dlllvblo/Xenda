@@ -351,6 +351,10 @@ class RegistroEliminado(db.Model):
 
     tipo_propiedad = db.Column(db.String(100))
 
+    estatus_trabajo_realizado = db.Column(db.String(100))
+
+    estatus_trabajo_programado = db.Column(db.String(100))
+
     observaciones = db.Column(db.Text)
 
     fecha_original = db.Column(db.DateTime(timezone=True))
@@ -1241,9 +1245,7 @@ def index():
 
             tipo_propiedad=request.form.get('tipo_propiedad'),
 
-            observaciones=request.form[
-                'observaciones'
-                ].upper(),
+            observaciones=request.form.get('observaciones', '').upper() or None,
 
             trabajo_realizado=request.form.get('trabajo_realizado'),
 
@@ -1258,6 +1260,10 @@ def index():
                 request.form.get('actividades_programadas', '').upper()
                 or None
             ),
+
+            estatus_trabajo_realizado=request.form.get('estatus_trabajo_realizado'),
+
+            estatus_trabajo_programado=request.form.get('estatus_trabajo_programado'),
         )
 
         db.session.add(nuevo)
