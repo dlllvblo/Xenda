@@ -48,7 +48,7 @@
 
             border-collapse: collapse;
 
-            min-width: 2200px;
+            min-width: 3000px;
         }
 
         th,
@@ -278,6 +278,10 @@
             <th>Infografías validadas</th>
             <th>Estatus infografías</th>
             <th>Observaciones</th>
+            <th>Trabajo Realizado</th>
+            <th>Actividades Realizadas</th>
+            <th>Trabajo Programado</th>
+            <th>Actividades Programadas</th>
             <th>Usuario</th>
 
             {% if session['usuario'] == admin_correo %}
@@ -321,6 +325,10 @@
             <td>{{ r.infografias_validadas }}</td>
             <td>{{ r.estatus_infografias }}</td>
             <td>{{ r.observaciones }}</td>
+            <td>{{ r.trabajo_realizado }}</td>
+            <td>{{ r.actividades_realizadas }}</td>
+            <td>{{ r.trabajo_programado }}</td>
+            <td>{{ r.actividades_programadas }}</td>
             <td>{{ r.usuario }}</td>
 
             {% if session['usuario'] == admin_correo %}

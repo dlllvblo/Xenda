@@ -880,21 +880,6 @@
     <div class="card">
 
         <div class="section-title">
-            Actividades realizadas en gabinete
-        </div>
-
-        <textarea
-            name="observaciones"
-            placeholder="Ingrese las actividades realizadas en gabinete..."
-            style="text-transform: uppercase;"
-            autocapitalize="characters"
-        ></textarea>
-
-    </div>
-
-    <div class="card">
-
-        <div class="section-title">
             Trabajo Realizado
         </div>
 
@@ -911,6 +896,25 @@
                     <option value="">Seleccione una opción</option>
                     <option value="CAMPO">Campo</option>
                     <option value="GABINETE">Gabinete</option>
+                </select>
+
+            </div>
+
+            <div
+                class="input-group"
+                id="estatus_realizado_container"
+                style="display: none;"
+            >
+
+                <label>Estatus</label>
+
+                <select
+                    name="estatus_trabajo_realizado"
+                    id="estatus_trabajo_realizado"
+                >
+                    <option value="">Seleccione un estatus</option>
+                    <option value="EN PROCESO">En proceso</option>
+                    <option value="CONCLUIDO">Concluido</option>
                 </select>
 
             </div>
@@ -956,6 +960,25 @@
                     <option value="">Seleccione una opción</option>
                     <option value="CAMPO">Campo</option>
                     <option value="GABINETE">Gabinete</option>
+                </select>
+
+            </div>
+
+            <div
+                class="input-group"
+                id="estatus_programado_container"
+                style="display: none;"
+            >
+
+                <label>Estatus</label>
+
+                <select
+                    name="estatus_trabajo_programado"
+                    id="estatus_trabajo_programado"
+                >
+                    <option value="">Seleccione un estatus</option>
+                    <option value="EN PROCESO">En proceso</option>
+                    <option value="CONCLUIDO">Concluido</option>
                 </select>
 
             </div>
@@ -1666,8 +1689,11 @@ document.querySelector('form').addEventListener('submit', async function(e) {
 // =====================================
 
 document.getElementById('trabajo_realizado').addEventListener('change', function() {
-    const container = document.getElementById('actividades_realizadas_container');
-    container.style.display = this.value ? 'flex' : 'none';
+    const estatusContainer = document.getElementById('estatus_realizado_container');
+    const actContainer = document.getElementById('actividades_realizadas_container');
+    const show = this.value !== '';
+    estatusContainer.style.display = show ? 'flex' : 'none';
+    actContainer.style.display = show ? 'flex' : 'none';
 });
 
 // =====================================
@@ -1675,8 +1701,11 @@ document.getElementById('trabajo_realizado').addEventListener('change', function
 // =====================================
 
 document.getElementById('trabajo_programado').addEventListener('change', function() {
-    const container = document.getElementById('actividades_programadas_container');
-    container.style.display = this.value ? 'flex' : 'none';
+    const estatusContainer = document.getElementById('estatus_programado_container');
+    const actContainer = document.getElementById('actividades_programadas_container');
+    const show = this.value !== '';
+    estatusContainer.style.display = show ? 'flex' : 'none';
+    actContainer.style.display = show ? 'flex' : 'none';
 });
 
 </script>
