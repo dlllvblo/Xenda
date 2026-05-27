@@ -900,6 +900,17 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     background: url('/static/logo_RAN.png') no-repeat right center;
     background-size: contain;
   }}
+  .pagina::after {{
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 16px;
+    left: 24px;
+    width: 120px;
+    height: 40px;
+    background: url('/static/gob_mex2-sf.png') no-repeat left center;
+    background-size: contain;
+  }}
   /* PORTADA */
   .portada-seccion {{
     background: url('/static/portada_reporte.png') no-repeat center center;
@@ -1038,7 +1049,22 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     font-weight: 600;
     text-transform: uppercase;
     font-size: 11px;
+    border: 1px solid #1a4438;
   }}
+  .tabla-nucleos td {{
+    padding: 9px 8px;
+    border: 1px solid #d0d0d0;
+    vertical-align: middle;
+  }}
+  .tabla-nucleos tr:nth-child(even) td {{
+    background: #f9f6f0;
+  }}
+  .tabla-nucleos td:nth-child(1) {{ width: 40px; text-align: center; font-weight: bold; }}
+  .tabla-nucleos td:nth-child(2) {{ width: 120px; font-weight: bold; }}
+  .tabla-nucleos td:nth-child(3) {{ width: 120px; }}
+  .tabla-nucleos td:nth-child(4) {{ width: 130px; color: #6E152E; font-weight: bold; }}
+  .tabla-nucleos td:nth-child(5) {{ width: 60px; text-align: center; }}
+  .tabla-nucleos td:nth-child(6) {{ font-size: 12px; }}
   .tabla-nucleos td {{
     padding: 9px 8px;
     border-bottom: 1px solid #e0e0e0;
@@ -1048,16 +1074,6 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     background: #f9f6f0;
   }}
   /* PIE */
-  .pagina::after {{
-    content: 'Dirección General de Catastro y Asistencia Técnica · Dirección Técnica';
-    display: block;
-    font-size: 10px;
-    color: #999;
-    text-align: right;
-    margin-top: 24px;
-    border-top: 1px solid #e0e0e0;
-    padding-top: 8px;
-  }}
   @media print {{
     body {{ background: white; }}
     .pagina {{
