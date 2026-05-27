@@ -864,8 +864,8 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     position: absolute;
     top: 16px;
     right: 24px;
-    width: 180px;
-    height: 50px;
+    width: 380px;
+    height: 100px;
     background: url('/static/encabezado_html1.png') no-repeat right center;
     background-size: contain;
     filter: brightness(10);
@@ -945,7 +945,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     letter-spacing: 0.05em;
   }}
   .seccion-header.verde {{ background: #245C4F; }}
-  .seccion-header.guinda {{ background: #6E152E; margin-top: 24px; }}
+  .seccion-header.verde2 {{ background: #245C4F; margin-top: 24px; }}
   .seccion-body {{
     padding: 0 8px 16px 8px;
     font-size: 13px;
