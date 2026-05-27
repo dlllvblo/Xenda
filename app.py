@@ -854,14 +854,14 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   }}
   .portada-seccion::before {{
     content: '';
-    display: block;
-    width: 100%;
-    height: 60px;
-    background: url('/static/encabezado_html1.png') no-repeat center center;
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    width: 180px;
+    height: 50px;
+    background: url('/static/encabezado_html1.png') no-repeat right center;
     background-size: contain;
     filter: brightness(10);
-    background-color: rgba(0,0,0,0.25);
-    padding: 10px 0;
   }}
   .portada-seccion::after {{
     content: 'Direccion General de Catastro y Asistencia Tecnica · Direccion Tecnica';
