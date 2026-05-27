@@ -833,7 +833,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   .pagina::before {{
     content: '';
     display: block;
-    background: url('/static/encabezado_html1.png') no-repeat left center;
+    background: url('/static/logo_sedatu_ran_1.png') no-repeat left center;
     background-size: contain;
     height: 48px;
     margin-bottom: 28px;
