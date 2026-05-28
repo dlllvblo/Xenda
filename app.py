@@ -318,7 +318,38 @@ class Registro(db.Model):
 
     precision_gps = db.Column(db.Float)
 
-    fecha = db.Column(db.DateTime(timezone=True)) 
+    fecha = db.Column(db.DateTime(timezone=True))
+
+# =========================================
+# MODELO SUB-ACTIVIDADES
+# =========================================
+
+class SubActividad(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    registro_id = db.Column(
+        db.Integer,
+        db.ForeignKey('registro.id'),
+        nullable=False
+    )
+
+    tipo = db.Column(
+        db.String(20)  # 'realizada' o 'programada'
+    )
+
+    entidad = db.Column(db.String(100))
+
+    municipio = db.Column(db.String(100))
+
+    nucleo = db.Column(db.String(200))
+
+    frente = db.Column(db.String(20))
+
+    descripcion = db.Column(db.Text)
 
 # =========================================
 # REGISTROS ELIMINADOS
@@ -718,17 +749,37 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 
             # ---- TABLA NÚCLEOS SOCIAL ----
             filas_tabla = ''
-            for i, r in enumerate(social, 1):
-                filas_tabla += f'''
-                <tr>
-                    <td>{i}</td>
-                    <td>{r.entidad or ''}</td>
-                    <td>{r.municipio or ''}</td>
-                    <td>{r.nucleo or ''}</td>
-                    <td>F{r.frente or ''}</td>
-                    <td>{(r.actividades_realizadas or '').replace(chr(10), '<br>')}</td>
-                </tr>
-                '''
+            contador = 1
+            for r in social:
+                subs = SubActividad.query.filter_by(
+                    registro_id=r.id,
+                    tipo='realizada'
+                ).all()
+                if subs:
+                    for sub in subs:
+                        filas_tabla += f'''
+                        <tr>
+                            <td>{contador}</td>
+                            <td>{sub.entidad or r.entidad or ''}</td>
+                            <td>{sub.municipio or r.municipio or ''}</td>
+                            <td>{sub.nucleo or r.nucleo or ''}</td>
+                            <td>F{sub.frente or r.frente or ''}</td>
+                            <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
+                        </tr>
+                        '''
+                        contador += 1
+                else:
+                    filas_tabla += f'''
+                    <tr>
+                        <td>{contador}</td>
+                        <td>{r.entidad or ''}</td>
+                        <td>{r.municipio or ''}</td>
+                        <td>{r.nucleo or ''}</td>
+                        <td>F{r.frente or ''}</td>
+                        <td>{(r.actividades_realizadas or '').replace(chr(10), '<br>')}</td>
+                    </tr>
+                    '''
+                    contador += 1
 
             secciones_html += f'''
             <div class="pagina">
@@ -804,17 +855,37 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 
             # ---- TABLA NÚCLEOS PRIVADA ----
             filas_tabla_priv = ''
-            for i, r in enumerate(privada, 1):
-                filas_tabla_priv += f'''
-                <tr>
-                    <td>{i}</td>
-                    <td>{r.entidad or ''}</td>
-                    <td>{r.municipio or ''}</td>
-                    <td>{r.nucleo or ''}</td>
-                    <td>F{r.frente or ''}</td>
-                    <td>{(r.actividades_realizadas or '').replace(chr(10), '<br>')}</td>
-                </tr>
-                '''
+            contador = 1
+            for r in privada:
+                subs = SubActividad.query.filter_by(
+                    registro_id=r.id,
+                    tipo='realizada'
+                ).all()
+                if subs:
+                    for sub in subs:
+                        filas_tabla_priv += f'''
+                        <tr>
+                            <td>{contador}</td>
+                            <td>{sub.entidad or r.entidad or ''}</td>
+                            <td>{sub.municipio or r.municipio or ''}</td>
+                            <td>{sub.nucleo or r.nucleo or ''}</td>
+                            <td>F{sub.frente or r.frente or ''}</td>
+                            <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
+                        </tr>
+                        '''
+                        contador += 1
+                else:
+                    filas_tabla_priv += f'''
+                    <tr>
+                        <td>{contador}</td>
+                        <td>{r.entidad or ''}</td>
+                        <td>{r.municipio or ''}</td>
+                        <td>{r.nucleo or ''}</td>
+                        <td>F{r.frente or ''}</td>
+                        <td>{(r.actividades_realizadas or '').replace(chr(10), '<br>')}</td>
+                    </tr>
+                    '''
+                    contador += 1
 
             secciones_html += f'''
             <div class="pagina">
@@ -1555,6 +1626,46 @@ def index():
         )
 
         db.session.add(nuevo)
+        db.session.flush()
+
+        # =====================================
+        # GUARDAR SUB-ACTIVIDADES
+        # =====================================
+
+        import json
+
+        sub_realizadas = request.form.get('sub_actividades_realizadas', '[]')
+        sub_programadas = request.form.get('sub_actividades_programadas', '[]')
+
+        try:
+            for item in json.loads(sub_realizadas):
+                sub = SubActividad(
+                    registro_id=nuevo.id,
+                    tipo='realizada',
+                    entidad=item.get('entidad', ''),
+                    municipio=item.get('municipio', ''),
+                    nucleo=item.get('nucleo', ''),
+                    frente=item.get('frente', ''),
+                    descripcion=item.get('descripcion', '')
+                )
+                db.session.add(sub)
+        except:
+            pass
+
+        try:
+            for item in json.loads(sub_programadas):
+                sub = SubActividad(
+                    registro_id=nuevo.id,
+                    tipo='programada',
+                    entidad=item.get('entidad', ''),
+                    municipio=item.get('municipio', ''),
+                    nucleo=item.get('nucleo', ''),
+                    frente=item.get('frente', ''),
+                    descripcion=item.get('descripcion', '')
+                )
+                db.session.add(sub)
+        except:
+            pass
 
         db.session.commit()
 
