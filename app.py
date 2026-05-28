@@ -664,6 +664,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
         # ---- PORTADA DE SECCIÓN ----
         secciones_html += f'''
         <div class="pagina portada-seccion">
+            <div class="portada-bandera"></div>
             <div class="portada-contenido">
                 <p class="portada-subtitulo">Reporte de actividades</p>
                 <div class="portada-divider"></div>
@@ -895,8 +896,8 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     font-weight: 500;
   }}
   .encabezado-logo {{
-    width: 160px;
-    height: 45px;
+    width: 120px;
+    height: 35px;
     background: url('/static/logo_RAN.png') no-repeat right center;
     background-size: contain;
   }}
@@ -945,6 +946,16 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     background: rgba(0,0,0,0.2);
     padding: 12px;
     letter-spacing: 0.05em;
+  }}
+  .portada-bandera {{
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 220px;
+    height: 300px;
+    background: url('/static/bandera.png') no-repeat left center;
+    background-size: contain;
   }}
   .portada-contenido {{
     text-align: center;
@@ -1008,6 +1019,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     margin-bottom: 16px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    text-align: center;
   }}
   .seccion-header.verde {{ background: #245C4F; }}
   .seccion-header.guinda {{ background: #6E152E; margin-top: 24px; }}
@@ -1045,7 +1057,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     background: #245C4F;
     color: white;
     padding: 10px 8px;
-    text-align: left;
+    text-align: center;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 11px;
