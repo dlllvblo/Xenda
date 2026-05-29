@@ -2412,6 +2412,15 @@ def pre_reporte():
 def version():
     return 'v2'
 
+@app.route('/test_html')
+def test_html():
+    with open('templates/index.html', 'r', encoding='utf-8') as f:
+        contenido = f.read()
+    if 'CONFIG_DIRECCION' in contenido:
+        return 'CONFIG_DIRECCION ENCONTRADO'
+    else:
+        return 'NO ENCONTRADO'
+
 # =========================================
 # CREAR TABLAS
 # =========================================
