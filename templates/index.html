@@ -682,7 +682,7 @@
         <div
             class="input-group"
             id="propiedad-container"
-            style="display: none;"
+            style="display: flex;"
         >
 
             <label>
@@ -1365,14 +1365,14 @@ actividadSelect.addEventListener(
         ) {
 
             propiedadContainer.style.display =
-                'flex';
+                'none';
 
         }
 
         else {
 
             propiedadContainer.style.display =
-                'none';
+                'flex';
 
         }
 
@@ -1480,6 +1480,27 @@ function aplicarConfigDireccion(direccion) {
     const labelActProg = document.getElementById('actividades_programadas')
         ?.closest('.input-group')?.querySelector('label');
     if (labelActProg) labelActProg.textContent = config.labelProgramada;
+
+    // Opciones del select de actividad según dirección
+    const selectActividad = document.querySelector('select[name="actividad"]');
+    if (selectActividad) {
+        if (direccion === 'CARTOGRAFÍA') {
+            selectActividad.innerHTML = `
+                <option value="">Seleccione una opción</option>
+                <option value="AFECTACIÓN">Afectación</option>
+                <option value="INDIVIDUALES">Individuales</option>
+                <option value="VALIDACIÓN DE PLANOS DE LAS LIBERADORAS">Validación de planos de las liberadoras</option>
+                <option value="DECRETO DE OCUPACIÓN TEMPORAL">Decreto de Ocupación Temporal</option>
+            `;
+        } else {
+            selectActividad.innerHTML = `
+                <option value="">Seleccione una opción</option>
+                <option value="MEDICIÓN">Medición</option>
+                <option value="REUNIÓN DE SEGUIMIENTO">Reunión de seguimiento</option>
+                <option value="ASAMBLEA">Asamblea</option>
+            `;
+        }
+    }
 }
 
 direccionSelect.addEventListener('change', function() {
