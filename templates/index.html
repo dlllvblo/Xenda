@@ -243,6 +243,8 @@
             color: #6b7280;
 
             font-size: 14px;
+            
+            padding-bottom: 20px;
         }
 
         .link-registros {
@@ -1118,12 +1120,12 @@
     Ver registros capturados
 </a>
 
+</div>
+
 <div class="footer">
 
     XENDA · Registro Agrario Nacional ·
     SEDATU
-
-</div>
 
 </div>
 
@@ -1435,12 +1437,14 @@ avisoMantenimiento.textContent = '⚠️ Esta dirección se encuentra en manteni
 document.querySelector('form').insertAdjacentElement('afterbegin', avisoMantenimiento);
 
 function tarjetasFormulario() {
-    return document.querySelectorAll('.card:not(:first-of-type)');
+    return document.querySelectorAll('.card:not(:first-of-type), .submit-container');
 }
 
 function mostrarAviso(mostrar) {
     avisoMantenimiento.style.display = mostrar ? 'block' : 'none';
-    tarjetasFormulario().forEach(card => card.style.display = mostrar ? 'none' : '');
+    document.querySelectorAll('.card:not(:first-of-type)').forEach(card => {
+        card.style.display = mostrar ? 'none' : '';
+    });
     document.querySelector('.submit-container').style.display = mostrar ? 'none' : '';
 }
 
