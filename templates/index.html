@@ -1444,7 +1444,9 @@ function tarjetasFormulario() {
 
 function mostrarAviso(mostrar) {
     avisoMantenimiento.style.display = mostrar ? 'block' : 'none';
-    document.querySelectorAll('.card:not(:first-of-type)').forEach(card => {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        if (index === 0) return;
         card.style.display = mostrar ? 'none' : '';
     });
     document.querySelector('.submit-container').style.display = mostrar ? 'none' : '';
