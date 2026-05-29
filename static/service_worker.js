@@ -1,4 +1,4 @@
-const CACHE_NAME = 'xenda-v1';
+const CACHE_NAME = 'xenda-v2';
 
 const ARCHIVOS_CACHE = [
     '/',
