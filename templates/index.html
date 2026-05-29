@@ -920,6 +920,7 @@
                     <option value="">Seleccione un estatus</option>
                     <option value="EN PROCESO">En proceso</option>
                     <option value="CONCLUIDO">Concluido</option>
+                    <option value="PENDIENTE DE INICIAR">Pendiente de iniciar</option>
                 </select>
 
             </div>
@@ -997,12 +998,13 @@
                 <label>Tipo de trabajo programado</label>
 
                 <select
-                    name="trabajo_programado"
-                    id="trabajo_programado"
+                    name="estatus_trabajo_programado"
+                    id="estatus_trabajo_programado"
                 >
-                    <option value="">Seleccione una opción</option>
-                    <option value="CAMPO">Campo</option>
-                    <option value="GABINETE">Gabinete</option>
+                    <option value="">Seleccione un estatus</option>
+                    <option value="EN PROCESO">En proceso</option>
+                    <option value="CONCLUIDO">Concluido</option>
+                    <option value="PENDIENTE DE INICIAR">Pendiente de iniciar</option>
                 </select>
 
             </div>
@@ -1373,90 +1375,129 @@ actividadSelect.addEventListener(
     }
 );
 
-const direccionSelect =
-    document.getElementById('direccion');
-
-const responsableContainer =
-    document.getElementById(
-        'responsable-container'
-    );
-
-const responsableTexto =
-    document.getElementById(
-        'responsable-texto'
-    );
+const direccionSelect = document.getElementById('direccion');
+const responsableContainer = document.getElementById('responsable-container');
+const responsableTexto = document.getElementById('responsable-texto');
 
 const responsables = {
-
-    'PLANEACIÓN':
-        'GEOG. JORGE DANIEL LAZCANO SÁNCHEZ',
-
-    'TOPOGRAFÍA':
-        'GEOG. RODRIGO SANDOVAL PIÑA',
-
-    'TOPOGRAFÍA OCCIDENTE':
-        'ING. MARTÍN FLORES BAILÓN',
-
-    'TOPOGRAFÍA NORTE':
-        'ING. LUIS HUMBERTO QUIROZ ESCAMILLA',
-
-    'TOPOGRAFÍA OCCIDENTE PACÍFICO':
-        'ARQ. MIGUEL ÁNGEL SÁNCHEZ CORTES',
-
-    'TOPOGRAFÍA NORTE ORIENTE':
-        'ING. AGUSTIN TAPIA VIVEROS',
-
-    'PRODUCTOS Y SISTEMAS GEOESPACIALES':
-        'MTRA. VICTORIA ERIKA VELÁSQUEZ ALFARO',
-
-    "BDT'S CONSTRUCCIÓN":
-        'ARQ. RAÚL IVAN PÉREZ JUÁREZ',
-
-    "BDT'S AGROFORESTALES":
-        'ING. EDUARDO MORALES DAMASO',
-
-    'MEDICIONES':
-        'ING. MAURO JOEL LÓPEZ FRANCO',
-
-    'TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN':
-        'ING. JAVIER RODRÍGUEZ HERNÁNDEZ',
-
-    'CARTOGRAFÍA':
-        'MTRA. THANIA LORENA COLIN ESPINOZA',
-
-    'GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL':
-        'ING. JOSÉ GILBERTO MUÑIZ ROMERO'
-
+    'PLANEACIÓN': 'GEOG. JORGE DANIEL LAZCANO SÁNCHEZ',
+    'TOPOGRAFÍA': 'GEOG. RODRIGO SANDOVAL PIÑA',
+    'TOPOGRAFÍA OCCIDENTE': 'ING. MARTÍN FLORES BAILÓN',
+    'TOPOGRAFÍA NORTE': 'ING. LUIS HUMBERTO QUIROZ ESCAMILLA',
+    'TOPOGRAFÍA OCCIDENTE PACÍFICO': 'ARQ. MIGUEL ÁNGEL SÁNCHEZ CORTES',
+    'TOPOGRAFÍA NORTE ORIENTE': 'ING. AGUSTIN TAPIA VIVEROS',
+    'PRODUCTOS Y SISTEMAS GEOESPACIALES': 'MTRA. VICTORIA ERIKA VELÁSQUEZ ALFARO',
+    "BDT'S CONSTRUCCIÓN": 'ARQ. RAÚL IVAN PÉREZ JUÁREZ',
+    "BDT'S AGROFORESTALES": 'ING. EDUARDO MORALES DAMASO',
+    'MEDICIONES': 'ING. MAURO JOEL LÓPEZ FRANCO',
+    'TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN': 'ING. JAVIER RODRÍGUEZ HERNÁNDEZ',
+    'CARTOGRAFÍA': 'MTRA. THANIA LORENA COLIN ESPINOZA',
+    'GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL': 'ING. JOSÉ GILBERTO MUÑIZ ROMERO'
 };
 
-direccionSelect.addEventListener(
-    'change',
-    function() {
+const DIRECCIONES_ACTIVAS = [
+    "BDT'S AGROFORESTALES",
+    "BDT'S CONSTRUCCIÓN",
+    'CARTOGRAFÍA',
+    'PRODUCTOS Y SISTEMAS GEOESPACIALES',
+    'MEDICIONES',
+    'TOPOGRAFÍA NORTE ORIENTE',
+    'TOPOGRAFÍA OCCIDENTE',
+    'TOPOGRAFÍA OCCIDENTE PACÍFICO'
+];
 
-        const direccion =
-            direccionSelect.value;
+const CONFIG_DIRECCION = {
+    "BDT'S AGROFORESTALES":               { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
+    "BDT'S CONSTRUCCIÓN":                 { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
+    'CARTOGRAFÍA':                        { campoActividad: 'Tipo de Plano',     labelRealizada: 'Actividad realizada',                       labelProgramada: 'Actividades programadas' },
+    'PRODUCTOS Y SISTEMAS GEOESPACIALES': { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada',                       labelProgramada: 'Actividades programadas' },
+    'MEDICIONES':                         { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
+    'TOPOGRAFÍA NORTE ORIENTE':           { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
+    'TOPOGRAFÍA OCCIDENTE':               { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
+    'TOPOGRAFÍA OCCIDENTE PACÍFICO':      { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
+};
 
-        if (
-            responsables[direccion]
-        ) {
+// Aviso mantenimiento
+const avisoMantenimiento = document.createElement('div');
+avisoMantenimiento.id = 'aviso-mantenimiento';
+avisoMantenimiento.style.cssText = `
+    display: none;
+    background: #fef9c3;
+    color: #854d0e;
+    padding: 20px;
+    border-radius: 14px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 24px;
+`;
+avisoMantenimiento.textContent = '⚠️ Esta dirección se encuentra en mantenimiento. Por favor seleccione otra dirección.';
+document.querySelector('form').insertAdjacentElement('afterbegin', avisoMantenimiento);
 
-            responsableTexto.textContent =
-                responsables[direccion];
+function tarjetasFormulario() {
+    return document.querySelectorAll('.card:not(:first-of-type)');
+}
 
-            responsableContainer.style.display =
-                'block';
+function mostrarAviso(mostrar) {
+    avisoMantenimiento.style.display = mostrar ? 'block' : 'none';
+    tarjetasFormulario().forEach(card => card.style.display = mostrar ? 'none' : '');
+    document.querySelector('.submit-container').style.display = mostrar ? 'none' : '';
+}
 
-        }
+function aplicarConfigDireccion(direccion) {
+    const config = CONFIG_DIRECCION[direccion];
+    if (!config) return;
 
-        else {
+    // Label tipo de actividad
+    const labelActividad = document.querySelector('select[name="actividad"]')
+        ?.closest('.input-group')?.querySelector('label');
+    if (labelActividad) labelActividad.textContent = config.campoActividad + ' *';
 
-            responsableContainer.style.display =
-                'none';
+    // Label trabajo realizado (select)
+    const labelTrabajoReal = document.getElementById('trabajo_realizado')
+        ?.closest('.input-group')?.querySelector('label');
+    if (labelTrabajoReal) labelTrabajoReal.textContent = config.labelRealizada;
 
-        }
+    // Label actividades realizadas (textarea)
+    const labelActReal = document.getElementById('actividades_realizadas')
+        ?.closest('.input-group')?.querySelector('label');
+    if (labelActReal) labelActReal.textContent = config.labelRealizada;
 
+    // Label trabajo programado (select)
+    const labelTrabajoProg = document.getElementById('trabajo_programado')
+        ?.closest('.input-group')?.querySelector('label');
+    if (labelTrabajoProg) labelTrabajoProg.textContent = config.labelProgramada;
+
+    // Label actividades programadas (textarea)
+    const labelActProg = document.getElementById('actividades_programadas')
+        ?.closest('.input-group')?.querySelector('label');
+    if (labelActProg) labelActProg.textContent = config.labelProgramada;
+}
+
+direccionSelect.addEventListener('change', function() {
+    const direccion = this.value;
+
+    // Responsable
+    if (responsables[direccion]) {
+        responsableTexto.textContent = responsables[direccion];
+        responsableContainer.style.display = 'block';
+    } else {
+        responsableContainer.style.display = 'none';
     }
-);
+
+    if (!direccion) {
+        mostrarAviso(false);
+        return;
+    }
+
+    if (!DIRECCIONES_ACTIVAS.includes(direccion)) {
+        mostrarAviso(true);
+        return;
+    }
+
+    mostrarAviso(false);
+    aplicarConfigDireccion(direccion);
+});
 
 const frenteInput =
     document.getElementById('frente');
