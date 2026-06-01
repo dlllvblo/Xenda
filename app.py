@@ -1668,39 +1668,6 @@ def index():
         except:
             pass
 
-        trabajo_realizado_json = request.form.get('trabajo_realizado_json', '[]')
-        trabajo_programado_json = request.form.get('trabajo_programado_json', '[]')
-
-        try:
-            for item in json.loads(trabajo_realizado_json):
-                sub = SubActividad(
-                    registro_id=nuevo.id,
-                    tipo='trabajo_realizado',
-                    entidad=item.get('entidad', ''),
-                    municipio=item.get('municipio', ''),
-                    nucleo=item.get('nucleo', ''),
-                    frente=item.get('frente', ''),
-                    descripcion=f"[{item.get('tipo','')}][{item.get('estatus','')}] {item.get('descripcion','')}"
-                )
-                db.session.add(sub)
-        except:
-            pass
-
-        try:
-            for item in json.loads(trabajo_programado_json):
-                sub = SubActividad(
-                    registro_id=nuevo.id,
-                    tipo='trabajo_programado',
-                    entidad=item.get('entidad', ''),
-                    municipio=item.get('municipio', ''),
-                    nucleo=item.get('nucleo', ''),
-                    frente=item.get('frente', ''),
-                    descripcion=f"[{item.get('tipo','')}][{item.get('estatus','')}] {item.get('descripcion','')}"
-                )
-                db.session.add(sub)
-        except:
-            pass
-
         db.session.commit()
 
         flash(
