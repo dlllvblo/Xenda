@@ -420,48 +420,12 @@
                         Seleccione una dirección
                     </option>
 
-                    <option value="PLANEACIÓN">
-                        PLANEACIÓN
-                    </option>
-
-                    <option value="TOPOGRAFÍA">
-                        TOPOGRAFÍA CENTRO
-                    </option>
-
-                    <option value="TOPOGRAFÍA OCCIDENTE">
-                        TOPOGRAFÍA OCCIDENTE
-                    </option>
-
-                    <option value="TOPOGRAFÍA NORTE">
-                        TOPOGRAFÍA NORTE
-                    </option>
-
-                    <option value="TOPOGRAFÍA OCCIDENTE PACÍFICO">
-                        TOPOGRAFÍA OCCIDENTE PACÍFICO
-                    </option>
-
-                    <option value="TOPOGRAFÍA NORTE ORIENTE">
-                        TOPOGRAFÍA NORTE ORIENTE
-                    </option>
-
-                    <option value="PRODUCTOS Y SISTEMAS GEOESPACIALES">
-                        PRODUCTOS Y SISTEMAS GEOESPACIALES
-                    </option>
-
-                    <option value="BDT'S CONSTRUCCIÓN">
-                        BDT'S CONSTRUCCIÓN
-                    </option>
-
                     <option value="BDT'S AGROFORESTALES">
                         BDT'S AGROFORESTALES
                     </option>
 
-                    <option value="MEDICIONES">
-                        MEDICIONES
-                    </option>
-
-                    <option value="TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN">
-                        TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN
+                    <option value="BDT'S CONSTRUCCIÓN">
+                        BDT'S CONSTRUCCIÓN
                     </option>
 
                     <option value="CARTOGRAFÍA">
@@ -470,6 +434,42 @@
 
                     <option value="GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL">
                         GESTÍON DE INFORMACIÓN CATASTRAL Y REGISTRAL
+                    </option>
+
+                    <option value="MEDICIONES">
+                        MEDICIONES
+                    </option>
+
+                    <option value="PLANEACIÓN">
+                        PLANEACIÓN
+                    </option>
+
+                    <option value="PRODUCTOS Y SISTEMAS GEOESPACIALES">
+                        PRODUCTOS Y SISTEMAS GEOESPACIALES
+                    </option>
+
+                    <option value="TOPOGRAFÍA CENTRO">
+                        TOPOGRAFÍA CENTRO
+                    </option>
+
+                    <option value="TOPOGRAFÍA NORTE">
+                        TOPOGRAFÍA NORTE
+                    </option>
+
+                    <option value="TOPOGRAFÍA NORTE ORIENTE">
+                        TOPOGRAFÍA NORTE ORIENTE
+                    </option>
+
+                    <option value="TOPOGRAFÍA OCCIDENTE">
+                        TOPOGRAFÍA OCCIDENTE
+                    </option>
+
+                    <option value="TOPOGRAFÍA OCCIDENTE PACÍFICO">
+                        TOPOGRAFÍA OCCIDENTE PACÍFICO
+                    </option>
+
+                    <option value="TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN">
+                        TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN
                     </option>
 
                 </select>
@@ -1370,7 +1370,7 @@ const responsableTexto = document.getElementById('responsable-texto');
 
 const responsables = {
     'PLANEACIÓN': 'GEOG. JORGE DANIEL LAZCANO SÁNCHEZ',
-    'TOPOGRAFÍA': 'GEOG. RODRIGO SANDOVAL PIÑA',
+    'TOPOGRAFÍA CENTRO': 'GEOG. RODRIGO SANDOVAL PIÑA',
     'TOPOGRAFÍA OCCIDENTE': 'ING. MARTÍN FLORES BAILÓN',
     'TOPOGRAFÍA NORTE': 'ING. LUIS HUMBERTO QUIROZ ESCAMILLA',
     'TOPOGRAFÍA OCCIDENTE PACÍFICO': 'ARQ. MIGUEL ÁNGEL SÁNCHEZ CORTES',
@@ -1472,17 +1472,17 @@ function aplicarConfigDireccion(direccion) {
         if (direccion === 'CARTOGRAFÍA') {
             selectActividad.innerHTML = `
                 <option value="">Seleccione una opción</option>
-                <option value="AFECTACIÓN">Afectación</option>
-                <option value="INDIVIDUALES">Individuales</option>
-                <option value="VALIDACIÓN DE PLANOS DE LAS LIBERADORAS">Validación de planos de las liberadoras</option>
-                <option value="DECRETO DE OCUPACIÓN TEMPORAL">Decreto de Ocupación Temporal</option>
+                <option value="AFECTACIÓN">AFECTACIÓN</option>
+                <option value="INDIVIDUALES">INDIVIDUALES</option>
+                <option value="VALIDACIÓN DE PLANOS DE LAS LIBERADORAS">VALIDACIÓN DE PLANOS DE LAS LIBERADORAS</option>
+                <option value="DECRETO DE OCUPACIÓN TEMPORAL">DECRETO DE OCUPACIÓN TEMPORAL</option>
             `;
         } else {
             selectActividad.innerHTML = `
                 <option value="">Seleccione una opción</option>
-                <option value="MEDICIÓN">Medición</option>
-                <option value="REUNIÓN DE SEGUIMIENTO">Reunión de seguimiento</option>
-                <option value="ASAMBLEA">Asamblea</option>
+                <option value="MEDICIÓN">MEDICIÓN</option>
+                <option value="REUNIÓN DE SEGUIMIENTO">REUNIÓN DE SEGUIMIENTO</option>
+                <option value="ASAMBLEA">ASAMBLEA</option>
             `;
         }
     }
