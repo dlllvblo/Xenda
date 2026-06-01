@@ -1389,6 +1389,7 @@ def reiniciar_registros():
     if session.get('usuario') not in ADMIN_CORREOS:
         return 'No autorizado', 403
     if request.method == 'POST':
+        SubActividad.query.delete()
         Registro.query.delete()
         RegistroEliminado.query.delete()
         Exportacion.query.delete()
