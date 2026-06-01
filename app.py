@@ -1667,12 +1667,12 @@ def index():
 
             fecha=hora_cdmx(),
 
-            tramo=request.form['tramo'],
+            tramo=request.form.get('tramo') or None,
 
             entidad=request.form.get('entidad') or None,
 
             municipio=request.form.get('municipio') or None,
-            
+
             nucleo=request.form.get('nucleo') or None,
 
             frente=frente,

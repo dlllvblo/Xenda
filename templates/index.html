@@ -1302,6 +1302,10 @@ const DIRECCIONES_ACTIVAS = [
     'TOPOGRAFÍA OCCIDENTE PACÍFICO'
 ];
 
+const DIRECCIONES_SIN_TRAMO = [
+    'CARTOGRAFÍA'
+];
+
 const CONFIG_DIRECCION = {
     "BDT'S AGROFORESTALES":               { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
     "BDT'S CONSTRUCCIÓN":                 { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
@@ -1404,6 +1408,14 @@ direccionSelect.addEventListener('change', function() {
         responsableContainer.style.display = 'block';
     } else {
         responsableContainer.style.display = 'none';
+    }
+
+    // Tramo requerido solo si la dirección no está en DIRECCIONES_SIN_TRAMO
+    const tramoSelect = document.getElementById('tramo');
+    if (DIRECCIONES_SIN_TRAMO.includes(direccion)) {
+        tramoSelect.removeAttribute('required');
+    } else {
+        tramoSelect.setAttribute('required', 'required');
     }
 
     if (!direccion) {
