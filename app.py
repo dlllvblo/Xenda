@@ -1669,11 +1669,11 @@ def index():
 
             tramo=request.form['tramo'],
 
-            entidad=request.form['entidad'],
+            entidad=request.form.get('entidad') or None,
 
-            municipio=request.form['municipio'],
-
-            nucleo=request.form['nucleo'],
+            municipio=request.form.get('municipio') or None,
+            
+            nucleo=request.form.get('nucleo') or None,
 
             frente=frente,
 
