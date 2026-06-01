@@ -879,8 +879,8 @@
                 <label id="label_trabajo_realizado">Tipo de trabajo realizado</label>
                 <select name="trabajo_realizado" id="trabajo_realizado">
                     <option value="">Seleccione una opción</option>
-                    <option value="CAMPO">Campo</option>
-                    <option value="GABINETE">Gabinete</option>
+                    <option value="CAMPO">CAMPO</option>
+                    <option value="GABINETE">GABINETE</option>
                 </select>
             </div>
 
@@ -888,9 +888,9 @@
                 <label>Estatus</label>
                 <select name="estatus_trabajo_realizado" id="estatus_trabajo_realizado">
                     <option value="">Seleccione un estatus</option>
-                    <option value="EN PROCESO">En proceso</option>
-                    <option value="CONCLUIDO">Concluido</option>
-                    <option value="PENDIENTE DE INICIAR">Pendiente de iniciar</option>
+                    <option value="EN PROCESO">EN PROCESO</option>
+                    <option value="CONCLUIDO">CONCLUIDO</option>
+                    <option value="PENDIENTE DE INICIAR">PENDIENTE DE INICIAR</option>
                 </select>
             </div>
 
@@ -899,6 +899,19 @@
                 <textarea name="actividades_realizadas" id="actividades_realizadas"
                     placeholder="Describa las actividades realizadas..."
                     style="text-transform: uppercase;" autocapitalize="characters"></textarea>
+                <div id="tabla_trabajos_realizados" style="margin: 12px 0;"></div>
+                <button type="button" onclick="agregarTrabajoRealizado()" style="
+                    background: #245C4F;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 12px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    font-size: 14px;
+                    margin-top: 8px;
+                ">+ Añadir otro trabajo realizado</button>
+                <input type="hidden" name="trabajos_realizados_json" id="trabajos_realizados_json" value="[]">
             </div>
 
             <!-- SUB-ACTIVIDADES REALIZADAS -->
@@ -933,8 +946,8 @@
                 <label id="label_trabajo_programado">Tipo de trabajo programado</label>
                 <select name="trabajo_programado" id="trabajo_programado">
                     <option value="">Seleccione una opción</option>
-                    <option value="CAMPO">Campo</option>
-                    <option value="GABINETE">Gabinete</option>
+                    <option value="CAMPO">CAMPO</option>
+                    <option value="GABINETE">GABINETE</option>
                 </select>
             </div>
 
@@ -942,9 +955,9 @@
                 <label>Estatus</label>
                 <select name="estatus_trabajo_programado" id="estatus_trabajo_programado">
                     <option value="">Seleccione un estatus</option>
-                    <option value="EN PROCESO">En proceso</option>
-                    <option value="CONCLUIDO">Concluido</option>
-                    <option value="PENDIENTE DE INICIAR">Pendiente de iniciar</option>
+                    <option value="EN PROCESO">EN PROCESO</option>
+                    <option value="CONCLUIDO">CONCLUIDO</option>
+                    <option value="PENDIENTE DE INICIAR">PENDIENTE DE INICIAR</option>
                 </select>
             </div>
 
@@ -953,6 +966,19 @@
                 <textarea name="actividades_programadas" id="actividades_programadas"
                     placeholder="Describa las actividades programadas..."
                     style="text-transform: uppercase;" autocapitalize="characters"></textarea>
+                <div id="tabla_trabajos_programados" style="margin: 12px 0;"></div>
+                <button type="button" onclick="agregarTrabajoProgramado()" style="
+                    background: #6E152E;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 12px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    font-size: 14px;
+                    margin-top: 8px;
+                ">+ Añadir otro trabajo programado</button>
+                <input type="hidden" name="trabajos_programados_json" id="trabajos_programados_json" value="[]">
             </div>
 
             <!-- SUB-ACTIVIDADES PROGRAMADAS -->
@@ -1866,6 +1892,105 @@ function agregarSubProgramada() {
     renderTabla(subProgramadas, 'tabla_sub_programadas');
     document.getElementById('sp_frente').value = '';
     document.getElementById('sp_descripcion').value = '';
+}
+
+// =====================================
+// TRABAJOS REALIZADOS / PROGRAMADOS
+// =====================================
+
+let trabajosRealizados = [];
+let trabajosProgramados = [];
+
+function renderTablaTrabajosR() {
+    const container = document.getElementById('tabla_trabajos_realizados');
+    if (trabajosRealizados.length === 0) { container.innerHTML = ''; return; }
+    let html = `<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;margin-top:12px;">
+        <thead><tr style="background:#245C4F;color:white;">
+            <th style="padding:8px;">Tipo</th>
+            <th style="padding:8px;">Estatus</th>
+            <th style="padding:8px;">Descripción</th>
+            <th style="padding:8px;"></th>
+        </tr></thead><tbody>`;
+    trabajosRealizados.forEach((item, i) => {
+        html += `<tr style="border-bottom:1px solid #e0e0e0;">
+            <td style="padding:6px;">${item.tipo}</td>
+            <td style="padding:6px;">${item.estatus}</td>
+            <td style="padding:6px;">${item.descripcion}</td>
+            <td style="padding:6px;text-align:center;">
+                <button type="button" onclick="eliminarTrabajoR(${i})" style="background:#a42145;color:white;border:none;border-radius:8px;padding:4px 10px;cursor:pointer;">✕</button>
+            </td>
+        </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function eliminarTrabajoR(index) {
+    trabajosRealizados.splice(index, 1);
+    document.getElementById('trabajos_realizados_json').value = JSON.stringify(trabajosRealizados);
+    renderTablaTrabajosR();
+}
+
+function agregarTrabajoRealizado() {
+    const tipo = document.getElementById('trabajo_realizado').value;
+    const estatus = document.getElementById('estatus_trabajo_realizado').value;
+    const descripcion = document.getElementById('actividades_realizadas').value.toUpperCase();
+    if (!tipo || !descripcion) { alert('Selecciona tipo e ingresa descripción'); return; }
+    trabajosRealizados.push({ tipo, estatus, descripcion });
+    document.getElementById('trabajos_realizados_json').value = JSON.stringify(trabajosRealizados);
+    renderTablaTrabajosR();
+    document.getElementById('trabajo_realizado').value = '';
+    document.getElementById('estatus_trabajo_realizado').value = '';
+    document.getElementById('actividades_realizadas').value = '';
+    document.getElementById('estatus_realizado_container').style.display = 'none';
+    document.getElementById('actividades_realizadas_container').style.display = 'none';
+    document.getElementById('sub_realizadas_container').style.display = 'none';
+}
+
+function renderTablaTrabajosP() {
+    const container = document.getElementById('tabla_trabajos_programados');
+    if (trabajosProgramados.length === 0) { container.innerHTML = ''; return; }
+    let html = `<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;margin-top:12px;">
+        <thead><tr style="background:#6E152E;color:white;">
+            <th style="padding:8px;">Tipo</th>
+            <th style="padding:8px;">Estatus</th>
+            <th style="padding:8px;">Descripción</th>
+            <th style="padding:8px;"></th>
+        </tr></thead><tbody>`;
+    trabajosProgramados.forEach((item, i) => {
+        html += `<tr style="border-bottom:1px solid #e0e0e0;">
+            <td style="padding:6px;">${item.tipo}</td>
+            <td style="padding:6px;">${item.estatus}</td>
+            <td style="padding:6px;">${item.descripcion}</td>
+            <td style="padding:6px;text-align:center;">
+                <button type="button" onclick="eliminarTrabajoP(${i})" style="background:#a42145;color:white;border:none;border-radius:8px;padding:4px 10px;cursor:pointer;">✕</button>
+            </td>
+        </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function eliminarTrabajoP(index) {
+    trabajosProgramados.splice(index, 1);
+    document.getElementById('trabajos_programados_json').value = JSON.stringify(trabajosProgramados);
+    renderTablaTrabajosP();
+}
+
+function agregarTrabajoProgramado() {
+    const tipo = document.getElementById('trabajo_programado').value;
+    const estatus = document.getElementById('estatus_trabajo_programado').value;
+    const descripcion = document.getElementById('actividades_programadas').value.toUpperCase();
+    if (!tipo || !descripcion) { alert('Selecciona tipo e ingresa descripción'); return; }
+    trabajosProgramados.push({ tipo, estatus, descripcion });
+    document.getElementById('trabajos_programados_json').value = JSON.stringify(trabajosProgramados);
+    renderTablaTrabajosP();
+    document.getElementById('trabajo_programado').value = '';
+    document.getElementById('estatus_trabajo_programado').value = '';
+    document.getElementById('actividades_programadas').value = '';
+    document.getElementById('estatus_programado_container').style.display = 'none';
+    document.getElementById('actividades_programadas_container').style.display = 'none';
+    document.getElementById('sub_programadas_container').style.display = 'none';
 }
 
 </script>

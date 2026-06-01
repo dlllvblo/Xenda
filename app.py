@@ -716,6 +716,40 @@ def generar_reporte_quincenal_html(registros, periodo_label):
             estatus_p = r_social.estatus_trabajo_programado or ''
             acts_p = r_social.actividades_programadas or ''
 
+            # Bloques realizados
+            trabajos_r = SubActividad.query.filter_by(registro_id=r_social.id, tipo='trabajo_realizado').all()
+            if trabajos_r:
+                bloques_r = ''
+                for tr in trabajos_r:
+                    tipo_tr = tr.frente or ''
+                    desc_tr = tr.descripcion or ''
+                    estatus_tr = ''
+                    if desc_tr.startswith('['):
+                        end = desc_tr.find(']')
+                        if end > 0:
+                            estatus_tr = desc_tr[1:end]
+                            desc_tr = desc_tr[end+2:]
+                    bloques_r += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
+            else:
+                bloques_r = f'<p><strong>Trabajo de {trabajo_r.lower()}:</strong> <span class="estatus-badge">{estatus_r}</span></p><p class="acts-texto">{acts_r.replace(chr(10), "<br>")}</p>'
+
+            # Bloques programados
+            trabajos_p = SubActividad.query.filter_by(registro_id=r_social.id, tipo='trabajo_programado').all()
+            if trabajos_p:
+                bloques_p = ''
+                for tp in trabajos_p:
+                    tipo_tp = tp.frente or ''
+                    desc_tp = tp.descripcion or ''
+                    estatus_tp = ''
+                    if desc_tp.startswith('['):
+                        end = desc_tp.find(']')
+                        if end > 0:
+                            estatus_tp = desc_tp[1:end]
+                            desc_tp = desc_tp[end+2:]
+                    bloques_p += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
+            else:
+                bloques_p = f'<p><strong>Trabajo de {trabajo_p.lower()}:</strong> <span class="estatus-badge">{estatus_p}</span></p><p class="acts-texto">{acts_p.replace(chr(10), "<br>")}</p>'
+
             secciones_html += f'''
             <div class="pagina">
                 <div class="encabezado-pagina">
@@ -729,26 +763,15 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 <div class="seccion-header verde">
                     ACTIVIDADES REALIZADAS EN CAMPO Y/O GABINETE, PROPIEDAD SOCIAL
                 </div>
-                <div class="seccion-body">
-                    <p><strong>Trabajo de {trabajo_r.lower()}:</strong>
-                        <span class="estatus-badge">{estatus_r}</span>
-                    </p>
-                    <p class="acts-texto">{acts_r.replace(chr(10), '<br>')}</p>
-                </div>
+                <div class="seccion-body">{bloques_r}</div>
                 <div class="seccion-header guinda">
                     ACTIVIDADES PROGRAMADAS PARA LA SIGUIENTE QUINCENA EN PROPIEDAD SOCIAL
                 </div>
-                <div class="seccion-body">
-                    <p><strong>Trabajo de {trabajo_p.lower()}:</strong>
-                        <span class="estatus-badge">{estatus_p}</span>
-                    </p>
-                    <p class="acts-texto">{acts_p.replace(chr(10), '<br>')}</p>
-                </div>
+                <div class="seccion-body">{bloques_p}</div>
             </div>
             '''
-
             # ---- TABLA NÚCLEOS SOCIAL ----
-            filas_tabla = ''
+            filas_tabla_social = ''
             contador = 1
             for r in social:
                 subs = SubActividad.query.filter_by(
@@ -757,7 +780,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 ).all()
                 if subs:
                     for sub in subs:
-                        filas_tabla += f'''
+                        filas_tabla_social += f'''
                         <tr>
                             <td>{contador}</td>
                             <td>{sub.entidad or r.entidad or ''}</td>
@@ -769,7 +792,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         '''
                         contador += 1
                 else:
-                    filas_tabla += f'''
+                    filas_tabla_social += f'''
                     <tr>
                         <td>{contador}</td>
                         <td>{r.entidad or ''}</td>
@@ -806,7 +829,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         </tr>
                     </thead>
                     <tbody>
-                        {filas_tabla}
+                        {filas_tabla_social}
                     </tbody>
                 </table>
             </div>
@@ -822,6 +845,40 @@ def generar_reporte_quincenal_html(registros, periodo_label):
             estatus_p = r_privada.estatus_trabajo_programado or ''
             acts_p = r_privada.actividades_programadas or ''
 
+            # Bloques realizados
+            trabajos_r = SubActividad.query.filter_by(registro_id=r_privada.id, tipo='trabajo_realizado').all()
+            if trabajos_r:
+                bloques_r = ''
+                for tr in trabajos_r:
+                    tipo_tr = tr.frente or ''
+                    desc_tr = tr.descripcion or ''
+                    estatus_tr = ''
+                    if desc_tr.startswith('['):
+                        end = desc_tr.find(']')
+                        if end > 0:
+                            estatus_tr = desc_tr[1:end]
+                            desc_tr = desc_tr[end+2:]
+                    bloques_r += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
+            else:
+                bloques_r = f'<p><strong>Trabajo de {trabajo_r.lower()}:</strong> <span class="estatus-badge">{estatus_r}</span></p><p class="acts-texto">{acts_r.replace(chr(10), "<br>")}</p>'
+
+            # Bloques programados
+            trabajos_p = SubActividad.query.filter_by(registro_id=r_privada.id, tipo='trabajo_programado').all()
+            if trabajos_p:
+                bloques_p = ''
+                for tp in trabajos_p:
+                    tipo_tp = tp.frente or ''
+                    desc_tp = tp.descripcion or ''
+                    estatus_tp = ''
+                    if desc_tp.startswith('['):
+                        end = desc_tp.find(']')
+                        if end > 0:
+                            estatus_tp = desc_tp[1:end]
+                            desc_tp = desc_tp[end+2:]
+                    bloques_p += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
+            else:
+                bloques_p = f'<p><strong>Trabajo de {trabajo_p.lower()}:</strong> <span class="estatus-badge">{estatus_p}</span></p><p class="acts-texto">{acts_p.replace(chr(10), "<br>")}</p>'
+
             secciones_html += f'''
             <div class="pagina">
                 <div class="encabezado-pagina">
@@ -835,21 +892,11 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 <div class="seccion-header verde">
                     ACTIVIDADES REALIZADAS EN CAMPO Y/O GABINETE, PROPIEDAD PRIVADA
                 </div>
-                <div class="seccion-body">
-                    <p><strong>Trabajo de {trabajo_r.lower()}:</strong>
-                        <span class="estatus-badge">{estatus_r}</span>
-                    </p>
-                    <p class="acts-texto">{acts_r.replace(chr(10), '<br>')}</p>
-                </div>
+                <div class="seccion-body">{bloques_r}</div>
                 <div class="seccion-header guinda">
                     ACTIVIDADES PROGRAMADAS PARA LA SIGUIENTE QUINCENA EN PROPIEDAD PRIVADA
                 </div>
-                <div class="seccion-body">
-                    <p><strong>Trabajo de {trabajo_p.lower()}:</strong>
-                        <span class="estatus-badge">{estatus_p}</span>
-                    </p>
-                    <p class="acts-texto">{acts_p.replace(chr(10), '<br>')}</p>
-                </div>
+                <div class="seccion-body">{bloques_p}</div>
             </div>
             '''
 
@@ -1663,6 +1710,39 @@ def index():
                     nucleo=item.get('nucleo', ''),
                     frente=item.get('frente', ''),
                     descripcion=item.get('descripcion', '')
+                )
+                db.session.add(sub)
+        except:
+            pass
+
+        trabajos_realizados_json = request.form.get('trabajos_realizados_json', '[]')
+        trabajos_programados_json = request.form.get('trabajos_programados_json', '[]')
+
+        try:
+            for item in json.loads(trabajos_realizados_json):
+                sub = SubActividad(
+                    registro_id=nuevo.id,
+                    tipo='trabajo_realizado',
+                    entidad='',
+                    municipio='',
+                    nucleo='',
+                    frente=item.get('tipo', ''),
+                    descripcion=f"[{item.get('estatus','')}] {item.get('descripcion','')}"
+                )
+                db.session.add(sub)
+        except:
+            pass
+
+        try:
+            for item in json.loads(trabajos_programados_json):
+                sub = SubActividad(
+                    registro_id=nuevo.id,
+                    tipo='trabajo_programado',
+                    entidad='',
+                    municipio='',
+                    nucleo='',
+                    frente=item.get('tipo', ''),
+                    descripcion=f"[{item.get('estatus','')}] {item.get('descripcion','')}"
                 )
                 db.session.add(sub)
         except:
