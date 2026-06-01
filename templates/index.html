@@ -872,108 +872,111 @@
     </div>
 
     <div class="card">
-        <div class="section-title">
-            Trabajo Realizado
-        </div>
+        <div class="section-title">Trabajo Realizado</div>
         <div class="grid">
-            <div class="input-group" style="grid-column: 1 / -1;">
-                <label id="label_trabajo_realizado">Actividades realizadas</label>
-                <div id="tabla_tr" style="margin-bottom: 12px;"></div>
+
+            <div class="input-group">
+                <label id="label_trabajo_realizado">Tipo de trabajo realizado</label>
+                <select name="trabajo_realizado" id="trabajo_realizado">
+                    <option value="">Seleccione una opción</option>
+                    <option value="CAMPO">Campo</option>
+                    <option value="GABINETE">Gabinete</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="estatus_realizado_container" style="display: none;">
+                <label>Estatus</label>
+                <select name="estatus_trabajo_realizado" id="estatus_trabajo_realizado">
+                    <option value="">Seleccione un estatus</option>
+                    <option value="EN PROCESO">En proceso</option>
+                    <option value="CONCLUIDO">Concluido</option>
+                    <option value="PENDIENTE DE INICIAR">Pendiente de iniciar</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="actividades_realizadas_container" style="display: none;">
+                <label>Descripción de actividades realizadas</label>
+                <textarea name="actividades_realizadas" id="actividades_realizadas"
+                    placeholder="Describa las actividades realizadas..."
+                    style="text-transform: uppercase;" autocapitalize="characters"></textarea>
+            </div>
+
+            <!-- SUB-ACTIVIDADES REALIZADAS -->
+            <div class="input-group" id="sub_realizadas_container" style="display: none; grid-column: 1 / -1;">
+                <label>Actividades en tabla del reporte</label>
+                <div id="tabla_sub_realizadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <select id="tr_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <select id="sr_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                         <option value="">Entidad</option>
                     </select>
-                    <select id="tr_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <select id="sr_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                         <option value="">Municipio</option>
                     </select>
-                    <select id="tr_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <select id="sr_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                         <option value="">Núcleo Agrario</option>
                     </select>
-                    <input id="tr_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                    <select id="tr_tipo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Campo / Gabinete</option>
-                        <option value="CAMPO">CAMPO</option>
-                        <option value="GABINETE">GABINETE</option>
-                    </select>
-                    <select id="tr_estatus" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Estatus</option>
-                        <option value="EN PROCESO">EN PROCESO</option>
-                        <option value="CONCLUIDO">CONCL</option>
-                        <option value="PENDIENTE DE INICIAR">PENDIENTE DE INICIAR</option>
-                    </select>
-                    <textarea id="tr_descripcion" placeholder="Descripción de la actividad realizada..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
+                    <input id="sr_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
-                <button type="button" onclick="agregarTrabajoRealizado()" style="
-                    background: #245C4F;
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 12px;
-                    font-weight: bold;
-                    cursor: pointer;
-                    font-size: 14px;
-                ">+ Añadir actividad realizada</button>
-                <input type="hidden" name="trabajo_realizado_json" id="trabajo_realizado_json" value="[]">
+                <button type="button" onclick="agregarSubRealizada()" style="background:#245C4F;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad</button>
+                <input type="hidden" name="sub_actividades_realizadas" id="sub_actividades_realizadas" value="[]">
             </div>
+
         </div>
     </div>
 
     <div class="card">
-
-        <div class="section-title">
-            Trabajo Programado
-        </div>
-
+        <div class="section-title">Trabajo Programado</div>
         <div class="grid">
 
-            <!-- TABLA TRABAJO PROGRAMADO -->
-            <div class="input-group" style="grid-column: 1 / -1;">
+            <div class="input-group">
+                <label id="label_trabajo_programado">Tipo de trabajo programado</label>
+                <select name="trabajo_programado" id="trabajo_programado">
+                    <option value="">Seleccione una opción</option>
+                    <option value="CAMPO">Campo</option>
+                    <option value="GABINETE">Gabinete</option>
+                </select>
+            </div>
 
-                <label id="label_trabajo_programado">Actividades programadas</label>
+            <div class="input-group" id="estatus_programado_container" style="display: none;">
+                <label>Estatus</label>
+                <select name="estatus_trabajo_programado" id="estatus_trabajo_programado">
+                    <option value="">Seleccione un estatus</option>
+                    <option value="EN PROCESO">En proceso</option>
+                    <option value="CONCLUIDO">Concluido</option>
+                    <option value="PENDIENTE DE INICIAR">Pendiente de iniciar</option>
+                </select>
+            </div>
 
-                <div id="tabla_tp" style="margin-bottom: 12px;"></div>
+            <div class="input-group" id="actividades_programadas_container" style="display: none;">
+                <label>Descripción de actividades programadas</label>
+                <textarea name="actividades_programadas" id="actividades_programadas"
+                    placeholder="Describa las actividades programadas..."
+                    style="text-transform: uppercase;" autocapitalize="characters"></textarea>
+            </div>
 
+            <!-- SUB-ACTIVIDADES PROGRAMADAS -->
+            <div class="input-group" id="sub_programadas_container" style="display: none; grid-column: 1 / -1;">
+                <label>Actividades programadas en tabla del reporte</label>
+                <div id="tabla_sub_programadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <select id="tp_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <select id="sp_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                         <option value="">Entidad</option>
                     </select>
-                    <select id="tp_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <select id="sp_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                         <option value="">Municipio</option>
                     </select>
-                    <select id="tp_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <select id="sp_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                         <option value="">Núcleo Agrario</option>
                     </select>
-                    <input id="tp_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                    <select id="tp_tipo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Campo / Gabinete</option>
-                        <option value="CAMPO">CAMPO</option>
-                        <option value="GABINETE">GABINETE</option>
-                    </select>
-                    <select id="tp_estatus" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Estatus</option>
-                        <option value="EN PROCESO">EN PROCESO</option>
-                        <option value="CONCLUIDO">CONCLUIDO</option>
-                        <option value="PENDIENTE DE INICIAR">PENDIENTE DE INICIAR</option>
-                    </select>
-                    <textarea id="tp_descripcion" placeholder="Descripción de la actividad programada..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
+                    <input id="sp_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <textarea id="sp_descripcion" placeholder="Descripción de la actividad programada..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
-
-                <button type="button" onclick="agregarTrabajoProgramado()" style="
-                    background: #6E152E;
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 12px;
-                    font-weight: bold;
-                    cursor: pointer;
-                    font-size: 14px;
-                ">+ Añadir actividad programada</button>
-
-                <input type="hidden" name="trabajo_programado_json" id="trabajo_programado_json" value="[]">
+                <button type="button" onclick="agregarSubProgramada()" style="background:#6E152E;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad programada</button>
+                <input type="hidden" name="sub_actividades_programadas" id="sub_actividades_programadas" value="[]">
             </div>
 
         </div>
-
     </div>
 
     <div class="card" style="display:none; margin:0; padding:0;">
@@ -1860,6 +1863,168 @@ document.getElementById('tp_municipio').addEventListener('change', function() {
     sel.innerHTML = '<option value="">Núcleo Agrario</option>';
     nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
 });
+
+// TRABAJO REALIZADO
+document.getElementById('trabajo_realizado').addEventListener('change', function() {
+    const estatusContainer = document.getElementById('estatus_realizado_container');
+    const actContainer = document.getElementById('actividades_realizadas_container');
+    const show = this.value !== '';
+    estatusContainer.style.display = show ? 'flex' : 'none';
+    actContainer.style.display = show ? 'flex' : 'none';
+    document.getElementById('sub_realizadas_container').style.display = show ? 'flex' : 'none';
+});
+
+// TRABAJO PROGRAMADO
+document.getElementById('trabajo_programado').addEventListener('change', function() {
+    const estatusContainer = document.getElementById('estatus_programado_container');
+    const actContainer = document.getElementById('actividades_programadas_container');
+    const show = this.value !== '';
+    estatusContainer.style.display = show ? 'flex' : 'none';
+    actContainer.style.display = show ? 'flex' : 'none';
+    document.getElementById('sub_programadas_container').style.display = show ? 'flex' : 'none';
+});
+
+// SUB-ACTIVIDADES
+let subRealizadas = [];
+let subProgramadas = [];
+
+function poblarSelectsSub() {
+    const tramo = document.getElementById('tramo').value;
+    const entidades = [...new Set(
+        CATALOGO.filter(r => r.TRAMO === tramo).map(r => r.ENTIDAD_FEDERATIVA)
+    )].sort();
+    ['sr_entidad', 'sp_entidad'].forEach(id => {
+        const sel = document.getElementById(id);
+        sel.innerHTML = '<option value="">Entidad</option>';
+        entidades.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+    });
+    ['sr_municipio', 'sp_municipio'].forEach(id => {
+        document.getElementById(id).innerHTML = '<option value="">Municipio</option>';
+    });
+    ['sr_nucleo', 'sp_nucleo'].forEach(id => {
+        document.getElementById(id).innerHTML = '<option value="">Núcleo Agrario</option>';
+    });
+}
+
+document.getElementById('tramo').addEventListener('change', poblarSelectsSub);
+
+document.getElementById('sr_entidad').addEventListener('change', function() {
+    const tramo = document.getElementById('tramo').value;
+    const municipios = [...new Set(
+        CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
+    )].sort();
+    const sel = document.getElementById('sr_municipio');
+    sel.innerHTML = '<option value="">Municipio</option>';
+    municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
+    document.getElementById('sr_nucleo').innerHTML = '<option value="">Núcleo Agrario</option>';
+});
+
+document.getElementById('sr_municipio').addEventListener('change', function() {
+    const tramo = document.getElementById('tramo').value;
+    const entidad = document.getElementById('sr_entidad').value;
+    const nucleos = [...new Set(
+        CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
+    )].sort();
+    const sel = document.getElementById('sr_nucleo');
+    sel.innerHTML = '<option value="">Núcleo Agrario</option>';
+    nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
+});
+
+document.getElementById('sp_entidad').addEventListener('change', function() {
+    const tramo = document.getElementById('tramo').value;
+    const municipios = [...new Set(
+        CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
+    )].sort();
+    const sel = document.getElementById('sp_municipio');
+    sel.innerHTML = '<option value="">Municipio</option>';
+    municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
+    document.getElementById('sp_nucleo').innerHTML = '<option value="">Núcleo Agrario</option>';
+});
+
+document.getElementById('sp_municipio').addEventListener('change', function() {
+    const tramo = document.getElementById('tramo').value;
+    const entidad = document.getElementById('sp_entidad').value;
+    const nucleos = [...new Set(
+        CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
+    )].sort();
+    const sel = document.getElementById('sp_nucleo');
+    sel.innerHTML = '<option value="">Núcleo Agrario</option>';
+    nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
+});
+
+function renderTabla(lista, containerId) {
+    const container = document.getElementById(containerId);
+    if (lista.length === 0) { container.innerHTML = ''; return; }
+    let html = `<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;">
+        <thead><tr style="background:#245C4F;color:white;">
+            <th style="padding:8px;">No.</th>
+            <th style="padding:8px;">Entidad</th>
+            <th style="padding:8px;">Municipio</th>
+            <th style="padding:8px;">Núcleo</th>
+            <th style="padding:8px;">Frente</th>
+            <th style="padding:8px;">Descripción</th>
+            <th style="padding:8px;"></th>
+        </tr></thead><tbody>`;
+    lista.forEach((item, i) => {
+        html += `<tr style="border-bottom:1px solid #e0e0e0;">
+            <td style="padding:6px;text-align:center;">${i+1}</td>
+            <td style="padding:6px;">${item.entidad}</td>
+            <td style="padding:6px;">${item.municipio}</td>
+            <td style="padding:6px;">${item.nucleo}</td>
+            <td style="padding:6px;">${item.frente}</td>
+            <td style="padding:6px;">${item.descripcion}</td>
+            <td style="padding:6px;text-align:center;">
+                <button type="button" onclick="eliminarSub('${containerId}',${i})" style="background:#a42145;color:white;border:none;border-radius:8px;padding:4px 10px;cursor:pointer;">✕</button>
+            </td>
+        </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function eliminarSub(containerId, index) {
+    if (containerId === 'tabla_sub_realizadas') {
+        subRealizadas.splice(index, 1);
+        document.getElementById('sub_actividades_realizadas').value = JSON.stringify(subRealizadas);
+        renderTabla(subRealizadas, 'tabla_sub_realizadas');
+    } else {
+        subProgramadas.splice(index, 1);
+        document.getElementById('sub_actividades_programadas').value = JSON.stringify(subProgramadas);
+        renderTabla(subProgramadas, 'tabla_sub_programadas');
+    }
+}
+
+function agregarSubRealizada() {
+    const item = {
+        entidad: document.getElementById('sr_entidad').value,
+        municipio: document.getElementById('sr_municipio').value,
+        nucleo: document.getElementById('sr_nucleo').value,
+        frente: document.getElementById('sr_frente').value,
+        descripcion: document.getElementById('sr_descripcion').value.toUpperCase()
+    };
+    if (!item.descripcion) { alert('Ingresa al menos la descripción'); return; }
+    subRealizadas.push(item);
+    document.getElementById('sub_actividades_realizadas').value = JSON.stringify(subRealizadas);
+    renderTabla(subRealizadas, 'tabla_sub_realizadas');
+    document.getElementById('sr_frente').value = '';
+    document.getElementById('sr_descripcion').value = '';
+}
+
+function agregarSubProgramada() {
+    const item = {
+        entidad: document.getElementById('sp_entidad').value,
+        municipio: document.getElementById('sp_municipio').value,
+        nucleo: document.getElementById('sp_nucleo').value,
+        frente: document.getElementById('sp_frente').value,
+        descripcion: document.getElementById('sp_descripcion').value.toUpperCase()
+    };
+    if (!item.descripcion) { alert('Ingresa al menos la descripción'); return; }
+    subProgramadas.push(item);
+    document.getElementById('sub_actividades_programadas').value = JSON.stringify(subProgramadas);
+    renderTabla(subProgramadas, 'tabla_sub_programadas');
+    document.getElementById('sp_frente').value = '';
+    document.getElementById('sp_descripcion').value = '';
+}
 
 </script>
 
