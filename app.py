@@ -1968,44 +1968,28 @@ def registros():
         Registro.fecha.desc()
     ).all()
 
-    tramos = sorted([
-
-    t[0]
-
-    for t in db.session.query(
-        Registro.tramo
-    ).distinct()
-
-    ])
-
     entidades = sorted([
-
         e[0]
-
-        for e in db.session.query(
-            Registro.entidad
-        ).distinct()
-
+        for e in db.session.query(Registro.entidad).distinct()
+        if e[0]
     ])
 
     municipios = sorted([
-
         m[0]
+        for m in db.session.query(Registro.municipio).distinct()
+        if m[0]
+    ])
 
-        for m in db.session.query(
-            Registro.municipio
-        ).distinct()
-
+    tramos = sorted([
+        t[0]
+        for t in db.session.query(Registro.tramo).distinct()
+        if t[0]
     ])
 
     usuarios = sorted([
-
         u[0]
-
-        for u in db.session.query(
-            Registro.usuario
-        ).distinct()
-
+        for u in db.session.query(Registro.usuario).distinct()
+        if u[0]
     ])
 
     return render_template(
