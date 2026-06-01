@@ -708,47 +708,42 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 
         # ---- PROPIEDAD SOCIAL ----
         if social:
-            r_social = social[0]
-            trabajo_r = r_social.trabajo_realizado or ''
-            estatus_r = r_social.estatus_trabajo_realizado or ''
-            acts_r = r_social.actividades_realizadas or ''
-            trabajo_p = r_social.trabajo_programado or ''
-            estatus_p = r_social.estatus_trabajo_programado or ''
-            acts_p = r_social.actividades_programadas or ''
 
-            # Bloques realizados
-            trabajos_r = SubActividad.query.filter_by(registro_id=r_social.id, tipo='trabajo_realizado').all()
-            if trabajos_r:
-                bloques_r = ''
-                for tr in trabajos_r:
-                    tipo_tr = tr.frente or ''
-                    desc_tr = tr.descripcion or ''
-                    estatus_tr = ''
-                    if desc_tr.startswith('['):
-                        end = desc_tr.find(']')
-                        if end > 0:
-                            estatus_tr = desc_tr[1:end]
-                            desc_tr = desc_tr[end+2:]
-                    bloques_r += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
-            else:
-                bloques_r = f'<p><strong>Trabajo de {trabajo_r.lower()}:</strong> <span class="estatus-badge">{estatus_r}</span></p><p class="acts-texto">{acts_r.replace(chr(10), "<br>")}</p>'
+            # SOCIAL — bloques realizados
+            bloques_r = ''
+            for r in social:
+                trabajos_r = SubActividad.query.filter_by(registro_id=r.id, tipo='trabajo_realizado').all()
+                if trabajos_r:
+                    for tr in trabajos_r:
+                        tipo_tr = tr.frente or ''
+                        desc_tr = tr.descripcion or ''
+                        estatus_tr = ''
+                        if desc_tr.startswith('['):
+                            end = desc_tr.find(']')
+                            if end > 0:
+                                estatus_tr = desc_tr[1:end]
+                                desc_tr = desc_tr[end+2:]
+                        bloques_r += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
+                elif r.trabajo_realizado:
+                    bloques_r += f'<p><strong>Trabajo de {(r.trabajo_realizado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_realizado or ""}</span></p><p class="acts-texto">{(r.actividades_realizadas or "").replace(chr(10), "<br>")}</p>'
 
-            # Bloques programados
-            trabajos_p = SubActividad.query.filter_by(registro_id=r_social.id, tipo='trabajo_programado').all()
-            if trabajos_p:
-                bloques_p = ''
-                for tp in trabajos_p:
-                    tipo_tp = tp.frente or ''
-                    desc_tp = tp.descripcion or ''
-                    estatus_tp = ''
-                    if desc_tp.startswith('['):
-                        end = desc_tp.find(']')
-                        if end > 0:
-                            estatus_tp = desc_tp[1:end]
-                            desc_tp = desc_tp[end+2:]
-                    bloques_p += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
-            else:
-                bloques_p = f'<p><strong>Trabajo de {trabajo_p.lower()}:</strong> <span class="estatus-badge">{estatus_p}</span></p><p class="acts-texto">{acts_p.replace(chr(10), "<br>")}</p>'
+            # SOCIAL — bloques programados
+            bloques_p = ''
+            for r in social:
+                trabajos_p = SubActividad.query.filter_by(registro_id=r.id, tipo='trabajo_programado').all()
+                if trabajos_p:
+                    for tp in trabajos_p:
+                        tipo_tp = tp.frente or ''
+                        desc_tp = tp.descripcion or ''
+                        estatus_tp = ''
+                        if desc_tp.startswith('['):
+                            end = desc_tp.find(']')
+                            if end > 0:
+                                estatus_tp = desc_tp[1:end]
+                                desc_tp = desc_tp[end+2:]
+                        bloques_p += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
+                elif r.trabajo_programado:
+                    bloques_p += f'<p><strong>Trabajo de {(r.trabajo_programado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_programado or ""}</span></p><p class="acts-texto">{(r.actividades_programadas or "").replace(chr(10), "<br>")}</p>'
 
             secciones_html += f'''
             <div class="pagina">
@@ -834,50 +829,87 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 </table>
             </div>
             '''
+            # TABLA NÚCLEOS PROGRAMADOS SOCIAL
+            filas_prog_social = ''
+            contador = 1
+            for r in social:
+                subs = SubActividad.query.filter_by(registro_id=r.id, tipo='programada').all()
+                if subs:
+                    for sub in subs:
+                        filas_prog_social += f'''
+                        <tr>
+                            <td>{contador}</td>
+                            <td>{sub.entidad or r.entidad or ''}</td>
+                            <td>{sub.municipio or r.municipio or ''}</td>
+                            <td>{sub.nucleo or r.nucleo or ''}</td>
+                            <td>F{sub.frente or r.frente or ''}</td>
+                            <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
+                        </tr>
+                        '''
+                        contador += 1
+
+            if filas_prog_social:
+                secciones_html += f'''
+                <div class="pagina">
+                    <div class="encabezado-pagina">
+                        <div class="encabezado-texto">
+                            <p class="proyecto">Proyecto ferroviario</p>
+                            <p class="tramo-nombre">TRAMO {tramo_nombre}</p>
+                            <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Social)</span></p>
+                        </div>
+                        <div class="encabezado-logo"></div>
+                    </div>
+                    <div class="seccion-header guinda">
+                        ACTIVIDADES PROGRAMADAS EN CAMPO (MEDICIÓN) &ndash; PROPIEDAD SOCIAL
+                    </div>
+                    <table class="tabla-nucleos">
+                        <thead><tr>
+                            <th>No.</th><th>Entidad Federativa</th><th>Municipio</th>
+                            <th>N&uacute;cleo Agrario</th><th>Frente</th><th>Actividades Programadas</th>
+                        </tr></thead>
+                        <tbody>{filas_prog_social}</tbody>
+                    </table>
+                </div>
+                '''
 
         # ---- PROPIEDAD PRIVADA ----
         if privada:
-            r_privada = privada[0]
-            trabajo_r = r_privada.trabajo_realizado or ''
-            estatus_r = r_privada.estatus_trabajo_realizado or ''
-            acts_r = r_privada.actividades_realizadas or ''
-            trabajo_p = r_privada.trabajo_programado or ''
-            estatus_p = r_privada.estatus_trabajo_programado or ''
-            acts_p = r_privada.actividades_programadas or ''
 
             # Bloques realizados
-            trabajos_r = SubActividad.query.filter_by(registro_id=r_privada.id, tipo='trabajo_realizado').all()
-            if trabajos_r:
-                bloques_r = ''
-                for tr in trabajos_r:
-                    tipo_tr = tr.frente or ''
-                    desc_tr = tr.descripcion or ''
-                    estatus_tr = ''
-                    if desc_tr.startswith('['):
-                        end = desc_tr.find(']')
-                        if end > 0:
-                            estatus_tr = desc_tr[1:end]
-                            desc_tr = desc_tr[end+2:]
-                    bloques_r += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
-            else:
-                bloques_r = f'<p><strong>Trabajo de {trabajo_r.lower()}:</strong> <span class="estatus-badge">{estatus_r}</span></p><p class="acts-texto">{acts_r.replace(chr(10), "<br>")}</p>'
+            bloques_r = ''
+            for r in privada:
+                trabajos_r = SubActividad.query.filter_by(registro_id=r.id, tipo='trabajo_realizado').all()
+                if trabajos_r:
+                    for tr in trabajos_r:
+                        tipo_tr = tr.frente or ''
+                        desc_tr = tr.descripcion or ''
+                        estatus_tr = ''
+                        if desc_tr.startswith('['):
+                            end = desc_tr.find(']')
+                            if end > 0:
+                                estatus_tr = desc_tr[1:end]
+                                desc_tr = desc_tr[end+2:]
+                        bloques_r += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
+                elif r.trabajo_realizado:
+                    bloques_r += f'<p><strong>Trabajo de {(r.trabajo_realizado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_realizado or ""}</span></p><p class="acts-texto">{(r.actividades_realizadas or "").replace(chr(10), "<br>")}</p>'
 
             # Bloques programados
-            trabajos_p = SubActividad.query.filter_by(registro_id=r_privada.id, tipo='trabajo_programado').all()
-            if trabajos_p:
-                bloques_p = ''
-                for tp in trabajos_p:
-                    tipo_tp = tp.frente or ''
-                    desc_tp = tp.descripcion or ''
-                    estatus_tp = ''
-                    if desc_tp.startswith('['):
-                        end = desc_tp.find(']')
-                        if end > 0:
-                            estatus_tp = desc_tp[1:end]
-                            desc_tp = desc_tp[end+2:]
-                    bloques_p += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
-            else:
-                bloques_p = f'<p><strong>Trabajo de {trabajo_p.lower()}:</strong> <span class="estatus-badge">{estatus_p}</span></p><p class="acts-texto">{acts_p.replace(chr(10), "<br>")}</p>'
+            bloques_p = ''
+            for r in privada:
+                trabajos_p = SubActividad.query.filter_by(registro_id=r.id, tipo='trabajo_programado').all()
+                if trabajos_p:
+                    for tp in trabajos_p:
+                        tipo_tp = tp.frente or ''
+                        desc_tp = tp.descripcion or ''
+                        estatus_tp = ''
+                        if desc_tp.startswith('['):
+                            end = desc_tp.find(']')
+                            if end > 0:
+                                estatus_tp = desc_tp[1:end]
+                                desc_tp = desc_tp[end+2:]
+                        bloques_p += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
+                elif r.trabajo_programado:
+                    bloques_p += f'<p><strong>Trabajo de {(r.trabajo_programado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_programado or ""}</span></p><p class="acts-texto">{(r.actividades_programadas or "").replace(chr(10), "<br>")}</p>'
 
             secciones_html += f'''
             <div class="pagina">
@@ -899,7 +931,6 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 <div class="seccion-body">{bloques_p}</div>
             </div>
             '''
-
             # ---- TABLA NÚCLEOS PRIVADA ----
             filas_tabla_priv = ''
             contador = 1
@@ -964,6 +995,48 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 </table>
             </div>
             '''
+             # TABLA NÚCLEOS PROGRAMADOS PRIVADA
+            filas_prog_privada = ''
+            contador = 1
+            for r in privada:
+                subs = SubActividad.query.filter_by(registro_id=r.id, tipo='programada').all()
+                if subs:
+                    for sub in subs:
+                        filas_prog_privada += f'''
+                        <tr>
+                            <td>{contador}</td>
+                            <td>{sub.entidad or r.entidad or ''}</td>
+                            <td>{sub.municipio or r.municipio or ''}</td>
+                            <td>{sub.nucleo or r.nucleo or ''}</td>
+                            <td>F{sub.frente or r.frente or ''}</td>
+                            <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
+                        </tr>
+                        '''
+                        contador += 1
+
+            if filas_prog_privada:
+                secciones_html += f'''
+                <div class="pagina">
+                    <div class="encabezado-pagina">
+                        <div class="encabezado-texto">
+                            <p class="proyecto">Proyecto ferroviario</p>
+                            <p class="tramo-nombre">TRAMO {tramo_nombre}</p>
+                            <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Privada)</span></p>
+                        </div>
+                        <div class="encabezado-logo"></div>
+                    </div>
+                    <div class="seccion-header guinda">
+                        ACTIVIDADES PROGRAMADAS EN CAMPO (MEDICIÓN) &ndash; PROPIEDAD PRIVADA
+                    </div>
+                    <table class="tabla-nucleos">
+                        <thead><tr>
+                            <th>No.</th><th>Entidad Federativa</th><th>Municipio</th>
+                            <th>N&uacute;cleo Agrario</th><th>Frente</th><th>Actividades Programadas</th>
+                        </tr></thead>
+                        <tbody>{filas_prog_privada}</tbody>
+                    </table>
+                </div>
+                '''
 
     html = f'''<!DOCTYPE html>
 <html lang="es">
