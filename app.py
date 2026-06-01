@@ -778,26 +778,14 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         filas_tabla_social += f'''
                         <tr>
                             <td>{contador}</td>
-                            <td>{sub.entidad or r.entidad or ''}</td>
-                            <td>{sub.municipio or r.municipio or ''}</td>
-                            <td>{sub.nucleo or r.nucleo or ''}</td>
-                            <td>F{sub.frente or r.frente or ''}</td>
+                            <td>{sub.entidad or ''}</td>
+                            <td>{sub.municipio or ''}</td>
+                            <td>{sub.nucleo or ''}</td>
+                            <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
                         '''
                         contador += 1
-                else:
-                    filas_tabla_social += f'''
-                    <tr>
-                        <td>{contador}</td>
-                        <td>{r.entidad or ''}</td>
-                        <td>{r.municipio or ''}</td>
-                        <td>{r.nucleo or ''}</td>
-                        <td>F{r.frente or ''}</td>
-                        <td>{(r.actividades_realizadas or '').replace(chr(10), '<br>')}</td>
-                    </tr>
-                    '''
-                    contador += 1
 
             secciones_html += f'''
             <div class="pagina">
@@ -839,10 +827,10 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         filas_prog_social += f'''
                         <tr>
                             <td>{contador}</td>
-                            <td>{sub.entidad or r.entidad or ''}</td>
-                            <td>{sub.municipio or r.municipio or ''}</td>
-                            <td>{sub.nucleo or r.nucleo or ''}</td>
-                            <td>F{sub.frente or r.frente or ''}</td>
+                            <td>{sub.entidad or ''}</td>
+                            <td>{sub.municipio or ''}</td>
+                            <td>{sub.nucleo or ''}</td>
+                            <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
                         '''
@@ -944,26 +932,14 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         filas_tabla_priv += f'''
                         <tr>
                             <td>{contador}</td>
-                            <td>{sub.entidad or r.entidad or ''}</td>
-                            <td>{sub.municipio or r.municipio or ''}</td>
-                            <td>{sub.nucleo or r.nucleo or ''}</td>
-                            <td>F{sub.frente or r.frente or ''}</td>
+                            <td>{sub.entidad or ''}</td>
+                            <td>{sub.municipio or ''}</td>
+                            <td>{sub.nucleo or ''}</td>
+                            <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
                         '''
                         contador += 1
-                else:
-                    filas_tabla_priv += f'''
-                    <tr>
-                        <td>{contador}</td>
-                        <td>{r.entidad or ''}</td>
-                        <td>{r.municipio or ''}</td>
-                        <td>{r.nucleo or ''}</td>
-                        <td>F{r.frente or ''}</td>
-                        <td>{(r.actividades_realizadas or '').replace(chr(10), '<br>')}</td>
-                    </tr>
-                    '''
-                    contador += 1
 
             secciones_html += f'''
             <div class="pagina">
@@ -1005,10 +981,10 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         filas_prog_privada += f'''
                         <tr>
                             <td>{contador}</td>
-                            <td>{sub.entidad or r.entidad or ''}</td>
-                            <td>{sub.municipio or r.municipio or ''}</td>
-                            <td>{sub.nucleo or r.nucleo or ''}</td>
-                            <td>F{sub.frente or r.frente or ''}</td>
+                            <td>{sub.entidad or ''}</td>
+                            <td>{sub.municipio or ''}</td>
+                            <td>{sub.nucleo or ''}</td>
+                            <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
                         '''

@@ -528,7 +528,6 @@
                 <select
                     name="entidad"
                     id="entidad"
-                    disabled
                 >
 
                     <option value="">
@@ -554,7 +553,6 @@
                 <select
                     name="municipio"
                     id="municipio"
-                    disabled
                 >
 
                     <option value="">
@@ -572,7 +570,6 @@
                 <select
                     name="nucleo"
                     id="nucleo"
-                    disabled
                 >
 
                     <option value="">
@@ -917,7 +914,7 @@
             </div>
 
             <!-- SUB-ACTIVIDADES REALIZADAS -->
-            <div class="input-group" id="sub_realizadas_container" style="display: none; grid-column: 1 / -1;">
+            <div class="input-group" id="sub_realizadas_container" style="grid-column: 1 / -1;">
                 <label>Actividades en tabla del reporte</label>
                 <div id="tabla_sub_realizadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
@@ -986,7 +983,7 @@
             </div>
 
             <!-- SUB-ACTIVIDADES PROGRAMADAS -->
-            <div class="input-group" id="sub_programadas_container" style="display: none; grid-column: 1 / -1;">
+            <div class="input-group" id="sub_programadas_container" style="grid-column: 1 / -1;">
                 <label>Actividades programadas en tabla del reporte</label>
                 <div id="tabla_sub_programadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
@@ -1113,12 +1110,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 '<option value="">Seleccione un núcleo agrario</option>';
 
             if (!tramo) return;
-
-            entidadSelect.disabled = false;
-
-            municipioSelect.disabled = true;
-
-            nucleoSelect.disabled = true;
 
             const entidades = [...new Set(
                 CATALOGO
@@ -1742,7 +1733,6 @@ document.getElementById('trabajo_realizado').addEventListener('change', function
     document.getElementById('estatus_realizado_container').style.display = show ? 'flex' : 'none';
     document.getElementById('actividades_realizadas_container').style.display = show ? 'flex' : 'none';
     document.getElementById('trabajos_realizados_wrapper').style.display = show ? 'block' : 'none';
-    document.getElementById('sub_realizadas_container').style.display = show ? 'flex' : 'none';
 });
 
 // TRABAJO PROGRAMADO
@@ -1751,7 +1741,6 @@ document.getElementById('trabajo_programado').addEventListener('change', functio
     document.getElementById('estatus_programado_container').style.display = show ? 'flex' : 'none';
     document.getElementById('actividades_programadas_container').style.display = show ? 'flex' : 'none';
     document.getElementById('trabajos_programados_wrapper').style.display = show ? 'block' : 'none';
-    document.getElementById('sub_programadas_container').style.display = show ? 'flex' : 'none';
 });
 
 // SUB-ACTIVIDADES
@@ -1946,7 +1935,6 @@ function agregarTrabajoRealizado() {
     document.getElementById('actividades_realizadas').value = '';
     document.getElementById('estatus_realizado_container').style.display = 'none';
     document.getElementById('actividades_realizadas_container').style.display = 'none';
-    document.getElementById('sub_realizadas_container').style.display = 'none';
 }
 
 function renderTablaTrabajosP() {
@@ -1992,7 +1980,6 @@ function agregarTrabajoProgramado() {
     document.getElementById('actividades_programadas').value = '';
     document.getElementById('estatus_programado_container').style.display = 'none';
     document.getElementById('actividades_programadas_container').style.display = 'none';
-    document.getElementById('sub_programadas_container').style.display = 'none';
 }
 
 </script>
