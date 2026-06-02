@@ -723,7 +723,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
             <div class="portada-contenido">
                 <p class="portada-subtitulo">Reporte de actividades</p>
                 <div class="portada-divider"></div>
-                <p class="portada-periodo">Proyectos Ferroviarios &ndash; {periodo_label}</p>
+                <p class="portada-periodo">Proyectos Ferroviarios &ndash; {quincena}</p>
                 <p class="portada-tramo">{'TRAMO ' + tramo_nombre if tramo_nombre else 'DIRECCIÓN DE: ' + direccion}</p>
                 <p class="portada-dir">{direccion}</p>
             </div>
