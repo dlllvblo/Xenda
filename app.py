@@ -29,6 +29,7 @@ def hora_cdmx():
     return datetime.utcnow() - timedelta(hours=6)
 
 def periodo_quincena():
+    return "01-15 de Junio 2026"
     ahora = hora_cdmx()
     dia = ahora.day
     mes = ahora.month
