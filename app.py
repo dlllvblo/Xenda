@@ -1096,7 +1096,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     content: '';
     display: block;
     position: absolute;
-    bottom: -5px;
+    bottom: -10px;
     left: 18px;
     width: 100px;
     height: 90px;
