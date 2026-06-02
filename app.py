@@ -1096,9 +1096,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     content: '';
     display: block;
     position: absolute;
-    bottom: -10px;
+    bottom: -5px;
     left: 18px;
-    width: 150px;
+    width: 60px;
     height: 90px;
     background: url('/static/gob_mex2-sf.png') no-repeat left center;
     background-size: contain;
