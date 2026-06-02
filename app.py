@@ -1140,14 +1140,12 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   }}
   .portada-bandera {{
     position: absolute;
-    left: -60;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 200px;
-    height: 260px;
+    left: 0;
+    bottom: 40px;
+    width: 180px;
+    height: 240px;
     background: url('/static/bandera.png') no-repeat left center;
     background-size: contain;
-    opacity: 0.85;
   }}
   .portada-contenido {{
     text-align: center;
