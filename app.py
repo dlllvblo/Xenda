@@ -28,6 +28,28 @@ def hora_cdmx():
 
     return datetime.utcnow() - timedelta(hours=6)
 
+def periodo_quincena():
+    ahora = hora_cdmx()
+    dia = ahora.day
+    mes = ahora.month
+    anio = ahora.year
+
+    meses = {
+        1:'Enero', 2:'Febrero', 3:'Marzo', 4:'Abril',
+        5:'Mayo', 6:'Junio', 7:'Julio', 8:'Agosto',
+        9:'Septiembre', 10:'Octubre', 11:'Noviembre', 12:'Diciembre'
+    }
+
+    import calendar
+    ultimo_dia = calendar.monthrange(anio, mes)[1]
+    nombre_mes = meses[mes]
+
+    if 10 <= dia <= 14:
+        return f"01–15 de {nombre_mes} {anio}"
+    elif 25 <= dia <= 29:
+        return f"16–{ultimo_dia} de {nombre_mes} {anio}"
+    else:
+        return f"{nombre_mes} {anio}"
 
 # =========================================
 # APP
@@ -662,6 +684,7 @@ def exportar_excel_mensual():
 # =========================================
 
 def generar_reporte_quincenal_html(registros, periodo_label):
+    quincena = periodo_quincena()
 
     tramos_nombres = {
         'TAP':   'AIFA - PACHUCA',
@@ -760,7 +783,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 </div>
                 <div class="seccion-body">{bloques_r}</div>
                 <div class="seccion-header guinda">
-                    ACTIVIDADES PROGRAMADAS PARA LA SIGUIENTE QUINCENA EN PROPIEDAD SOCIAL
+                    ACTIVIDADES PROGRAMADAS DEL {quincena} EN PROPIEDAD SOCIAL
                 </div>
                 <div class="seccion-body">{bloques_p}</div>
             </div>
@@ -914,7 +937,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 </div>
                 <div class="seccion-body">{bloques_r}</div>
                 <div class="seccion-header guinda">
-                    ACTIVIDADES PROGRAMADAS PARA LA SIGUIENTE QUINCENA EN PROPIEDAD PRIVADA
+                    ACTIVIDADES PROGRAMADAS DEL {quincena} EN PROPIEDAD PRIVADA
                 </div>
                 <div class="seccion-body">{bloques_p}</div>
             </div>
