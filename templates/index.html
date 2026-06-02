@@ -869,7 +869,7 @@
     </div>
 
     <div class="card">
-        <div class="section-title">Trabajo Realizado</div>
+        <div class="section-title" id="titulo-realizado">Trabajo Realizado</div>
         <div class="grid">
 
             <div class="input-group">
@@ -1989,7 +1989,7 @@ function agregarTrabajoProgramado() {
 function calcularQuincena() {
     const ahora = new Date();
     const dia = ahora.getDate();
-    const mes = ahora.getMonth(); // 0-11
+    const mes = ahora.getMonth();
     const anio = ahora.getFullYear();
 
     const meses = [
@@ -2000,14 +2000,18 @@ function calcularQuincena() {
     const diasEnMes = new Date(anio, mes + 1, 0).getDate();
 
     let texto = 'Trabajo Programado';
+    let textoR = 'Trabajo Realizado';
 
     if (dia >= 10 && dia <= 14) {
         texto = `Trabajo Programado · 01–15 de ${meses[mes]} ${anio}`;
+        textoR = `Trabajo Realizado · 01–15 de ${meses[mes]} ${anio}`;
     } else if (dia >= 25 && dia <= 29) {
         texto = `Trabajo Programado · 16–${diasEnMes} de ${meses[mes]} ${anio}`;
+        textoR = `Trabajo Realizado · 16–${diasEnMes} de ${meses[mes]} ${anio}`;
     }
 
     document.getElementById('titulo-programado').textContent = 'Trabajo Programado · 01–15 de Junio 2026';
+    document.getElementById('titulo-realizado').textContent = 'Trabajo Programado · 01–15 de Junio 2026';
 }
 
 calcularQuincena();
