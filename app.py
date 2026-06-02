@@ -2633,8 +2633,7 @@ def pre_reporte_direccion():
 
     direcciones_disponibles = db.session.query(Registro.direccion).filter(
         db.extract('year', Registro.fecha) == ahora.year,
-        db.extract('month', Registro.fecha) == ahora.month,
-        Registro.tramo.is_(None)
+        db.extract('month', Registro.fecha) == ahora.month
     ).distinct().all()
 
     direcciones = [d[0] for d in direcciones_disponibles if d[0]]
@@ -2667,7 +2666,6 @@ def pre_reporte_direccion_detalle(direccion):
         db.extract('year', Registro.fecha) == ahora.year,
         db.extract('month', Registro.fecha) == ahora.month,
         Registro.direccion == direccion,
-        Registro.tramo.is_(None)
     ).order_by(Registro.fecha).all()
 
     if not registros:
