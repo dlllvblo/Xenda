@@ -1141,7 +1141,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
   .portada-bandera {{
     position: absolute;
     left: 0;
-    bottom: 10px;
+    bottom: 5px;
     width: 200px;
     height: 260px;
     background: url('/static/bandera.png') no-repeat left center;
