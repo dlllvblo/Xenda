@@ -689,13 +689,13 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 
     tramos_nombres = {
         'TAP':   'AIFA - PACHUCA',
+        'TIGDL': 'IRAPUATO - GUADALAJARA',
+        'TMLM':  'MAZATLÁN - LOS MOCHIS',
         'TMQ':   'MÉXICO - QUERÉTARO',
         'TQI':   'QUERÉTARO - IRAPUATO',
-        'TSNL':  'SALTILLO - NUEVO LAREDO',
-        'TIGDL': 'IRAPUATO - GUADALAJARA',
         'TQSLP': 'QUERÉTARO - SAN LUIS POTOSÍ',
+        'TSNL':  'SALTILLO - NUEVO LAREDO',
         'TSLPS': 'SAN LUIS POTOSÍ - SALTILLO',
-        'TMLM':  'MAZATLÁN - LOS MOCHIS',
     }
 
     # Agrupar por dirección y tramo
