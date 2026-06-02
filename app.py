@@ -2043,6 +2043,8 @@ def eliminar_registro(id):
 
     registro = Registro.query.get_or_404(id)
 
+    SubActividad.query.filter_by(registro_id=id).delete()
+
     eliminado = RegistroEliminado(
 
         id_original=registro.id,
