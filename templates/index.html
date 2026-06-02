@@ -144,6 +144,10 @@
             text-align: center;
         }
 
+        #titulo-programado {
+            color: #6E152E;
+        }
+
         .grid {
 
             display: grid;
@@ -1769,7 +1773,7 @@ function poblarSelectsSub() {
         document.getElementById(id).innerHTML = '<option value="">Municipio</option>';
     });
     ['sr_nucleo', 'sp_nucleo'].forEach(id => {
-        document.getElementById(id).innerHTML = '<option value="">Núcleo Agrario</option>';
+        document.getElementById(id).innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     });
 }
 
@@ -1783,7 +1787,7 @@ document.getElementById('sr_entidad').addEventListener('change', function() {
     const sel = document.getElementById('sr_municipio');
     sel.innerHTML = '<option value="">Municipio</option>';
     municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
-    document.getElementById('sr_nucleo').innerHTML = '<option value="">Núcleo Agrario</option>';
+    document.getElementById('sr_nucleo').innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
 });
 
 document.getElementById('sr_municipio').addEventListener('change', function() {
@@ -1793,7 +1797,7 @@ document.getElementById('sr_municipio').addEventListener('change', function() {
         CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
     )].sort();
     const sel = document.getElementById('sr_nucleo');
-    sel.innerHTML = '<option value="">Núcleo Agrario</option>';
+    sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
 });
 
@@ -1805,7 +1809,7 @@ document.getElementById('sp_entidad').addEventListener('change', function() {
     const sel = document.getElementById('sp_municipio');
     sel.innerHTML = '<option value="">Municipio</option>';
     municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
-    document.getElementById('sp_nucleo').innerHTML = '<option value="">Núcleo Agrario</option>';
+    document.getElementById('sp_nucleo').innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
 });
 
 document.getElementById('sp_municipio').addEventListener('change', function() {
@@ -1815,7 +1819,7 @@ document.getElementById('sp_municipio').addEventListener('change', function() {
         CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
     )].sort();
     const sel = document.getElementById('sp_nucleo');
-    sel.innerHTML = '<option value="">Núcleo Agrario</option>';
+    sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
 });
 
