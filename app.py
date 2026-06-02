@@ -2354,11 +2354,13 @@ def dashboard():
     tramos_labels = [
         t[0]
         for t in tramos_data
+        if t[0]
     ]
 
     tramos_values = [
         t[1]
         for t in tramos_data
+        if t[0]
     ]
 
     # =====================================
