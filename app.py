@@ -2545,6 +2545,144 @@ def pre_reporte():
     return html
 
 # =========================================
+# PRE-REPORTE POR TRAMO
+# =========================================
+
+@app.route('/pre_reporte_tramo')
+def pre_reporte_tramo():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+
+    ahora = hora_cdmx()
+    tramos_nombres = {
+        'TAP':   'AIFA - PACHUCA',
+        'TIGDL': 'IRAPUATO - GUADALAJARA',
+        'TMLM':  'MAZATLÁN - LOS MOCHIS',
+        'TMQ':   'MÉXICO - QUERÉTARO',
+        'TQI':   'QUERÉTARO - IRAPUATO',
+        'TQSLP': 'QUERÉTARO - SAN LUIS POTOSÍ',
+        'TSNL':  'SALTILLO - NUEVO LAREDO',
+        'TSLPS': 'SAN LUIS POTOSÍ - SALTILLO',
+    }
+
+    tramos_disponibles = db.session.query(Registro.tramo).filter(
+        db.extract('year', Registro.fecha) == ahora.year,
+        db.extract('month', Registro.fecha) == ahora.month,
+        Registro.tramo.isnot(None)
+    ).distinct().all()
+
+    tramos = [(t[0], tramos_nombres.get(t[0], t[0])) for t in tramos_disponibles]
+
+    return f'''<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Pre-Reporte por Tramo</title>
+<style>
+  body {{ font-family: Segoe UI, sans-serif; background: #f0f0f0; padding: 40px; }}
+  h2 {{ color: #6E152E; margin-bottom: 24px; }}
+  .btn {{ display: block; width: 300px; margin: 10px auto; padding: 14px;
+          background: #6E152E; color: white; text-align: center;
+          border-radius: 10px; text-decoration: none; font-weight: bold; }}
+  .btn:hover {{ background: #a42145; }}
+</style>
+</head>
+<body>
+<h2 style="text-align:center;">Selecciona un tramo</h2>
+{''.join(f'<a class="btn" href="/pre_reporte_tramo/{t[0]}" target="_blank">{t[1]}</a>' for t in sorted(tramos, key=lambda x: x[1]))}
+</body></html>'''
+
+
+@app.route('/pre_reporte_tramo/<tramo>')
+def pre_reporte_tramo_detalle(tramo):
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+
+    ahora = hora_cdmx()
+    registros = Registro.query.filter(
+        db.extract('year', Registro.fecha) == ahora.year,
+        db.extract('month', Registro.fecha) == ahora.month,
+        Registro.tramo == tramo
+    ).order_by(Registro.direccion).all()
+
+    if not registros:
+        return '<h2 style="font-family:sans-serif;padding:40px;">No hay registros para este tramo.</h2>'
+
+    meses = {
+        'January': 'Enero', 'February': 'Febrero', 'March': 'Marzo',
+        'April': 'Abril', 'May': 'Mayo', 'June': 'Junio',
+        'July': 'Julio', 'August': 'Agosto', 'September': 'Septiembre',
+        'October': 'Octubre', 'November': 'Noviembre', 'December': 'Diciembre'
+    }
+    mes_en = ahora.strftime('%B')
+    periodo_label = f"{meses.get(mes_en, mes_en)} {ahora.year}"
+
+    return generar_reporte_quincenal_html(registros, periodo_label)
+
+
+# =========================================
+# PRE-REPORTE POR DIRECCIÓN
+# =========================================
+
+@app.route('/pre_reporte_direccion')
+def pre_reporte_direccion():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+
+    ahora = hora_cdmx()
+
+    direcciones_disponibles = db.session.query(Registro.direccion).filter(
+        db.extract('year', Registro.fecha) == ahora.year,
+        db.extract('month', Registro.fecha) == ahora.month,
+        Registro.tramo.is_(None)
+    ).distinct().all()
+
+    direcciones = [d[0] for d in direcciones_disponibles if d[0]]
+
+    return f'''<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Pre-Reporte por Dirección</title>
+<style>
+  body {{ font-family: Segoe UI, sans-serif; background: #f0f0f0; padding: 40px; }}
+  h2 {{ color: #245C4F; margin-bottom: 24px; }}
+  .btn {{ display: block; width: 340px; margin: 10px auto; padding: 14px;
+          background: #245C4F; color: white; text-align: center;
+          border-radius: 10px; text-decoration: none; font-weight: bold; }}
+  .btn:hover {{ background: #1a3f36; }}
+</style>
+</head>
+<body>
+<h2 style="text-align:center;">Selecciona una dirección</h2>
+{''.join(f'<a class="btn" href="/pre_reporte_direccion/{d}" target="_blank">{d}</a>' for d in sorted(direcciones))}
+</body></html>'''
+
+
+@app.route('/pre_reporte_direccion/<direccion>')
+def pre_reporte_direccion_detalle(direccion):
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+
+    ahora = hora_cdmx()
+    registros = Registro.query.filter(
+        db.extract('year', Registro.fecha) == ahora.year,
+        db.extract('month', Registro.fecha) == ahora.month,
+        Registro.direccion == direccion,
+        Registro.tramo.is_(None)
+    ).order_by(Registro.fecha).all()
+
+    if not registros:
+        return '<h2 style="font-family:sans-serif;padding:40px;">No hay registros para esta dirección.</h2>'
+
+    meses = {
+        'January': 'Enero', 'February': 'Febrero', 'March': 'Marzo',
+        'April': 'Abril', 'May': 'Mayo', 'June': 'Junio',
+        'July': 'Julio', 'August': 'Agosto', 'September': 'Septiembre',
+        'October': 'Octubre', 'November': 'Noviembre', 'December': 'Diciembre'
+    }
+    mes_en = ahora.strftime('%B')
+    periodo_label = f"{meses.get(mes_en, mes_en)} {ahora.year}"
+
+    return generar_reporte_quincenal_html(registros, periodo_label)
+
+# =========================================
 # VERSION
 # =========================================
 
