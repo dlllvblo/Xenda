@@ -1930,7 +1930,7 @@ function agregarTrabajoRealizado() {
     const tipo = document.getElementById('trabajo_realizado').value;
     const estatus = document.getElementById('estatus_trabajo_realizado').value;
     const descripcion = document.getElementById('actividades_realizadas').value.toUpperCase();
-    if (!tipo || !descripcion) { alert('Selecciona tipo e ingresa descripción'); return; }
+    if (!descripcion) { alert('Ingresa la descripción'); return; }
     trabajosRealizados.push({ tipo, estatus, descripcion });
     document.getElementById('trabajos_realizados_json').value = JSON.stringify(trabajosRealizados);
     renderTablaTrabajosR();
@@ -1973,7 +1973,7 @@ function agregarTrabajoProgramado() {
     const tipo = document.getElementById('trabajo_programado').value;
     const estatus = document.getElementById('estatus_trabajo_programado').value;
     const descripcion = document.getElementById('actividades_programadas').value.toUpperCase();
-    if (!tipo || !descripcion) { alert('Selecciona tipo e ingresa descripción'); return; }
+    if (!descripcion) { alert('Ingresa la descripción'); return; }
     trabajosProgramados.push({ tipo, estatus, descripcion });
     document.getElementById('trabajos_programados_json').value = JSON.stringify(trabajosProgramados);
     renderTablaTrabajosP();
