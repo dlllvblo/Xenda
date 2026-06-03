@@ -810,7 +810,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         </tr>
                         '''
                         contador += 1
-
+        if filas_tabla_social:
             secciones_html += f'''
             <div class="pagina">
                 <div class="encabezado-pagina">
@@ -964,7 +964,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         </tr>
                         '''
                         contador += 1
-
+        if filas_tabla_priv:
             secciones_html += f'''
             <div class="pagina">
                 <div class="encabezado-pagina">
