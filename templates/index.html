@@ -336,7 +336,7 @@
         #sp_entidad, #sp_municipio, #sp_nucleo {
             text-transform: uppercase;
         }  
-          
+
         @media (max-width: 768px) {
 
             body {
@@ -944,7 +944,7 @@
                         <option value="">NÚCLEO AGRARIO</option>
                         <option value="VARIOS">VARIOS</option>
                     </select>
-                    <input id="sr_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <input id="sr_frente" type="number" min="0" step="1" placeholder="FRENTE" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;" class="bloquear-numero">
                     <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
                     <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
@@ -1015,7 +1015,7 @@
                         <option value="">NÚCLEO AGRARIO</option>
                         <option value="VARIOS">VARIOS</option>
                     </select>
-                    <input id="sp_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <input id="sp_frente" type="number" min="0" step="1" placeholder="FRENTE" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; class="bloquear-numero">
                     <textarea id="sp_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
                     <textarea id="sp_descripcion" placeholder="Descripción de la actividad programada..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
