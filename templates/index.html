@@ -1701,8 +1701,10 @@ let subProgramadas = [];
 
 function poblarSelectsSub() {
     const tramo = document.getElementById('tramo').value;
+
+    // Entidades: siempre todas, sin filtrar por tramo
     const entidades = [...new Set(
-        CATALOGO.filter(r => r.TRAMO === tramo).map(r => r.ENTIDAD_FEDERATIVA)
+        CATALOGO.map(r => r.ENTIDAD_FEDERATIVA)
     )].sort();
     ['sr_entidad', 'sp_entidad'].forEach(id => {
         const sel = document.getElementById(id);
@@ -1718,6 +1720,7 @@ function poblarSelectsSub() {
 }
 
 document.getElementById('tramo').addEventListener('change', poblarSelectsSub);
+poblarSelectsSub();
 
 document.getElementById('sr_entidad').addEventListener('change', function() {
     const tramo = document.getElementById('tramo').value;
