@@ -374,6 +374,8 @@ class SubActividad(db.Model):
 
     descripcion = db.Column(db.Text)
 
+    trabajo_campo = db.Column(db.String(300))
+
 # =========================================
 # REGISTROS ELIMINADOS
 # =========================================
@@ -807,7 +809,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{sub.municipio or ''}</td>
                             <td>{sub.nucleo or ''}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
-                            <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
+                            <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
                         '''
                         contador += 1
@@ -856,7 +858,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{sub.municipio or ''}</td>
                             <td>{sub.nucleo or ''}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
-                            <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
+                            <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
                         '''
                         contador += 1
@@ -962,7 +964,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{sub.municipio or ''}</td>
                             <td>{sub.nucleo or ''}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
-                            <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
+                            <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
                         '''
                         contador += 1
@@ -1011,7 +1013,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{sub.municipio or ''}</td>
                             <td>{sub.nucleo or ''}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
-                            <td>{(sub.descripcion or '').replace(chr(10), '<br>')}</td>
+                            <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
                         '''
                         contador += 1
@@ -1768,7 +1770,8 @@ def index():
                     municipio=item.get('municipio', ''),
                     nucleo=item.get('nucleo', ''),
                     frente=item.get('frente', ''),
-                    descripcion=item.get('descripcion', '')
+                    descripcion=item.get('descripcion', ''),
+                    trabajo_campo=item.get('trabajo_campo', '')
                 )
                 db.session.add(sub)
         except:
@@ -1783,7 +1786,8 @@ def index():
                     municipio=item.get('municipio', ''),
                     nucleo=item.get('nucleo', ''),
                     frente=item.get('frente', ''),
-                    descripcion=item.get('descripcion', '')
+                    descripcion=item.get('descripcion', ''),
+                    trabajo_campo=item.get('trabajo_campo', '')
                 )
                 db.session.add(sub)
         except:

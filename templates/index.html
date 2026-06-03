@@ -933,6 +933,7 @@
                         <option value="VARIOS">VARIOS</option>
                     </select>
                     <input id="sr_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
                     <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
                 <button type="button" onclick="agregarSubRealizada()" style="background:#245C4F;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad</button>
@@ -1003,6 +1004,7 @@
                         <option value="VARIOS">VARIOS</option>
                     </select>
                     <input id="sp_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <textarea id="sp_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
                     <textarea id="sp_descripcion" placeholder="Descripción de la actividad programada..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
                 <button type="button" onclick="agregarSubProgramada()" style="background:#6E152E;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad programada</button>
@@ -1871,6 +1873,7 @@ function agregarSubRealizada() {
         municipio: document.getElementById('sr_municipio').value,
         nucleo: document.getElementById('sr_nucleo').value,
         frente: document.getElementById('sr_frente').value,
+        trabajo_campo: document.getElementById('sr_trabajo_campo').value.toUpperCase(),
         descripcion: document.getElementById('sr_descripcion').value.toUpperCase()
     };
     if (!item.descripcion) { alert('Ingresa al menos la descripción'); return; }
@@ -1879,6 +1882,7 @@ function agregarSubRealizada() {
     renderTabla(subRealizadas, 'tabla_sub_realizadas');
     document.getElementById('sr_frente').value = '';
     document.getElementById('sr_descripcion').value = '';
+    document.getElementById('sr_trabajo_campo').value = '';
 }
 
 function agregarSubProgramada() {
@@ -1887,6 +1891,7 @@ function agregarSubProgramada() {
         municipio: document.getElementById('sp_municipio').value,
         nucleo: document.getElementById('sp_nucleo').value,
         frente: document.getElementById('sp_frente').value,
+        trabajo_campo: document.getElementById('sp_trabajo_campo').value.toUpperCase(),
         descripcion: document.getElementById('sp_descripcion').value.toUpperCase()
     };
     if (!item.descripcion) { alert('Ingresa al menos la descripción'); return; }
@@ -1895,6 +1900,7 @@ function agregarSubProgramada() {
     renderTabla(subProgramadas, 'tabla_sub_programadas');
     document.getElementById('sp_frente').value = '';
     document.getElementById('sp_descripcion').value = '';
+    document.getElementById('sp_trabajo_campo').value = '';
 }
 
 // =====================================
