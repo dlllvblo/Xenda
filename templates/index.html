@@ -305,6 +305,12 @@
                 opacity: 0.96;
             }
 
+            .btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+
             .btn-guardar {
 
                 background:
@@ -524,7 +530,7 @@
                 </select>
 
             </div>
-
+            <!-- BLOQUEO TEMPORAL DE INFORMACIÓN TERRITORIAL
             <div class="input-group">
 
                 <label>Entidad Federativa *</label>
@@ -599,7 +605,7 @@
                 >
 
             </div>
-
+            -->
         </div>
 
     </div>
@@ -681,10 +687,10 @@
         >
 
             <label>
-                Tipo de Propiedad
+                Tipo de Propiedad *
             </label>
 
-            <select name="tipo_propiedad">
+            <select name="tipo_propiedad" required>
 
                 <option value="">
                     Seleccione una opción
@@ -1023,7 +1029,8 @@
     <div class="submit-container">
 
         <button
-            type="submit"                       
+            type="submit"
+            id="btn-guardar"                      
             class="btn btn-guardar"
         >
             Guardar registro
@@ -1107,15 +1114,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const tramo =
                 tramoSelect.value;
-
-            entidadSelect.innerHTML =
-                '<option value="">Seleccione una entidad</option>';
-
-            municipioSelect.innerHTML =
-                '<option value="">Seleccione un municipio</option>';
-
-            nucleoSelect.innerHTML =
-                '<option value="">Seleccione un núcleo agrario</option>';
+            if (entidadSelect) entidadSelect.innerHTML = '<option value="">Seleccione una entidad</option>';
+            if (municipioSelect) municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
+            if (nucleoSelect) nucleoSelect.innerHTML = '<option value="">Seleccione un núcleo agrario</option>';            
 
             if (!tramo) return;
 
@@ -1125,15 +1126,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     .map(r => r.ENTIDAD_FEDERATIVA)
             )].sort();
 
-            entidades.forEach(entidad => {
-
-                entidadSelect.innerHTML += `
-                    <option value="${entidad}">
-                        ${entidad}
-                    </option>
-                `;
-
-            });
+            if (entidadSelect) {
+                entidades.forEach(entidad => {
+                    entidadSelect.innerHTML += `
+                        <option value="${entidad}">
+                            ${entidad}
+                        </option>
+                    `;
+                });
+            }
 
         }
     );
@@ -1143,98 +1144,49 @@ document.addEventListener('DOMContentLoaded', function() {
     // ENTIDADES → MUNICIPIOS
     // =====================================
 
-    entidadSelect.addEventListener(
-        'change',
-        function() {
-
-            const tramo =
-                tramoSelect.value;
-
-            const entidad =
-                entidadSelect.value;
-
-            municipioSelect.innerHTML =
-                '<option value="">Seleccione un municipio</option>';
-
-            nucleoSelect.innerHTML =
-                '<option value="">Seleccione un núcleo agrario</option>';
-
+        if (entidadSelect) {
+        entidadSelect.addEventListener('change', function() {
+            const tramo = tramoSelect.value;
+            const entidad = entidadSelect.value;
+            if (municipioSelect) municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
+            if (nucleoSelect) nucleoSelect.innerHTML = '<option value="">Seleccione un núcleo agrario</option>';
             if (!tramo || !entidad) return;
-
-            municipioSelect.disabled = false;
-
-            nucleoSelect.disabled = true;
-
+            if (municipioSelect) municipioSelect.disabled = false;
+            if (nucleoSelect) nucleoSelect.disabled = true;
             const municipios = [...new Set(
-                CATALOGO
-                    .filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad)
-                    .map(r => r.MUNICIPIO)
+                CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad).map(r => r.MUNICIPIO)
             )].sort();
-
             municipios.forEach(municipio => {
-
-                municipioSelect.innerHTML += `
-                    <option value="${municipio}">
-                        ${municipio}
-                    </option>
-                `;
-
+                if (municipioSelect) municipioSelect.innerHTML += `<option value="${municipio}">${municipio}</option>`;
             });
-
-        }
-    );
+        });
+    }
 
 
     // =====================================
     // MUNICIPIOS → NUCLEOS
     // =====================================
 
-    municipioSelect.addEventListener(
-        'change',
-        function() {
-
-            const tramo =
-                tramoSelect.value;
-
-            const entidad =
-                entidadSelect.value;
-
-            const municipio =
-                municipioSelect.value;
-
-            nucleoSelect.innerHTML =
-                '<option value="">Seleccione un núcleo agrario</option>';
-
-            if (
-                !tramo ||
-                !entidad ||
-                !municipio
-            ) return;
-
-            nucleoSelect.disabled = false;
-
+        if (municipioSelect) {
+        municipioSelect.addEventListener('change', function() {
+            const tramo = tramoSelect.value;
+            const entidad = entidadSelect ? entidadSelect.value : '';
+            const municipio = municipioSelect.value;
+            if (nucleoSelect) nucleoSelect.innerHTML = '<option value="">Seleccione un núcleo agrario</option>';
+            if (!tramo || !entidad || !municipio) return;
+            if (nucleoSelect) nucleoSelect.disabled = false;
             const nucleos = [...new Set(
-                CATALOGO
-                    .filter(r =>
-                        r.TRAMO === tramo &&
-                        r.ENTIDAD_FEDERATIVA === entidad &&
-                        r.MUNICIPIO === municipio
-                    )
-                    .map(r => r.NUCLEO_AGRARIO)
+                CATALOGO.filter(r =>
+                    r.TRAMO === tramo &&
+                    r.ENTIDAD_FEDERATIVA === entidad &&
+                    r.MUNICIPIO === municipio
+                ).map(r => r.NUCLEO_AGRARIO)
             )].sort();
-
             nucleos.forEach(nucleo => {
-
-                nucleoSelect.innerHTML += `
-                    <option value="${nucleo}">
-                        ${nucleo}
-                    </option>
-                `;
-
+                if (nucleoSelect) nucleoSelect.innerHTML += `<option value="${nucleo}">${nucleo}</option>`;
             });
-
-        }
-    );
+        });
+    }
 
 });
 
@@ -1396,9 +1348,9 @@ function aplicarConfigDireccion(direccion) {
             selectActividad.innerHTML = `
                 <option value="">Seleccione una opción</option>
                 <option value="AFECTACIÓN">AFECTACIÓN</option>
-                <option value="INDIVIDUALES">INDIVIDUALES</option>
-                <option value="VALIDACIÓN DE PLANOS DE LAS LIBERADORAS">VALIDACIÓN DE PLANOS DE LAS LIBERADORAS</option>
-                <option value="DECRETO DE OCUPACIÓN TEMPORAL">DECRETO DE OCUPACIÓN TEMPORAL</option>
+                <option value="EXPROPIACIÓN">EXPROPIACIÓN</option>
+                <option value="REVISIÓN">REVISIÓN</option>
+                <option value="VALIDACIÓN">VALIDACIÓN</option>
             `;
         } else {
             selectActividad.innerHTML = `
@@ -1444,41 +1396,17 @@ direccionSelect.addEventListener('change', function() {
     aplicarConfigDireccion(direccion);
 });
 
-const frenteInput =
-    document.getElementById('frente');
-
-frenteInput.addEventListener(
-    'keydown',
-    function(e) {
-
-        const teclasPermitidas = [
-
-            'Backspace',
-            'Delete',
-            'ArrowLeft',
-            'ArrowRight',
-            'Tab'
-
-        ];
-
-        if (
-            teclasPermitidas.includes(e.key)
-        ) {
-            return;
-        }
-
+const frenteInput = document.getElementById('frente');
+if (frenteInput) {
+    frenteInput.addEventListener('keydown', function(e) {
+        const teclasPermitidas = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab'];
+        if (teclasPermitidas.includes(e.key)) return;
         if (!/[0-9]/.test(e.key)) {
-
-            alert(
-                'Ingrese números solamente'
-            );
-
+            alert('Ingrese números solamente');
             e.preventDefault();
-
         }
-
-    }
-);
+    });
+}
 
 const inputsNumericos =
     document.querySelectorAll(
@@ -1674,6 +1602,10 @@ window.addEventListener('online', sincronizarPendientes);
 // ENVÍO OFFLINE
 document.querySelector('form').addEventListener('submit', async function(e) {
 
+    const btnGuardar = document.getElementById('btn-guardar');
+    btnGuardar.disabled = true;
+    btnGuardar.textContent = 'Guardando...';
+
     if (!navigator.onLine) {
 
         e.preventDefault();
@@ -1697,10 +1629,11 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         setTimeout(function() {
             flash.style.transition = 'opacity 0.5s ease';
             flash.style.opacity = '0';
-            setTimeout(function() {
-                flash.remove();
-            }, 500);
+            setTimeout(function() { flash.remove(); }, 500);
         }, 3000);
+
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = 'Guardar registro';
         return;
     }
 
@@ -1719,6 +1652,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
 
         if (response.ok || response.redirected) { 
             window.location.href = '/?guardado=1';
+            // No se rehabilita el botón porque la página se recarga
         } else {
             throw new Error('Error del servidor');
         }
@@ -1742,10 +1676,11 @@ document.querySelector('form').addEventListener('submit', async function(e) {
         setTimeout(function() {
             flash.style.transition = 'opacity 0.5s ease';
             flash.style.opacity = '0';
-            setTimeout(function() {
-                flash.remove();
-            }, 500);
+            setTimeout(function() { flash.remove(); }, 500);
         }, 3000);
+
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = 'Guardar registro';
 
     }
 
@@ -2026,8 +1961,8 @@ function calcularQuincena() {
         textoR = `Trabajo Realizado · 16–${diasEnMes} de ${meses[mes]} ${anio}`;
     }
 
-    document.getElementById('titulo-programado').textContent = 'Trabajo Programado · 01–15 de Junio 2026';
-    document.getElementById('titulo-realizado').textContent = 'Trabajo Realizado · 01–15 de Junio 2026';
+    document.getElementById('titulo-programado').textContent = texto;
+    document.getElementById('titulo-realizado').textContent = textoR;
 }
 
 calcularQuincena();
