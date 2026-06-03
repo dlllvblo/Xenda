@@ -332,6 +332,11 @@
                     0 14px 24px rgba(159,34,65,0.35);
             }
 
+        #sr_entidad, #sr_municipio, #sr_nucleo,
+        #sp_entidad, #sp_municipio, #sp_nucleo {
+            text-transform: uppercase;
+        }  
+          
         @media (max-width: 768px) {
 
             body {
@@ -347,7 +352,7 @@
                 background-repeat: no-repeat;
                 background-color: #dec9a2;
 
-            }   
+            }
 
             .topbar h1 {
 
@@ -930,7 +935,7 @@
                 <div id="tabla_sub_realizadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <select id="sr_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value=""></option>
+                        <option value="">ENTIDAD</option>
                     </select>
                     <select id="sr_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                         <option value="">MUNICIPIO</option>
