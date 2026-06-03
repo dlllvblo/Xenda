@@ -731,6 +731,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
         '''
 
         # ---- PROPIEDAD SOCIAL ----
+        filas_tabla_social = ''
         if social:
 
             # SOCIAL — bloques realizados
@@ -885,6 +886,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 '''
 
         # ---- PROPIEDAD PRIVADA ----
+        filas_tabla_priv = ''
         if privada:
 
             # Bloques realizados
