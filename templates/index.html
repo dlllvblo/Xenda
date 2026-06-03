@@ -366,6 +366,30 @@
 
         }
 
+        .tooltip-error {
+            position: absolute;
+            background: #6E152E;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+            z-index: 999;
+            pointer-events: none;
+            margin-top: 4px;
+        }
+
+        .tooltip-error::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 16px;
+            border-width: 0 6px 6px 6px;
+            border-style: solid;
+            border-color: transparent transparent #6E152E transparent;
+        }
+
     </style>
 
 </head>
@@ -944,7 +968,9 @@
                         <option value="">NÚCLEO AGRARIO</option>
                         <option value="VARIOS">VARIOS</option>
                     </select>
-                    <input id="sr_frente" type="number" min="0" step="1" placeholder="FRENTE" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;" class="bloquear-numero">
+                    <div style="position:relative;">
+                        <input id="sr_frente" type="number" min="0" step="1" placeholder="FRENTE" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; width:100%;" class="bloquear-numero">
+                    </div>
                     <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
                     <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
@@ -1413,6 +1439,25 @@ if (frenteInput) {
         }
     });
 }
+
+const srFrenteInput = document.getElementById('sr_frente');
+if (srFrenteInput) {
+    srFrenteInput.addEventListener('keydown', function(e) {
+        const teclasPermitidas = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab'];
+        if (teclasPermitidas.includes(e.key)) return;
+        if (!/[0-9]/.test(e.key)) {
+            e.preventDefault();
+            if (document.getElementById('tooltip-sr-frente')) return;
+            const tooltip = document.createElement('div');
+            tooltip.id = 'tooltip-sr-frente';
+            tooltip.className = 'tooltip-error';
+            tooltip.textContent = '⚠️ Solo números';
+            srFrenteInput.parentElement.appendChild(tooltip);
+            setTimeout(function() { tooltip.remove(); }, 2000);
+        }
+    });
+}
+
 
 const inputsNumericos =
     document.querySelectorAll(
