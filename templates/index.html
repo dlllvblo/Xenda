@@ -930,13 +930,13 @@
                 <div id="tabla_sub_realizadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <select id="sr_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Entidad</option>
+                        <option value="">ENTIDAD</option>
                     </select>
                     <select id="sr_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Municipio</option>
+                        <option value="">MUNICIPIO</option>
                     </select>
                     <select id="sr_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Núcleo Agrario</option>
+                        <option value="">NÚCLEO AGRARIO</option>
                         <option value="VARIOS">VARIOS</option>
                     </select>
                     <input id="sr_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
@@ -995,19 +995,19 @@
                 <input type="hidden" name="trabajos_programados_json" id="trabajos_programados_json" value="[]">
             </div>
 
-            <!-- SUB-ACTIVIDADES PROGRAMADAS -->
+            <!-- SUB-ACTIVIDADES PROGRAMADAS
             <div class="input-group" id="sub_programadas_container" style="grid-column: 1 / -1;">
                 <label>Actividades programadas en tabla del reporte</label>
                 <div id="tabla_sub_programadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <select id="sp_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Entidad</option>
+                        <option value="">ENTIDAD</option>
                     </select>
                     <select id="sp_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Municipio</option>
+                        <option value="">MUNICIPIO</option>
                     </select>
                     <select id="sp_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">Núcleo Agrario</option>
+                        <option value="">NÚCLEO AGRARIO</option>
                         <option value="VARIOS">VARIOS</option>
                     </select>
                     <input id="sp_frente" type="text" placeholder="Frente" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
@@ -1017,7 +1017,7 @@
                 <button type="button" onclick="agregarSubProgramada()" style="background:#6E152E;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad programada</button>
                 <input type="hidden" name="sub_actividades_programadas" id="sub_actividades_programadas" value="[]">
             </div>
-
+            -->
         </div>
     </div>
 
@@ -1700,22 +1700,23 @@ let subRealizadas = [];
 let subProgramadas = [];
 
 function poblarSelectsSub() {
-    const tramo = document.getElementById('tramo').value;
-
-    // Entidades: siempre todas, sin filtrar por tramo
     const entidades = [...new Set(
         CATALOGO.map(r => r.ENTIDAD_FEDERATIVA)
     )].sort();
     ['sr_entidad', 'sp_entidad'].forEach(id => {
         const sel = document.getElementById(id);
-        sel.innerHTML = '<option value="">Entidad</option>';
-        entidades.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+        if (sel) {
+            sel.innerHTML = '<option value="">Entidad</option>';
+            entidades.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
+        }
     });
     ['sr_municipio', 'sp_municipio'].forEach(id => {
-        document.getElementById(id).innerHTML = '<option value="">Municipio</option>';
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<option value="">Municipio</option>';
     });
     ['sr_nucleo', 'sp_nucleo'].forEach(id => {
-        document.getElementById(id).innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     });
 }
 
@@ -1744,27 +1745,38 @@ document.getElementById('sr_municipio').addEventListener('change', function() {
     nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
 });
 
-document.getElementById('sp_entidad').addEventListener('change', function() {
-    const tramo = document.getElementById('tramo').value;
-    const municipios = [...new Set(
-        CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
-    )].sort();
-    const sel = document.getElementById('sp_municipio');
-    sel.innerHTML = '<option value="">Municipio</option>';
-    municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
-    document.getElementById('sp_nucleo').innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
-});
+const spEntidad = document.getElementById('sp_entidad');
+if (spEntidad) {
+    spEntidad.addEventListener('change', function() {
+        const tramo = document.getElementById('tramo').value;
+        const municipios = [...new Set(
+            CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
+        )].sort();
+        const sel = document.getElementById('sp_municipio');
+        if (sel) {
+            sel.innerHTML = '<option value="">Municipio</option>';
+            municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
+        }
+        const spNucleo = document.getElementById('sp_nucleo');
+        if (spNucleo) spNucleo.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
+    });
+}
 
-document.getElementById('sp_municipio').addEventListener('change', function() {
-    const tramo = document.getElementById('tramo').value;
-    const entidad = document.getElementById('sp_entidad').value;
-    const nucleos = [...new Set(
-        CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
-    )].sort();
-    const sel = document.getElementById('sp_nucleo');
-    sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
-    nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
-});
+const spMunicipio = document.getElementById('sp_municipio');
+if (spMunicipio) {
+    spMunicipio.addEventListener('change', function() {
+        const tramo = document.getElementById('tramo').value;
+        const entidad = spEntidad ? spEntidad.value : '';
+        const nucleos = [...new Set(
+            CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
+        )].sort();
+        const sel = document.getElementById('sp_nucleo');
+        if (sel) {
+            sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
+            nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
+        }
+    });
+}
 
 function renderTabla(lista, containerId) {
     const container = document.getElementById(containerId);
