@@ -9,6 +9,8 @@ from flask import (
     send_file 
 )
 from flask_sqlalchemy import SQLAlchemy
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from datetime import datetime, timedelta
 import pandas as pd
 import unicodedata
@@ -65,6 +67,12 @@ ADMIN_CORREO_2 = os.getenv('ADMIN_CORREO_2')
 ADMIN_CORREOS = [c for c in [ADMIN_CORREO, ADMIN_CORREO_2] if c]
 
 app.permanent_session_lifetime = timedelta(days=7)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri="memory://"
+)
 
 database_url = os.getenv('DATABASE_URL')
 
@@ -1349,7 +1357,7 @@ catalogo['MUNICIPIO_NORMALIZADO'] = (
 # =========================================
 
 @app.route('/login', methods=['GET', 'POST'])
-
+@limiter.limit("5 per minute")
 def login():
 
     if request.method == 'POST':
@@ -1513,6 +1521,10 @@ def reiniciar_registros():
     if session.get('usuario') not in ADMIN_CORREOS:
         return 'No autorizado', 403
     if request.method == 'POST':
+        confirmacion = request.form.get('confirmacion', '')
+        if confirmacion.upper() != 'CONFIRMAR':
+            flash('Escribe CONFIRMAR para continuar')
+            return redirect('/reiniciar_registros')
         SubActividad.query.delete()
         Registro.query.delete()
         RegistroEliminado.query.delete()
@@ -1521,24 +1533,19 @@ def reiniciar_registros():
         flash('Registros reiniciados correctamente')
         return redirect('/admin')
     return '''
-        <h2>
-            ¿Seguro que deseas reiniciar TODOS los registros?
-        </h2>
-
-        <p>
-            Esta acción no se puede deshacer.
-        </p>
-
+        <h2>¿Seguro que deseas reiniciar TODOS los registros?</h2>
+        <p>Esta acción no se puede deshacer.</p>
+        <p>Escribe <strong>CONFIRMAR</strong> para continuar:</p>
         <form method="POST">
-
-            <button type="submit">
-                Sí, reiniciar registros
-            </button>
-
-            <a href="/admin">
-                Cancelar
-            </a>
-
+            <input
+                type="text"
+                name="confirmacion"
+                placeholder="Escribe CONFIRMAR"
+                style="padding:8px; font-size:16px; margin:10px 0;"
+            >
+            <br>
+            <button type="submit">Reiniciar registros</button>
+            <a href="/admin">Cancelar</a>
         </form>
     '''
 
