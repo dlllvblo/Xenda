@@ -2589,7 +2589,7 @@ def pre_reporte_tramo():
 </style>
 </head>
 <body>
-<h2 style="text-align:center;">Selecciona un tramo</h2>
+<h2 style="text-align:center;">Seleccione un tramo</h2>
 {''.join(f'<a class="btn" href="/pre_reporte_tramo/{t[0]}" target="_blank">{t[1]}</a>' for t in sorted(tramos, key=lambda x: x[1]))}
 </body></html>'''
 
@@ -2652,7 +2652,7 @@ def pre_reporte_direccion():
 </style>
 </head>
 <body>
-<h2 style="text-align:center;">Selecciona una dirección</h2>
+<h2 style="text-align:center;">Seleccione una dirección</h2>
 {''.join(f'<a class="btn" href="/pre_reporte_direccion/{d}" target="_blank">{d}</a>' for d in sorted(direcciones))}
 </body></html>'''
 
