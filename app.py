@@ -721,6 +721,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
         # ---- PORTADA DE SECCIÓN ----
         secciones_html += f'''
         <div class="pagina portada-seccion">
+            <div class="portada-bandera"></div>
             <div class="portada-contenido">
                 <p class="portada-subtitulo">Reporte de actividades</p>
                 <div class="portada-divider"></div>
@@ -1119,17 +1120,13 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     padding: 0;
     overflow: hidden;
   }}
-  .pagina.portada-seccion {{
-    overflow: visible;
-  }}
-  .pagina.portada-seccion::before {{
-    content: '';
+  .portada-bandera {{
     position: absolute;
     left: 0;
-    bottom: 0;
+    bottom: -10px;
     width: 200px;
     height: 260px;
-    background: url('/static/bandera.png') no-repeat left bottom;
+    background: url('/static/bandera.png') no-repeat left center;
     background-size: contain;
     z-index: 10;
   }}
