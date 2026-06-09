@@ -1126,10 +1126,10 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     content: '';
     position: absolute;
     left: 0;
-    bottom: -10px;
+    bottom: 0;
     width: 200px;
     height: 260px;
-    background: url('/static/bandera.png') no-repeat left center;
+    background: url('/static/bandera.png') no-repeat left bottom;
     background-size: contain;
     z-index: 10;
   }}
