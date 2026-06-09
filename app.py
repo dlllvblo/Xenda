@@ -1118,7 +1118,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     justify-content: space-between;
     min-height: 540px;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
   }}
   .portada-seccion::before {{
     content: '';
@@ -1150,6 +1150,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     height: 260px;
     background: url('/static/bandera.png') no-repeat left center;
     background-size: contain;
+    z-index: 10;
   }}
   .portada-contenido {{
     text-align: center;
