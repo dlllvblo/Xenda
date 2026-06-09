@@ -2220,70 +2220,65 @@ def descargar_registros():
     datos = []
 
     for r in registros:
-        datos.append({
 
-            'ID': r.id,
+        subs_realizadas = SubActividad.query.filter_by(
+            registro_id=r.id, tipo='realizada'
+        ).all()
 
-            'DIRECCIÓN': r.direccion,
+        subs_programadas = SubActividad.query.filter_by(
+            registro_id=r.id, tipo='programada'
+        ).all()
 
-            'TRAMO': r.tramo,
+        base = {
+            'DIRECCIÓN':                      r.direccion,
+            'TRAMO':                          r.tramo,
+            'TIPO DE PROPIEDAD':              r.tipo_propiedad,
+            'TIPO DE ACTIVIDAD':              r.actividad,
+            'MODALIDAD':                      r.tipo,
+            'NO. DE INFOGRAFÍAS':             r.num_infografias,
+            'INFOGRAFÍAS GENERADAS':          r.infografias_generadas,
+            'INFOGRAFÍAS VALIDADAS':          r.infografias_validadas,
+            'ESTATUS INFOGRAFÍAS':            r.estatus_infografias,
+            'NO. DE MEDICIONES':              r.mediciones_agroforestales,
+            'NO. DE FICHAS':                  r.mediciones_bdts,
+            'PLANOS':                         r.planos,
+            'PLANOS GENERADOS':               r.planos_generados,
+            'PLANOS VALIDADOS':               r.planos_validados,
+            'TIPO DE TRABAJO REALIZADO':      r.trabajo_realizado,
+            'ESTATUS TRABAJO REALIZADO':      r.estatus_trabajo_realizado,
+            'DESCRIPCIÓN ACTIVIDADES REALIZADAS': r.actividades_realizadas,
+            'ENTIDAD (TABLA)':                '',
+            'MUNICIPIO (TABLA)':              '',
+            'NÚCLEO AGRARIO (TABLA)':         '',
+            'FRENTE (TABLA)':                 '',
+            'TRABAJO DE CAMPO (TABLA)':       '',
+            'DESCRIPCIÓN ACTIVIDAD (TABLA)':  '',
+            'TIPO DE TRABAJO PROGRAMADO':     r.trabajo_programado,
+            'ESTATUS TRABAJO PROGRAMADO':     r.estatus_trabajo_programado,
+            'DESCRIPCIÓN ACTIVIDADES PROGRAMADAS': r.actividades_programadas,
+            'USUARIO':                        r.usuario,
+            'FECHA':                          r.fecha.strftime('%d/%m/%Y %H:%M:%S') if r.fecha else '',
+        }
 
-            'ENTIDAD FEDERATIVA': r.entidad,
-
-            'MUNICIPIO': r.municipio,
-
-            'NÚCLEO AGRARIO': r.nucleo,
-
-            'FRENTE': r.frente,
-
-            'ACTIVIDAD': r.actividad,
-
-            'MODALIDAD': r.tipo,
-
-            'TIPO DE PROPIEDAD': r.tipo_propiedad,
-
-            'MEDICIONES AGROFORESTALES': r.mediciones_agroforestales,
-
-            'MEDICIONES BDTS': r.mediciones_bdts,
-
-            'PLANOS': r.planos,
-
-            'PLANOS GENERADOS': r.planos_generados,
-
-            'PLANOS VALIDADOS': r.planos_validados,
-
-            'NO. DE INFOGRAFÍAS': r.num_infografias,
-
-            'INFOGRAFÍAS GENERADAS': r.infografias_generadas,
-
-            'INFOGRAFÍAS VALIDADAS': r.infografias_validadas,
-
-            'ESTATUS INFOGRAFÍAS': r.estatus_infografias,
-
-            'TRABAJO REALIZADO': r.trabajo_realizado,
-
-            'ESTATUS TRABAJO REALIZADO': r.estatus_trabajo_realizado,
-
-            'ACTIVIDADES REALIZADAS': r.actividades_realizadas,
-
-            'TRABAJO PROGRAMADO': r.trabajo_programado,
-
-            'ESTATUS TRABAJO PROGRAMADO': r.estatus_trabajo_programado,
-
-            'ACTIVIDADES PROGRAMADAS': r.actividades_programadas,
-
-            'USUARIO': r.usuario,
-
-            'FECHA': r.fecha.strftime(
-                '%d/%m/%Y %H:%M:%S'
-            ) if r.fecha else '',
-        })        
+        # Si hay sub-actividades realizadas, una fila por cada una
+        if subs_realizadas:
+            for sub in subs_realizadas:
+                fila = base.copy()
+                fila['ENTIDAD (TABLA)']               = sub.entidad or ''
+                fila['MUNICIPIO (TABLA)']             = sub.municipio or ''
+                fila['NÚCLEO AGRARIO (TABLA)']        = sub.nucleo or ''
+                fila['FRENTE (TABLA)']                = sub.frente or ''
+                fila['TRABAJO DE CAMPO (TABLA)']      = sub.trabajo_campo or ''
+                fila['DESCRIPCIÓN ACTIVIDAD (TABLA)'] = sub.descripcion or ''
+                datos.append(fila)
+        else:
+            datos.append(base)
 
     df = pd.DataFrame(datos)
 
     ruta_archivo = os.path.join(
-    '/tmp',
-    'registros_xenda.xlsx'
+        '/tmp',
+        'registros_xenda.xlsx'
     )
 
     df.to_excel(
