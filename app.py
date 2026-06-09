@@ -1151,7 +1151,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     text-align: center;
     font-size: 11px;
     color: #BC945A;
-    background: rgba(0,0,0,0.2);
+    background: transparent;
     padding: 12px;
     letter-spacing: 0.05em;
   }}
