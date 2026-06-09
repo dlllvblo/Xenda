@@ -280,21 +280,23 @@
             <th>ID</th>
             <th>Dirección</th>
             <th>Tramo</th>
+            <th>Tipo de propiedad</th>
             <th>Actividad</th>
             <th>Modalidad</th>
-            <th>Tipo de propiedad</th>
-            <th>Mediciones Agroforestales</th>
-            <th>Mediciones BDTS</th>
-            <th>Planos</th>
-            <th>Planos Generados</th>
-            <th>Planos Validados</th>
             <th>No. Infografías</th>
             <th>Infografías Generadas</th>
             <th>Infografías Validadas</th>
             <th>Estatus Infografías</th>
-            <th>Trabajo Realizado</th>
+            <th>No. de Mediciones</th>
+            <th>No de Fichas</th>
+            <th>Planos</th>
+            <th>Planos Generados</th>
+            <th>Planos Validados</th>
+            <th>Tipo Trabajo Realizado</th>
+            <th>Estatus Realizado</th>
             <th>Actividades Realizadas</th>
-            <th>Trabajo Programado</th>
+            <th>Tipo Trabajo Programado</th>
+            <th>Estatus Programado</th>
             <th>Actividades Programadas</th>
             <th>Usuario</th>
 
@@ -323,21 +325,23 @@
             <td>{{ r.id }}</td>
             <td>{{ r.direccion }}</td>
             <td>{{ r.tramo }}</td>
+            <td>{{ r.tipo_propiedad }}</td>
             <td>{{ r.actividad }}</td>
             <td>{{ r.tipo }}</td>
-            <td>{{ r.tipo_propiedad }}</td>
+            <td>{{ r.num_infografias }}</td>
+            <td>{{ r.infografias_generadas }}</td>
+            <td>{{ r.infografias_validadas }}</td>
+            <td>{{ r.estatus_infografias }}</td>
             <td>{{ r.mediciones_agroforestales }}</td>
             <td>{{ r.mediciones_bdts }}</td>
             <td>{{ r.planos }}</td>
             <td>{{ r.planos_generados }}</td>
             <td>{{ r.planos_validados }}</td>
-            <td>{{ r.num_infografias }}</td>
-            <td>{{ r.infografias_generadas }}</td>
-            <td>{{ r.infografias_validadas }}</td>
-            <td>{{ r.estatus_infografias }}</td>
             <td>{{ r.trabajo_realizado }}</td>
+            <td>{{ r.estatus_trabajo_realizado }}</td>
             <td>{{ r.actividades_realizadas }}</td>
             <td>{{ r.trabajo_programado }}</td>
+            <td>{{ r.estatus_trabajo_programado }}</td>
             <td>{{ r.actividades_programadas }}</td>
             <td>{{ r.usuario }}</td>
 
