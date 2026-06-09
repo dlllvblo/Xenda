@@ -3,190 +3,277 @@
 <head>
 
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Xenda Admin</title>
 
     <style>
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial;
-            background: rgba(110, 21, 46, 0.8);
-            padding: 20px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background:
+                linear-gradient(
+                    rgba(110,21,46,0.92),
+                    rgba(110,21,46,0.92)
+                ),
+                url("/static/fondo.png");
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            padding: 30px 20px;
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 17px;
-            max-width: 700px;
+        .container {
+            max-width: 780px;
             margin: auto;
-            box-shadow: 0 8px 24px rgba(64, 64, 64, 0.5);
         }
 
-        h1 {
-            margin-top: 0;
+        /* TOPBAR */
+        .topbar {
+            text-align: center;
+            margin-bottom: 28px;
+            color: white;
         }
 
-        input {
-            width: 320px;
-            max-width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+        .topbar h1 {
+            font-size: 32px;
+            letter-spacing: 4px;
+            font-weight: bold;
+            margin-bottom: 4px;
         }
 
-        button {
+        .topbar p {
+            font-size: 13px;
+            color: rgba(222,201,162,0.8);
+            letter-spacing: 0.5px;
+        }
+
+        /* CARD */
+        .card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #691B4F;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0e6ec;
+        }
+
+        /* FLASH */
+        .flash {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* FORM AGREGAR */
+        .form-agregar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-agregar input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1.5px solid #d1d5db;
+            font-size: 14px;
+            background: #f9fafb;
+            transition: 0.2s;
+        }
+
+        .form-agregar input:focus {
+            outline: none;
+            border-color: #691B4F;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(105,27,79,0.12);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .btn-guinda {
             background: #691B4F;
             color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
         }
 
+        .btn-verde {
+            background: #245C4F;
+            color: white;
+        }
+
+        .btn-gris {
+            background: #4b5563;
+            color: white;
+        }
+
+        /* SECCIÓN NAVEGACIÓN */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* SECCIÓN DESCARGAS */
+        .descargas-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .descarga-btn {
+            background: #f9fafb;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .descarga-btn:hover {
+            background: #f0e6ec;
+            border-color: #691B4F;
+            color: #691B4F;
+            transform: translateY(-2px);
+        }
+
+        .descarga-btn .icono {
+            font-size: 22px;
+        }
+
+        /* SECCIÓN REPORTES */
+        .reportes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .reporte-btn {
+            background: #f0faf8;
+            border: 1.5px solid #c6ddd9;
+            border-radius: 12px;
+            padding: 14px 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #245C4F;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reporte-btn:hover {
+            background: #245C4F;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .reporte-btn .icono {
+            font-size: 22px;
+        }
+
+        /* TABLA */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
 
-        td, th {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
+        th {
+            padding: 12px 16px;
+            background: #691B4F;
+            color: white;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
         }
 
-        a {
-            color: red;
+        th:first-child { border-radius: 10px 0 0 0; }
+        th:last-child  { border-radius: 0 10px 0 0; text-align: center; }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        td:last-child { text-align: center; }
+
+        tr:last-child td { border-bottom: none; }
+
+        tr:hover td { background: #fdf4f8; }
+
+        .eliminar-link {
+            color: #dc2626;
             text-decoration: none;
-        }
-
-        .flash {
-            background: #dbeafe;
-            padding: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 4px 12px;
             border-radius: 8px;
-            margin-bottom: 10px;
+            border: 1.5px solid #fca5a5;
+            transition: all 0.2s;
         }
 
-        .top-actions {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: end;
-
-            gap: 20px;
-
-            margin-bottom: 25px;
-
-            flex-wrap: wrap;
+        .eliminar-link:hover {
+            background: #dc2626;
+            color: white;
         }
 
-        .form-agregar {
-
-            flex: 1;
-
-            min-width: 280px;
-        }
-
-        .acciones-admin {
-
-            display: flex;
-
-            gap: 12px;
-
-            flex-wrap: wrap;
-        }
-
-        .top-actions a {
-
-            color: inherit;
-        }
-
-        .admin-links {
-
-            display: flex;
-
-            gap: 12px;
-
-            margin-bottom: 20px;
-
-            flex-wrap: wrap;
-        }
-
-        .admin-links a {
-
-            color: inherit;
-        }
-
-        .acciones-links {
-
-            display: flex;
-
-            gap: 20px;
-
-            margin-top: 12px;
-
-            flex-wrap: wrap;
-        }
-
-        .acciones-links a {
-
-            text-decoration: underline;
-
-            color: #245C4F;
-
-            font-weight: bold;
-
-            text-align: center;
-        }
-
-        td:last-child,
-        th:last-child {
-
-            text-align: center;
-        }
-
-        .link-admin {
-
-            color: #691B4F;
-
-            text-decoration: underline;
-
-            font-size: 14px;
-
-            cursor: pointer;
-
-            transition: opacity 0.2s ease;
-        }
-
-        .link-admin:hover {
-
-            opacity: 0.7;
-        }
-
-        .link-correo {
-
-            color: #a42145;
-
-            text-decoration: underline;
-
-            font-size: 14px;
-
-            cursor: pointer;
-
-            transition: opacity 0.2s ease;
-
-            font-weight: bold;
-        }
-
-        .link-correo:hover {
-
-            opacity: 0.7;
+        @media (max-width: 600px) {
+            .descargas-grid,
+            .reportes-grid,
+            .nav-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
     </style>
@@ -194,247 +281,114 @@
 </head>
 <body>
 
-<div class="card">
+<div class="container">
 
-    <h1>Administración de Usuarios</h1>       
+    <div class="topbar">
+        <h1>XENDA</h1>
+        <p>Panel de Administración · Registro Agrario Nacional · SEDATU</p>
+    </div>
 
     {% with messages = get_flashed_messages() %}
-
         {% if messages %}
-
             {% for message in messages %}
-
-                <div class="flash">
-                    {{ message }}
-                </div>
-
+                <div class="flash">{{ message }}</div>
             {% endfor %}
-
         {% endif %}
-
     {% endwith %}
 
-    <div class="top-actions">
-
-    <form method="POST" class="form-agregar">
-
-        <input
-            type="email"
-            name="correo"
-            placeholder="correo@gmail.com"
-            required
-        >
-
-        <button type="submit">
-
-            Agregar usuario
-
-        </button>
-
-    </form>
-
-    <div class="acciones-admin">
-
-        <a href="/registros">
-
-            <button type="button">
-
-                Ver registros
-
+    <!-- AGREGAR USUARIO -->
+    <div class="card">
+        <div class="card-title">Agregar usuario</div>
+        <form method="POST" class="form-agregar">
+            <input
+                type="email"
+                name="correo"
+                placeholder="correo@gmail.com"
+                required
+            >
+            <button type="submit" class="btn btn-guinda">
+                + Agregar
             </button>
-
-        </a>
-
-        <a href="/sesiones">
-
-            <button type="button">
-
-                Ver sesiones
-
-            </button>
-
-        </a>
-
+        </form>
     </div>
 
-    <div class="acciones-links">
+    <!-- NAVEGACIÓN -->
+    <div class="card">
+        <div class="card-title">Navegación</div>
+        <div class="nav-grid">
+            <a href="/registros" class="btn btn-guinda">📋 Ver registros</a>
+            <a href="/sesiones" class="btn btn-gris">🖥️ Ver sesiones activas</a>
+        </div>
+    </div>
 
-        <a href="/descargar_usuarios">
+    <!-- DESCARGAS -->
+    <div class="card">
+        <div class="card-title">Descargas</div>
+        <div class="descargas-grid">
+            <a href="/descargar_usuarios" class="descarga-btn">
+                <span class="icono">👥</span>
+                Usuarios
+            </a>
+            <a href="/descargar_eliminados" class="descarga-btn">
+                <span class="icono">🗑️</span>
+                Registros eliminados
+            </a>
+            <a href="/descargar_registros" class="descarga-btn">
+                <span class="icono">📊</span>
+                Registros
+            </a>
+        </div>
+    </div>
 
-            Descargar usuarios
+    <!-- REPORTES -->
+    <div class="card">
+        <div class="card-title">Pre-reportes quincenales</div>
+        <div class="reportes-grid">
+            <a href="/pre_reporte" target="_blank" class="reporte-btn">
+                <span class="icono">📄</span>
+                Reporte general
+            </a>
+            <a href="/pre_reporte_tramo" target="_blank" class="reporte-btn">
+                <span class="icono">🚆</span>
+                Por tramo
+            </a>
+            <a href="/pre_reporte_direccion" target="_blank" class="reporte-btn">
+                <span class="icono">🏢</span>
+                Por dirección
+            </a>
+        </div>
+    </div>
 
-        </a>
-
-        <a href="/descargar_eliminados">
-
-            Descargar registros eliminados
-
-        </a>
-
-        <a href="/descargar_registros">
-
-            Descargar registros            
-
-        </a>
-
-        <a href="/pre_reporte" target="_blank">
-            Ver pre-reporte quincenal
-        </a>
-
-        <a href="/pre_reporte_tramo" target="_blank">
-            Ver pre-reporte por tramo
-        </a>
-
-        <a href="/pre_reporte_direccion" target="_blank">
-            Ver pre-reporte por dirección
-        </a>
-
-        <!-- <button
-
-            type="button"
-
-            onclick="avisarWhatsApp()"
-
-            style="
-                background: #25D366;
-                color: white;
-                padding: 12px 18px;
-                border-radius: 10px;
-                border: none;
-                font-weight: bold;
-                cursor: pointer;
-            "
-        >
-
-            Avisar apertura de periodo
-
-        </button>
-
-        <button
-
-            type="button"
-
-            onclick="avisarCierreWhatsApp()"
-
-            style="
-                background: #a42145;
-                color: white;
-                padding: 12px 18px;
-                border-radius: 10px;
-                border: none;
-                font-weight: bold;
-                cursor: pointer;
-            "
-        >
-
-            Avisar cierre de periodo
-
-        </button> -->
-
+    <!-- USUARIOS -->
+    <div class="card">
+        <div class="card-title">Usuarios registrados ({{ usuarios | length }})</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Correo</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.correo }}</td>
+                    <td>
+                        <a
+                            href="/eliminar_usuario/{{ usuario.id }}"
+                            onclick="return confirm('¿Eliminar este usuario?')"
+                            class="eliminar-link"
+                        >
+                            Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
 </div>
-
-
-    <table>
-
-        <thead>
-            <tr>
-                <th>Correo</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            {% for usuario in usuarios %}
-
-            <tr>
-
-                <td>
-                    {{ usuario.correo }}
-                </td>
-
-                <td>
-                    <a href="/eliminar_usuario/{{ usuario.id }}"
-    		       onclick="return confirm('¿Eliminar este usuario?')"
-		    >
-    		       Eliminar
-		    </a>
-            
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-</div>
-
-<!-- <script>
-
-function avisarWhatsApp() {
-
-    const mensaje = `
-
-XENDA - *AVISO IMPORTANTE*
-
-El periodo de captura será habilitado
-mañana a partir de las 00:00 hrs.
-
-Favor de preparar actividades y reportes.
-
-`;
-
-    navigator.clipboard.writeText(
-        mensaje
-    );
-
-    alert(
-        'Mensaje copiado. Se abrirá WhatsApp Web.'
-    );
-
-    window.open(
-        'https://wa.me/',
-        '_blank'
-    );
-}
-
-</script>
-
-<script>
-
-function avisarCierreWhatsApp() {
-
-    const mensaje = `
-
-XENDA - *AVISO IMPORTANTE*
-
-El periodo de captura finalizará hoy
-a las 23:59 hrs.
-
-Favor de concluir registros pendientes.
-
-`;
-
-    navigator.clipboard.writeText(
-        mensaje
-    );
-
-    alert(
-        'Mensaje copiado. Se abrirá WhatsApp Web.'
-    );
-
-    window.open(
-        'https://wa.me/',
-        '_blank'
-    );
-}
-
-</script> -->
 
 </body>
 </html>
