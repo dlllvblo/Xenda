@@ -134,11 +134,6 @@
             color: white;
         }
 
-        .btn-verde {
-            background: #245C4F;
-            color: white;
-        }
-
         .btn-gris {
             background: #4b5563;
             color: white;
@@ -158,32 +153,16 @@
             gap: 10px;
         }
 
-        .descarga-btn {
-            background: #f9fafb;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 14px 12px;
-            text-align: center;
-            text-decoration: none;
-            color: #374151;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .descarga-btn:hover {
-            background: #f0e6ec;
-            border-color: #691B4F;
+        .btn-outline-guinda {
+            background: transparent;
+            border: 1.5px solid #691B4F;
             color: #691B4F;
-            transform: translateY(-2px);
         }
 
-        .descarga-btn .icono {
-            font-size: 22px;
+        .btn-outline-guinda:hover {
+            background: #691B4F;
+            color: white;
+            opacity: 1;
         }
 
         /* SECCIÓN REPORTES */
@@ -193,31 +172,16 @@
             gap: 10px;
         }
 
-        .reporte-btn {
-            background: #f0faf8;
-            border: 1.5px solid #c6ddd9;
-            border-radius: 12px;
-            padding: 14px 12px;
-            text-align: center;
-            text-decoration: none;
+        .btn-outline-verde {
+            background: transparent;
+            border: 1.5px solid #245C4F;
             color: #245C4F;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
         }
 
-        .reporte-btn:hover {
+        .btn-outline-verde:hover {
             background: #245C4F;
             color: white;
-            transform: translateY(-2px);
-        }
-
-        .reporte-btn .icono {
-            font-size: 22px;
+            opacity: 1;
         }
 
         /* TABLA */
@@ -312,12 +276,31 @@
         </form>
     </div>
 
+    <!-- REPORTES -->
+    <div class="card">
+        <div class="card-title">Pre-reportes quincenales</div>
+        <div class="reportes-grid">
+            <a href="/pre_reporte" target="_blank" class="btn btn-outline-verde">
+                <span class="icono"></span>
+                Reporte general
+            </a>
+            <a href="/pre_reporte_tramo" target="_blank" class="btn btn-outline-verde">
+                <span class="icono"></span>
+                Por tramo
+            </a>
+            <a href="/pre_reporte_direccion" target="_blank" class="btn btn-outline-verde">
+                <span class="icono"></span>
+                Por dirección
+            </a>
+        </div>
+    </div>
+
     <!-- NAVEGACIÓN -->
     <div class="card">
         <div class="card-title">Navegación</div>
         <div class="nav-grid">
             <a href="/registros" class="btn btn-guinda">Ver registros</a>
-            <a href="/sesiones" class="btn btn-gris">Ver sesiones activas</a>
+            <a href="/sesiones" class="btn btn-guinda">Ver sesiones activas</a>
         </div>
     </div>
 
@@ -325,36 +308,14 @@
     <div class="card">
         <div class="card-title">Descargas</div>
         <div class="descargas-grid">
-            <a href="/descargar_usuarios" class="descarga-btn">
-                <span class="icono"></span>
+            <a href="/descargar_usuarios" class="btn btn-outline-guinda">
                 Usuarios
             </a>
-            <a href="/descargar_eliminados" class="descarga-btn">
-                <span class="icono"></span>
+            <a href="/descargar_eliminados" class="btn btn-outline-guinda">
                 Registros eliminados
             </a>
-            <a href="/descargar_registros" class="descarga-btn">
-                <span class="icono"></span>
+            <a href="/descargar_registros" class="btn btn-outline-guinda">
                 Registros
-            </a>
-        </div>
-    </div>
-
-    <!-- REPORTES -->
-    <div class="card">
-        <div class="card-title">Pre-reportes quincenales</div>
-        <div class="reportes-grid">
-            <a href="/pre_reporte" target="_blank" class="reporte-btn">
-                <span class="icono"></span>
-                Reporte general
-            </a>
-            <a href="/pre_reporte_tramo" target="_blank" class="reporte-btn">
-                <span class="icono"></span>
-                Por tramo
-            </a>
-            <a href="/pre_reporte_direccion" target="_blank" class="reporte-btn">
-                <span class="icono"></span>
-                Por dirección
             </a>
         </div>
     </div>
