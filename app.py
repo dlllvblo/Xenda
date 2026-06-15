@@ -2396,60 +2396,76 @@ def dashboard():
         ).all()
 
         municipios = sorted(list(set([
-
             str(r.municipio)
-
             for r in registros_tramo
-
             if r.municipio
-
         ])))
 
         usuarios = sorted(list(set([
-
             str(r.usuario)
-
             for r in registros_tramo
-
             if r.usuario
-
         ])))
 
         detalle_tramos[tramo] = {
-
             'total': len(registros_tramo),
-
             'municipios': municipios,
-
             'usuarios': usuarios
         }
+
+    # =====================================
+    # REGISTROS POR DIRECCIÓN
+    # =====================================
+
+    direcciones_data = db.session.query(
+        Registro.direccion,
+        db.func.count(Registro.id)
+    ).group_by(Registro.direccion).order_by(db.func.count(Registro.id).desc()).all()
+    direcciones_labels = [d[0] for d in direcciones_data if d[0]]
+    direcciones_values = [d[1] for d in direcciones_data if d[0]]
+
+    propiedad_data = db.session.query(
+        Registro.tipo_propiedad,
+        db.func.count(Registro.id)
+    ).group_by(Registro.tipo_propiedad).all()
+    propiedad_labels = [p[0] for p in propiedad_data if p[0]]
+    propiedad_values = [p[1] for p in propiedad_data if p[0]]
+
+    actividad_data = db.session.query(
+        Registro.actividad,
+        db.func.count(Registro.id)
+    ).group_by(Registro.actividad).order_by(db.func.count(Registro.id).desc()).all()
+    actividad_labels = [a[0] for a in actividad_data if a[0]]
+    actividad_values = [a[1] for a in actividad_data if a[0]]
+
+    total_fichas = db.session.query(db.func.sum(Registro.mediciones_bdts)).scalar() or 0
+    total_planos_generados = db.session.query(db.func.sum(Registro.planos_generados)).scalar() or 0
+    total_planos_validados = db.session.query(db.func.sum(Registro.planos_validados)).scalar() or 0
 
     # =====================================
     # JSON DASHBOARD
     # =====================================
 
     return render_template(
-
         'dashboard.html',
-
         total_registros=total_registros,
-
         total_infografias=total_infografias,
-
         total_planos=total_planos,
-
         total_mediciones=total_mediciones,
-
         usuarios_activos=usuarios_activos,
-
         tramos_labels=tramos_labels,
-
         tramos_values=tramos_values,
-
         recientes=recientes,
-
         detalle_tramos=detalle_tramos,
-
+        direcciones_labels=direcciones_labels,
+        direcciones_values=direcciones_values,
+        propiedad_labels=propiedad_labels,
+        propiedad_values=propiedad_values,
+        actividad_labels=actividad_labels,
+        actividad_values=actividad_values,
+        total_fichas=total_fichas,
+        total_planos_generados=total_planos_generados,
+        total_planos_validados=total_planos_validados,
         admin_correo=ADMIN_CORREO
     )
 
