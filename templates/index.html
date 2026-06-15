@@ -1752,9 +1752,14 @@ let subRealizadas = [];
 let subProgramadas = [];
 
 function poblarSelectsSub() {
+    const tramo = document.getElementById('tramo').value;
+
     const entidades = [...new Set(
-        CATALOGO.map(r => r.ENTIDAD_FEDERATIVA)
+        CATALOGO
+            .filter(r => !tramo || r.TRAMO === tramo)
+            .map(r => r.ENTIDAD_FEDERATIVA)
     )].sort();
+
     ['sr_entidad', 'sp_entidad'].forEach(id => {
         const sel = document.getElementById(id);
         if (sel) {
@@ -1775,10 +1780,11 @@ function poblarSelectsSub() {
 document.getElementById('tramo').addEventListener('change', poblarSelectsSub);
 poblarSelectsSub();
 
+
 document.getElementById('sr_entidad').addEventListener('change', function() {
     const tramo = document.getElementById('tramo').value;
     const municipios = [...new Set(
-        CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
+        CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
     )].sort();
     const sel = document.getElementById('sr_municipio');
     sel.innerHTML = '<option value="">Municipio</option>';
@@ -1790,7 +1796,7 @@ document.getElementById('sr_municipio').addEventListener('change', function() {
     const tramo = document.getElementById('tramo').value;
     const entidad = document.getElementById('sr_entidad').value;
     const nucleos = [...new Set(
-        CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
+        CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
     )].sort();
     const sel = document.getElementById('sr_nucleo');
     sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
@@ -1802,7 +1808,7 @@ if (spEntidad) {
     spEntidad.addEventListener('change', function() {
         const tramo = document.getElementById('tramo').value;
         const municipios = [...new Set(
-            CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
+            CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
         )].sort();
         const sel = document.getElementById('sp_municipio');
         if (sel) {
@@ -1820,7 +1826,7 @@ if (spMunicipio) {
         const tramo = document.getElementById('tramo').value;
         const entidad = spEntidad ? spEntidad.value : '';
         const nucleos = [...new Set(
-            CATALOGO.filter(r => r.TRAMO === tramo && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
+            CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
         )].sort();
         const sel = document.getElementById('sp_nucleo');
         if (sel) {
