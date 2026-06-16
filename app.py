@@ -2005,40 +2005,40 @@ def registros():
         Registro.fecha.desc()
     ).all()
 
-    # Combinar actividades del registro + subactividades para mostrar todo
-    def combinar_actividades(reg, subs, kind):
-        partes = []
+    # Desglosar actividades (textarea + bloques + tabla) en filas tipo/estatus/actividad
+    def desglosar(reg, subs, kind):
+        filas = []
         campo = reg.actividades_realizadas if kind == 'realizado' else reg.actividades_programadas
+        tipo_campo = reg.trabajo_realizado if kind == 'realizado' else reg.trabajo_programado
+        est_campo = reg.estatus_trabajo_realizado if kind == 'realizado' else reg.estatus_trabajo_programado
         if campo:
-            partes.append(campo)
-        tipo_bloque = 'trabajo_' + kind
+            filas.append({'tipo': tipo_campo or '', 'estatus': est_campo or '', 'actividad': campo})
+        tb = 'trabajo_' + kind
         for s in subs:
-            if s.tipo == tipo_bloque and s.descripcion:
+            if s.tipo == tb and s.descripcion:
                 desc = s.descripcion
-                estatus = ''
+                est = ''
                 if desc.startswith('['):
                     fin = desc.find(']')
                     if fin > 0:
-                        estatus = desc[1:fin]
+                        est = desc[1:fin]
                         desc = desc[fin + 1:].strip()
-                etq = (s.frente or '').strip()
-                prefijo = ' / '.join(x for x in [etq, estatus] if x)
-                partes.append(f"[{prefijo}] {desc}" if prefijo else desc)
-        tipo_tabla = 'realizada' if kind == 'realizado' else 'programada'
+                filas.append({'tipo': (s.frente or '').strip(), 'estatus': est, 'actividad': desc})
+        tt = 'realizada' if kind == 'realizado' else 'programada'
         for s in subs:
-            if s.tipo == tipo_tabla and (s.descripcion or s.trabajo_campo):
+            if s.tipo == tt and (s.descripcion or s.trabajo_campo):
                 ubic = ', '.join(x for x in [s.entidad, s.municipio, s.nucleo,
                                              ('F' + str(s.frente)) if s.frente else ''] if x)
-                txt = s.descripcion or ''
-                if s.trabajo_campo:
-                    txt = f"Trabajo de campo: {s.trabajo_campo}. {txt}"
-                partes.append(f"({ubic}) {txt}" if ubic else txt)
-        return ' || '.join(partes) if partes else ''
+                act = s.descripcion or ''
+                if ubic:
+                    act = f"({ubic}) {act}"
+                filas.append({'tipo': 'CAMPO', 'estatus': s.trabajo_campo or '', 'actividad': act})
+        return filas
 
     for r in lista:
         subs = SubActividad.query.filter_by(registro_id=r.id).all()
-        r.acts_realizadas_full = combinar_actividades(r, subs, 'realizado')
-        r.acts_programadas_full = combinar_actividades(r, subs, 'programado')
+        r.det_realizadas = desglosar(r, subs, 'realizado')
+        r.det_programadas = desglosar(r, subs, 'programado')
 
     entidades = sorted([
         e[0]

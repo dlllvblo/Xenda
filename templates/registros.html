@@ -337,12 +337,12 @@
             <td>{{ r.planos }}</td>
             <td>{{ r.planos_generados }}</td>
             <td>{{ r.planos_validados }}</td>
-            <td>{{ r.trabajo_realizado }}</td>
-            <td>{{ r.estatus_trabajo_realizado }}</td>
-            <td style="white-space: normal; min-width: 320px;">{{ r.acts_realizadas_full or '—' }}</td>
-            <td>{{ r.trabajo_programado }}</td>
-            <td>{{ r.estatus_trabajo_programado }}</td>
-            <td style="white-space: normal; min-width: 320px;">{{ r.acts_programadas_full or '—' }}</td>
+            <td>{% for d in r.det_realizadas %}<div>{{ d.tipo or '—' }}</div>{% else %}—{% endfor %}</td>
+            <td>{% for d in r.det_realizadas %}<div>{{ d.estatus or '—' }}</div>{% else %}—{% endfor %}</td>
+            <td style="white-space: normal; min-width: 320px;">{% for d in r.det_realizadas %}<div style="margin-bottom:4px;">{{ d.actividad }}</div>{% else %}—{% endfor %}</td>
+            <td>{% for d in r.det_programadas %}<div>{{ d.tipo or '—' }}</div>{% else %}—{% endfor %}</td>
+            <td>{% for d in r.det_programadas %}<div>{{ d.estatus or '—' }}</div>{% else %}—{% endfor %}</td>
+            <td style="white-space: normal; min-width: 320px;">{% for d in r.det_programadas %}<div style="margin-bottom:4px;">{{ d.actividad }}</div>{% else %}—{% endfor %}</td>
             <td>{{ r.usuario }}</td>
 
             {% if session['usuario'] == admin_correo %}
