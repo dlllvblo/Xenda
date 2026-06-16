@@ -2005,6 +2005,41 @@ def registros():
         Registro.fecha.desc()
     ).all()
 
+    # Combinar actividades del registro + subactividades para mostrar todo
+    def combinar_actividades(reg, subs, kind):
+        partes = []
+        campo = reg.actividades_realizadas if kind == 'realizado' else reg.actividades_programadas
+        if campo:
+            partes.append(campo)
+        tipo_bloque = 'trabajo_' + kind
+        for s in subs:
+            if s.tipo == tipo_bloque and s.descripcion:
+                desc = s.descripcion
+                estatus = ''
+                if desc.startswith('['):
+                    fin = desc.find(']')
+                    if fin > 0:
+                        estatus = desc[1:fin]
+                        desc = desc[fin + 1:].strip()
+                etq = (s.frente or '').strip()
+                prefijo = ' / '.join(x for x in [etq, estatus] if x)
+                partes.append(f"[{prefijo}] {desc}" if prefijo else desc)
+        tipo_tabla = 'realizada' if kind == 'realizado' else 'programada'
+        for s in subs:
+            if s.tipo == tipo_tabla and (s.descripcion or s.trabajo_campo):
+                ubic = ', '.join(x for x in [s.entidad, s.municipio, s.nucleo,
+                                             ('F' + str(s.frente)) if s.frente else ''] if x)
+                txt = s.descripcion or ''
+                if s.trabajo_campo:
+                    txt = f"Trabajo de campo: {s.trabajo_campo}. {txt}"
+                partes.append(f"({ubic}) {txt}" if ubic else txt)
+        return ' || '.join(partes) if partes else ''
+
+    for r in lista:
+        subs = SubActividad.query.filter_by(registro_id=r.id).all()
+        r.acts_realizadas_full = combinar_actividades(r, subs, 'realizado')
+        r.acts_programadas_full = combinar_actividades(r, subs, 'programado')
+
     entidades = sorted([
         e[0]
         for e in db.session.query(Registro.entidad).distinct()

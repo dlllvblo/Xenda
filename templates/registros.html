@@ -339,10 +339,10 @@
             <td>{{ r.planos_validados }}</td>
             <td>{{ r.trabajo_realizado }}</td>
             <td>{{ r.estatus_trabajo_realizado }}</td>
-            <td>{{ r.actividades_realizadas }}</td>
+            <td style="white-space: normal; min-width: 320px;">{{ r.acts_realizadas_full or '—' }}</td>
             <td>{{ r.trabajo_programado }}</td>
             <td>{{ r.estatus_trabajo_programado }}</td>
-            <td>{{ r.actividades_programadas }}</td>
+            <td style="white-space: normal; min-width: 320px;">{{ r.acts_programadas_full or '—' }}</td>
             <td>{{ r.usuario }}</td>
 
             {% if session['usuario'] == admin_correo %}
