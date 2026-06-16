@@ -39,7 +39,7 @@
 
         .tabla-responsive {
 
-            overflow-x: auto;
+            overflow: auto;
 
             max-height: 80vh;
         }
@@ -122,22 +122,36 @@
             opacity: 0.9;
         }
 
-        td:first-child,
-        th:first-child {
+        /* Encabezados: fijos arriba al hacer scroll vertical */
+        th {
             position: sticky;
-            left: 0;
-            z-index: 3;
+            top: 0;
             background: #691B4F;
             color: white;
+            z-index: 2;
         }
 
+        /* Columna ID: fija a la izquierda al hacer scroll horizontal */
         td:first-child {
-            background: white;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background: #ffffff;
             color: #1a1a1a;
         }
 
         tr:nth-child(even) td:first-child {
             background: #f5f5f5;
+        }
+
+        /* Esquina (ID del encabezado): fija en ambas direcciones, encima de todo */
+        th:first-child {
+            position: sticky;
+            left: 0;
+            top: 0;
+            z-index: 4;
+            background: #691B4F;
+            color: white;
         }
 
     </style>
