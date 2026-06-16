@@ -131,36 +131,6 @@
             z-index: 2;
         }
 
-        /* Columna ID: fija a la izquierda al hacer scroll horizontal */
-        td:first-child {
-            position: sticky;
-            left: 0;
-            z-index: 3;
-            background: #ffffff;
-            color: #1a1a1a;
-        }
-
-        tr:nth-child(even) td:first-child {
-            background: #f5f5f5;
-        }
-
-        /* Esquina (ID del encabezado): fija en ambas direcciones, encima de todo */
-        th:first-child {
-            position: sticky;
-            left: 0;
-            top: 0;
-            z-index: 4;
-            background: #691B4F;
-            color: white;
-        }
-
-        /* Mini-tablas anidadas: que NO creen apilamiento propio para que la columna ID sticky quede siempre por encima */
-        td table,
-        td table td {
-            position: static;
-            z-index: auto;
-        }
-
     </style>
 
 </head>
