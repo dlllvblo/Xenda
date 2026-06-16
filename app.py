@@ -66,6 +66,7 @@ ADMIN_CORREO = os.getenv('ADMIN_CORREO')
 ADMIN_CORREO_2 = os.getenv('ADMIN_CORREO_2')
 ADMIN_CORREOS = [c for c in [ADMIN_CORREO, ADMIN_CORREO_2] if c]
 
+
 app.permanent_session_lifetime = timedelta(days=3)
 limiter = Limiter(
     get_remote_address,
@@ -1507,6 +1508,13 @@ def eliminar_usuario(id):
         return 'Acceso no autorizado'
 
     usuario = Usuario.query.get_or_404(id)
+
+    # Protección de correos de administradores para evitar eliminación accidental
+    if usuario.correo in ADMIN_CORREOS:
+
+        flash('Este usuario está protegido y no se puede eliminar')
+
+        return redirect('/admin')
 
     db.session.delete(usuario)
 
