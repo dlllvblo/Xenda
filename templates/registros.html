@@ -154,6 +154,13 @@
             color: white;
         }
 
+        /* Mini-tablas anidadas: que NO creen apilamiento propio para que la columna ID sticky quede siempre por encima */
+        td table,
+        td table td {
+            position: static;
+            z-index: auto;
+        }
+
     </style>
 
 </head>
