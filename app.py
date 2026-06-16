@@ -66,7 +66,7 @@ ADMIN_CORREO = os.getenv('ADMIN_CORREO')
 ADMIN_CORREO_2 = os.getenv('ADMIN_CORREO_2')
 ADMIN_CORREOS = [c for c in [ADMIN_CORREO, ADMIN_CORREO_2] if c]
 
-app.permanent_session_lifetime = timedelta(days=7)
+app.permanent_session_lifetime = timedelta(days=3)
 limiter = Limiter(
     get_remote_address,
     app=app,
