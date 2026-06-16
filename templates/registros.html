@@ -306,12 +306,8 @@
             <th>Planos</th>
             <th>Planos Generados</th>
             <th>Planos Validados</th>
-            <th>Tipo Trabajo Realizado</th>
-            <th>Estatus Realizado</th>
-            <th>Actividades Realizadas</th>
-            <th>Tipo Trabajo Programado</th>
-            <th>Estatus Programado</th>
-            <th>Actividades Programadas</th>
+            <th>Trabajo Realizado (Tipo / Estatus / Actividad)</th>
+            <th>Trabajo Programado (Tipo / Estatus / Actividad)</th>
             <th>Usuario</th>
 
             {% if session['usuario'] == admin_correo %}
@@ -351,12 +347,32 @@
             <td>{{ r.planos }}</td>
             <td>{{ r.planos_generados }}</td>
             <td>{{ r.planos_validados }}</td>
-            <td>{% for d in r.det_realizadas %}<div>{{ d.tipo or '—' }}</div>{% else %}—{% endfor %}</td>
-            <td>{% for d in r.det_realizadas %}<div>{{ d.estatus or '—' }}</div>{% else %}—{% endfor %}</td>
-            <td style="white-space: normal; min-width: 320px;">{% for d in r.det_realizadas %}<div style="margin-bottom:4px;">{{ d.actividad }}</div>{% else %}—{% endfor %}</td>
-            <td>{% for d in r.det_programadas %}<div>{{ d.tipo or '—' }}</div>{% else %}—{% endfor %}</td>
-            <td>{% for d in r.det_programadas %}<div>{{ d.estatus or '—' }}</div>{% else %}—{% endfor %}</td>
-            <td style="white-space: normal; min-width: 320px;">{% for d in r.det_programadas %}<div style="margin-bottom:4px;">{{ d.actividad }}</div>{% else %}—{% endfor %}</td>
+            <td style="padding:0; min-width:520px;">
+                {%- if r.det_realizadas -%}
+                <table style="border-collapse:collapse; width:100%; min-width:0;">
+                    {%- for d in r.det_realizadas %}
+                    <tr>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:nowrap; width:110px;">{{ d.tipo or '—' }}</td>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:nowrap; width:120px;">{{ d.estatus or '—' }}</td>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:normal;">{{ d.actividad }}</td>
+                    </tr>
+                    {%- endfor %}
+                </table>
+                {%- else -%}—{%- endif -%}
+            </td>
+            <td style="padding:0; min-width:520px;">
+                {%- if r.det_programadas -%}
+                <table style="border-collapse:collapse; width:100%; min-width:0;">
+                    {%- for d in r.det_programadas %}
+                    <tr>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:nowrap; width:110px;">{{ d.tipo or '—' }}</td>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:nowrap; width:120px;">{{ d.estatus or '—' }}</td>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:normal;">{{ d.actividad }}</td>
+                    </tr>
+                    {%- endfor %}
+                </table>
+                {%- else -%}—{%- endif -%}
+            </td>
             <td>{{ r.usuario }}</td>
 
             {% if session['usuario'] == admin_correo %}
