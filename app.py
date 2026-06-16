@@ -2248,13 +2248,49 @@ def descargar_eliminados():
 # DESCARGAR REGISTROS 
 # =========================================
 
-@app.route('/descargar_registros')
+# =========================================
+# DESCARGAR REGISTROS 
+# =========================================
 
+# =========================================
+# DESCARGAR REGISTROS 
+# =========================================
+
+@app.route('/descargar_registros')
 def descargar_registros():
 
     if session.get('usuario') not in ADMIN_CORREOS:
-
         return 'No autorizado', 403
+
+    # Mismo desglose que usa /registros, para que el Excel sea consistente
+    def desglosar(reg, subs, kind):
+        filas = []
+        campo = reg.actividades_realizadas if kind == 'realizado' else reg.actividades_programadas
+        tipo_campo = reg.trabajo_realizado if kind == 'realizado' else reg.trabajo_programado
+        est_campo = reg.estatus_trabajo_realizado if kind == 'realizado' else reg.estatus_trabajo_programado
+        if campo:
+            filas.append({'tipo': tipo_campo or '', 'estatus': est_campo or '', 'actividad': campo,
+                          'entidad': '', 'municipio': '', 'nucleo': '', 'frente': ''})
+        tb = 'trabajo_' + kind
+        for s in subs:
+            if s.tipo == tb and s.descripcion:
+                desc = s.descripcion
+                est = ''
+                if desc.startswith('['):
+                    fin = desc.find(']')
+                    if fin > 0:
+                        est = desc[1:fin]
+                        desc = desc[fin + 1:].strip()
+                filas.append({'tipo': (s.frente or '').strip(), 'estatus': est, 'actividad': desc,
+                              'entidad': '', 'municipio': '', 'nucleo': '', 'frente': ''})
+        tt = 'realizada' if kind == 'realizado' else 'programada'
+        for s in subs:
+            if s.tipo == tt and (s.descripcion or s.trabajo_campo):
+                filas.append({'tipo': 'CAMPO', 'estatus': s.trabajo_campo or '',
+                              'actividad': s.descripcion or '',
+                              'entidad': s.entidad or '', 'municipio': s.municipio or '',
+                              'nucleo': s.nucleo or '', 'frente': str(s.frente) if s.frente else ''})
+        return filas
 
     registros = Registro.query.order_by(
         Registro.fecha.desc()
@@ -2264,15 +2300,10 @@ def descargar_registros():
 
     for r in registros:
 
-        subs_realizadas = SubActividad.query.filter_by(
-            registro_id=r.id, tipo='realizada'
-        ).all()
-
-        subs_programadas = SubActividad.query.filter_by(
-            registro_id=r.id, tipo='programada'
-        ).all()
+        subs = SubActividad.query.filter_by(registro_id=r.id).all()
 
         base = {
+            'ID':                             r.id,
             'DIRECCIÓN':                      r.direccion,
             'TRAMO':                          r.tramo,
             'TIPO DE PROPIEDAD':              r.tipo_propiedad,
@@ -2287,35 +2318,30 @@ def descargar_registros():
             'PLANOS':                         r.planos,
             'PLANOS GENERADOS':               r.planos_generados,
             'PLANOS VALIDADOS':               r.planos_validados,
-            'TIPO DE TRABAJO REALIZADO':      r.trabajo_realizado,
-            'ESTATUS TRABAJO REALIZADO':      r.estatus_trabajo_realizado,
-            'DESCRIPCIÓN ACTIVIDADES REALIZADAS': r.actividades_realizadas,
-            'ENTIDAD (TABLA)':                '',
-            'MUNICIPIO (TABLA)':              '',
-            'NÚCLEO AGRARIO (TABLA)':         '',
-            'FRENTE (TABLA)':                 '',
-            'TRABAJO DE CAMPO (TABLA)':       '',
-            'DESCRIPCIÓN ACTIVIDAD (TABLA)':  '',
-            'TIPO DE TRABAJO PROGRAMADO':     r.trabajo_programado,
-            'ESTATUS TRABAJO PROGRAMADO':     r.estatus_trabajo_programado,
-            'DESCRIPCIÓN ACTIVIDADES PROGRAMADAS': r.actividades_programadas,
             'USUARIO':                        r.usuario,
             'FECHA':                          r.fecha.strftime('%d/%m/%Y %H:%M:%S') if r.fecha else '',
         }
 
-        # Si hay sub-actividades realizadas, una fila por cada una
-        if subs_realizadas:
-            for sub in subs_realizadas:
-                fila = base.copy()
-                fila['ENTIDAD (TABLA)']               = sub.entidad or ''
-                fila['MUNICIPIO (TABLA)']             = sub.municipio or ''
-                fila['NÚCLEO AGRARIO (TABLA)']        = sub.nucleo or ''
-                fila['FRENTE (TABLA)']                = sub.frente or ''
-                fila['TRABAJO DE CAMPO (TABLA)']      = sub.trabajo_campo or ''
-                fila['DESCRIPCIÓN ACTIVIDAD (TABLA)'] = sub.descripcion or ''
-                datos.append(fila)
-        else:
-            datos.append(base)
+        det_r = desglosar(r, subs, 'realizado')
+        det_p = desglosar(r, subs, 'programado')
+
+        # Una fila por bloque; realizadas y programadas emparejadas por índice
+        n = max(len(det_r), len(det_p), 1)
+        for i in range(n):
+            dr = det_r[i] if i < len(det_r) else {}
+            dp = det_p[i] if i < len(det_p) else {}
+            fila = base.copy()
+            fila['TIPO TRABAJO REALIZADO']        = dr.get('tipo', '')
+            fila['ESTATUS REALIZADO']             = dr.get('estatus', '')
+            fila['ACTIVIDAD REALIZADA']           = dr.get('actividad', '')
+            fila['ENTIDAD (TABLA)']               = dr.get('entidad', '')
+            fila['MUNICIPIO (TABLA)']             = dr.get('municipio', '')
+            fila['NÚCLEO AGRARIO (TABLA)']        = dr.get('nucleo', '')
+            fila['FRENTE (TABLA)']                = dr.get('frente', '')
+            fila['TIPO TRABAJO PROGRAMADO']       = dp.get('tipo', '')
+            fila['ESTATUS PROGRAMADO']            = dp.get('estatus', '')
+            fila['ACTIVIDAD PROGRAMADA']          = dp.get('actividad', '')
+            datos.append(fila)
 
     df = pd.DataFrame(datos)
 
