@@ -265,6 +265,11 @@
         <div class="card-title">Agregar usuario</div>
         <form method="POST" class="form-agregar">
             <input
+                type="text"
+                name="nombre"
+                placeholder="Nombre completo"
+            >
+            <input
                 type="email"
                 name="correo"
                 placeholder="correo@gmail.com"
@@ -326,6 +331,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Nombre</th>
                     <th>Correo</th>
                     <th>Acción</th>
                 </tr>
@@ -333,6 +339,7 @@
             <tbody>
                 {% for usuario in usuarios %}
                 <tr>
+                    <td>{{ usuario.nombre or '—' }}</td>
                     <td>{{ usuario.correo }}</td>
                     <td>
                         <a

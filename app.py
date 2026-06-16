@@ -182,6 +182,10 @@ class Usuario(db.Model):
         nullable=False
     )
 
+    nombre = db.Column(
+        db.String(200)
+    )
+
 # =========================================
 # SESIONES ACTIVAS
 # =========================================
@@ -1451,10 +1455,12 @@ def admin():
         return redirect('/login')
 
     if request.method == 'POST':
-
+    
         correo = request.form['correo']
 
         correo = correo.strip().lower()
+
+        nombre = request.form.get('nombre', '').strip()
 
         existente = Usuario.query.filter_by(
             correo=correo
@@ -1467,7 +1473,8 @@ def admin():
         else:
 
             nuevo = Usuario(
-                correo=correo
+                correo=correo,
+                nombre=nombre or None
             )
 
             db.session.add(nuevo)
@@ -2243,14 +2250,6 @@ def descargar_eliminados():
         ruta_archivo,
         as_attachment=True
     )
-
-# =========================================
-# DESCARGAR REGISTROS 
-# =========================================
-
-# =========================================
-# DESCARGAR REGISTROS 
-# =========================================
 
 # =========================================
 # DESCARGAR REGISTROS 
