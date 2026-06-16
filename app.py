@@ -2318,8 +2318,6 @@ def descargar_registros():
             'PLANOS':                         r.planos,
             'PLANOS GENERADOS':               r.planos_generados,
             'PLANOS VALIDADOS':               r.planos_validados,
-            'USUARIO':                        r.usuario,
-            'FECHA':                          r.fecha.strftime('%d/%m/%Y %H:%M:%S') if r.fecha else '',
         }
 
         det_r = desglosar(r, subs, 'realizado')
@@ -2341,6 +2339,8 @@ def descargar_registros():
             fila['TIPO TRABAJO PROGRAMADO']       = dp.get('tipo', '')
             fila['ESTATUS PROGRAMADO']            = dp.get('estatus', '')
             fila['ACTIVIDAD PROGRAMADA']          = dp.get('actividad', '')
+            fila['USUARIO']                       = r.usuario
+            fila['FECHA']                         = r.fecha.strftime('%d/%m/%Y %H:%M:%S') if r.fecha else ''
             datos.append(fila)
 
     df = pd.DataFrame(datos)
