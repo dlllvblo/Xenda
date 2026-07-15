@@ -428,6 +428,21 @@ class RegistroEliminado(db.Model):
     fecha_original = db.Column(db.DateTime(timezone=True))
 
 # =========================================
+# NOMBRES DE TRAMOS
+# =========================================
+
+TRAMOS_NOMBRES = {
+    'TAP':   'AIFA - PACHUCA',
+    'TIGDL': 'IRAPUATO - GUADALAJARA',
+    'TMLM':  'MAZATLÁN - LOS MOCHIS',
+    'TMQ':   'MÉXICO - QUERÉTARO',
+    'TQI':   'QUERÉTARO - IRAPUATO',
+    'TQSLP': 'QUERÉTARO - SAN LUIS POTOSÍ',
+    'TSNL':  'SALTILLO - NUEVO LAREDO',
+    'TSLPS': 'SAN LUIS POTOSÍ - SALTILLO',
+}
+
+# =========================================
 # NORMALIZAR TEXTO
 # =========================================
 
@@ -2535,6 +2550,59 @@ def dashboard():
         total_planos_validados=total_planos_validados,
         admin_correo=ADMIN_CORREO
     )
+
+# =========================================
+# DASHBOARD DE CONTEO
+# =========================================
+
+@app.route('/conteo')
+def conteo():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+    return render_template('conteo.html')
+
+
+@app.route('/api/conteo')
+def api_conteo():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return jsonify({'error': 'No autorizado'}), 403
+
+    q = db.session.query(
+        Registro.tramo,
+        Registro.direccion,
+        Registro.tipo_propiedad,
+        Registro.actividad,
+        db.func.count(Registro.id)
+    )
+
+    # Filtros opcionales: ?anio=2026&mes=5  |  ?anio=2026&trimestre=2
+    anio = request.args.get('anio', type=int)
+    mes = request.args.get('mes', type=int)
+    trimestre = request.args.get('trimestre', type=int)
+    if anio:
+        q = q.filter(db.extract('year', Registro.fecha) == anio)
+    if mes:
+        q = q.filter(db.extract('month', Registro.fecha) == mes)
+    elif trimestre:
+        meses_tri = {1: (1, 2, 3), 2: (4, 5, 6), 3: (7, 8, 9), 4: (10, 11, 12)}
+        q = q.filter(db.extract('month', Registro.fecha).in_(meses_tri.get(trimestre, (1, 2, 3))))
+
+    q = q.group_by(
+        Registro.tramo, Registro.direccion,
+        Registro.tipo_propiedad, Registro.actividad
+    )
+
+    rows = [
+        {
+            'tramo': TRAMOS_NOMBRES.get(t, t) if t else 'SIN TRAMO',
+            'direccion': d or 'SIN DIRECCIÓN',
+            'propiedad': p or 'SIN ESPECIFICAR',
+            'actividad': a or 'SIN ACTIVIDAD',
+            'n': n
+        }
+        for t, d, p, a, n in q.all()
+    ]
+    return jsonify({'rows': rows})
 
 # =========================================
 # MAPA GENERAL

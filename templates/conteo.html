@@ -1,0 +1,64 @@
+# ============================================================
+# XENDA - Dashboard de conteo
+# Pegar en app.py. Solo admin, igual que los pre-reportes.
+# ============================================================
+# ⚠️ VERIFICA los nombres de columna del modelo Registro antes
+#    de pegar. Asumí estos (ajusta si difieren en tu models):
+#      Registro.tramo       -> tramo (str)
+#      Registro.direccion   -> dirección (str)
+#      Registro.propiedad   -> "PROPIEDAD SOCIAL" / "PROPIEDAD PRIVADA"
+#      Registro.actividad   -> tipo de actividad (str, viene del select)
+#      Registro.fecha       -> fecha/timestamp del registro
+# ============================================================
+
+from sqlalchemy import func, extract
+
+
+@app.route('/conteo')
+def conteo():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+    return render_template('conteo.html')
+
+
+@app.route('/api/conteo')
+def api_conteo():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return jsonify({'error': 'No autorizado'}), 403
+
+    q = db.session.query(
+        Registro.tramo,
+        Registro.direccion,
+        Registro.propiedad,
+        Registro.actividad,
+        func.count(Registro.id)
+    )
+
+    # Filtro opcional por periodo: ?anio=2026&mes=5  |  ?anio=2026&trimestre=2
+    anio = request.args.get('anio', type=int)
+    mes = request.args.get('mes', type=int)
+    trimestre = request.args.get('trimestre', type=int)
+    if anio:
+        q = q.filter(extract('year', Registro.fecha) == anio)
+    if mes:
+        q = q.filter(extract('month', Registro.fecha) == mes)
+    elif trimestre:
+        meses_tri = {1: (1, 2, 3), 2: (4, 5, 6), 3: (7, 8, 9), 4: (10, 11, 12)}
+        q = q.filter(extract('month', Registro.fecha).in_(meses_tri.get(trimestre, (1, 2, 3))))
+
+    q = q.group_by(
+        Registro.tramo, Registro.direccion,
+        Registro.propiedad, Registro.actividad
+    )
+
+    rows = [
+        {
+            'tramo': t or 'SIN TRAMO',
+            'direccion': d or 'SIN DIRECCIÓN',
+            'propiedad': p or 'SIN ESPECIFICAR',
+            'actividad': a or 'SIN ACTIVIDAD',
+            'n': n
+        }
+        for t, d, p, a, n in q.all()
+    ]
+    return jsonify({'rows': rows})
