@@ -3,850 +3,649 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard · Xenda</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>XENDA · Centro de Operaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap');
+  :root{
+    --bg:#130D0C;
+    --bg-grain:#170F0E;
+    --panel:#1E1513;
+    --panel-2:#241915;
+    --line:#39271F;
+    --line-soft:#2C1E19;
 
-:root {
-  --guinda:    #6E152E;
-  --guinda-l:  #a42145;
-  --verde:     #245C4F;
-  --verde-l:   #2d7a68;
-  --dorado:    #BC945A;
-  --arena:     #dec9a2;
-  --bg:        #0f0a0c;
-  --bg-2:      #17100f;
-  --bg-card:   rgba(255,255,255,0.04);
-  --border:    rgba(255,255,255,0.07);
-  --text:      #f0e8e0;
-  --text-muted:#a09080;
-}
+    /* Paleta institucional (deep) + variantes legibles en oscuro */
+    --guinda-deep:#6E152E;
+    --guinda:#A21E42;
+    --verde-deep:#245C4F;
+    --verde:#2F8270;
+    --dorado:#BC945A;
+    --dorado-bright:#D7AE6E;
+    --arena:#DEC9A2;
 
-* { margin:0; padding:0; box-sizing:border-box; }
+    --text:#F4EADD;
+    --muted:#AB9381;
+    --muted-2:#7C6557;
 
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+    --radius:14px;
+    --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+  }
 
-/* ── FERROCARRIL TOP ── */
-.rail-header {
-  position: relative;
-  background: linear-gradient(180deg, #1a0810 0%, var(--bg) 100%);
-  padding: 32px 40px 0;
-  border-bottom: 1px solid var(--border);
-}
+  *{box-sizing:border-box;margin:0;padding:0}
 
-.rail-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 28px;
-  flex-wrap: wrap;
-  gap: 16px;
-}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 600px at 78% -10%, rgba(162,30,66,.10), transparent 60%),
+      radial-gradient(900px 500px at 5% 110%, rgba(47,130,112,.08), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding:18px;
+  }
 
-.rail-title {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+  .display{font-family:'Space Grotesk',system-ui,sans-serif}
 
-.rail-title h1 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 38px;
-  font-weight: 700;
-  letter-spacing: 6px;
-  color: var(--arena);
-}
+  /* ===== TOP BAR ===== */
+  .topbar{
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:14px 20px;margin-bottom:16px;
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+  .brand{display:flex;align-items:center;gap:14px;min-width:0}
+  .brand .logo{
+    width:42px;height:42px;border-radius:10px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--guinda) 0%,var(--guinda-deep) 100%);
+    display:grid;place-items:center;
+    box-shadow:0 0 0 1px rgba(215,174,110,.25), inset 0 1px 0 rgba(255,255,255,.12);
+    position:relative;
+  }
+  .brand .logo svg{width:24px;height:24px}
+  .brand h1{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:.06em;line-height:1}
+  .brand .sub{font-size:.62rem;letter-spacing:.34em;color:var(--dorado);text-transform:uppercase;margin-top:5px;font-weight:600}
 
-.rail-title .sub {
-  font-size: 13px;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
-  font-weight: 400;
-}
+  .topbar .spacer{flex:1 1 40px}
 
-.rail-nav {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
+  .live{display:flex;align-items:center;gap:9px;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .live .dot{width:9px;height:9px;border-radius:50%;background:var(--verde);box-shadow:0 0 0 0 rgba(47,130,112,.6);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,130,112,.55)}70%{box-shadow:0 0 0 9px rgba(47,130,112,0)}100%{box-shadow:0 0 0 0 rgba(47,130,112,0)}}
+  .clock{font-size:.82rem;color:var(--arena);letter-spacing:.05em}
 
-.btn-nav {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--arena);
-  padding: 9px 18px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-.btn-nav:hover { background: rgba(188,148,90,0.12); border-color: var(--dorado); }
-.btn-nav.primary { background: var(--guinda); border-color: var(--guinda-l); }
-.btn-nav.primary:hover { background: var(--guinda-l); }
+  .period{position:relative}
+  .period select{
+    appearance:none;-webkit-appearance:none;
+    background:var(--bg);color:var(--text);
+    border:1px solid var(--line);border-radius:9px;
+    padding:9px 34px 9px 14px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;
+    cursor:pointer;letter-spacing:.02em;
+  }
+  .period select:focus-visible{outline:2px solid var(--dorado);outline-offset:2px}
+  .period::after{content:"";position:absolute;right:13px;top:50%;transform:translateY(-30%) rotate(45deg);width:7px;height:7px;border-right:2px solid var(--dorado);border-bottom:2px solid var(--dorado);pointer-events:none}
 
-/* Línea de tramos */
-.tramos-rail {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  overflow-x: auto;
-  padding-bottom: 0;
-  scrollbar-width: none;
-}
-.tramos-rail::-webkit-scrollbar { display: none; }
+  /* ===== TRAMO CHIPS ===== */
+  .chips{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+  .chips .lab{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--muted-2);font-weight:600;margin-right:4px}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--panel);border:1px solid var(--line);
+    color:var(--muted);padding:7px 14px 7px 11px;border-radius:999px;
+    font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;
+    cursor:pointer;transition:all .18s ease;letter-spacing:.02em;user-select:none;
+  }
+  .chip .swatch{width:9px;height:9px;border-radius:3px;flex:0 0 auto;transition:opacity .18s}
+  .chip:hover{border-color:var(--muted-2);color:var(--text)}
+  .chip.off{opacity:.42;text-decoration:line-through;text-decoration-color:var(--muted-2)}
+  .chip.off .swatch{opacity:.3}
+  .chip:focus-visible{outline:2px solid var(--dorado);outline-offset:2px}
 
-.tramo-stop {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  padding: 10px 16px;
-  position: relative;
-  flex-shrink: 0;
-  transition: all 0.2s;
-}
-.tramo-stop::before {
-  content: '';
-  position: absolute;
-  top: 17px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--border);
-  z-index: 0;
-}
-.tramo-stop:first-child::before { left: 50%; }
-.tramo-stop:last-child::before  { right: 50%; }
+  /* ===== GRID ===== */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
 
-.tramo-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  border: 2px solid var(--bg);
-  position: relative;
-  z-index: 1;
-  transition: all 0.25s;
-}
-.tramo-stop.active .tramo-dot,
-.tramo-stop:hover .tramo-dot {
-  background: var(--dorado);
-  box-shadow: 0 0 12px rgba(188,148,90,0.6);
-  transform: scale(1.3);
-}
+  .panel{
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    box-shadow:var(--shadow);
+    position:relative;overflow:hidden;
+  }
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
+  .panel-head h2{font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--arena)}
+  .panel-head .tag{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted-2);letter-spacing:.1em;border:1px solid var(--line);padding:3px 8px;border-radius:6px}
 
-.tramo-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  color: var(--text-muted);
-  text-align: center;
-  line-height: 1.3;
-  transition: color 0.2s;
-}
-.tramo-stop.active .tramo-label,
-.tramo-stop:hover .tramo-label { color: var(--dorado); }
+  /* KPI cards */
+  .kpi{grid-column:span 3}
+  .kpi .top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+  .kpi .icon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;border:1px solid var(--line);background:var(--bg)}
+  .kpi .icon svg{width:18px;height:18px}
+  .kpi .delta{font-family:'IBM Plex Mono',monospace;font-size:.66rem;font-weight:600;padding:3px 7px;border-radius:6px;letter-spacing:.02em}
+  .delta.up{color:var(--verde);background:rgba(47,130,112,.12)}
+  .delta.flat{color:var(--dorado);background:rgba(188,148,90,.12)}
+  .kpi .value{font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:700;line-height:1;letter-spacing:-.02em}
+  .kpi .label{font-size:.72rem;color:var(--muted);margin-top:8px;letter-spacing:.02em}
 
-.tramo-count {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-muted);
-  transition: color 0.2s;
-}
-.tramo-stop.active .tramo-count,
-.tramo-stop:hover .tramo-count { color: var(--arena); }
+  /* spans */
+  .span8{grid-column:span 8}
+  .span4{grid-column:span 4}
+  .span12{grid-column:span 12}
 
-/* ── MAIN ── */
-.main {
-  padding: 32px 40px 48px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
+  /* ===== RAIL (signature) ===== */
+  .rail-row{display:grid;grid-template-columns:150px 1fr 96px;align-items:center;gap:18px;padding:15px 0;border-top:1px solid var(--line-soft)}
+  .rail-row:first-child{border-top:none}
+  .rail-id{display:flex;flex-direction:column;gap:3px}
+  .rail-id .badge{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.82rem;letter-spacing:.04em;display:inline-flex;align-items:center;gap:7px}
+  .rail-id .badge::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--c)}
+  .rail-id .nm{font-size:.72rem;color:var(--muted)}
+  .rail-id .meta{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted-2);letter-spacing:.04em;margin-top:2px}
 
-/* ── KPI GRID ── */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 28px;
-}
+  .track{position:relative;height:30px;display:flex;align-items:center}
+  .track .bed{
+    position:absolute;left:0;right:0;height:8px;border-radius:5px;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 9px, rgba(255,255,255,.05) 9px 11px),
+      var(--bg);
+    border:1px solid var(--line);
+  }
+  .track .fill{
+    position:absolute;left:0;height:8px;border-radius:5px;width:0;
+    background:linear-gradient(90deg, color-mix(in srgb,var(--c) 55%,#000), var(--c));
+    box-shadow:0 0 12px -1px var(--c);
+    transition:width 1.1s cubic-bezier(.2,.8,.2,1);
+  }
+  .track .train{
+    position:absolute;top:50%;transform:translate(-50%,-50%);
+    width:18px;height:18px;border-radius:50%;
+    background:var(--c);border:2px solid var(--bg);
+    box-shadow:0 0 0 2px var(--c), 0 0 14px var(--c);
+    left:0;transition:left 1.1s cubic-bezier(.2,.8,.2,1);z-index:3;
+  }
+  .track .station{position:absolute;top:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--panel);border:1.5px solid var(--muted-2);z-index:2}
+  .rail-pct{text-align:right;font-family:'Space Grotesk',sans-serif}
+  .rail-pct .big{font-size:1.5rem;font-weight:700;color:var(--c)}
+  .rail-pct .sm{font-size:.6rem;color:var(--muted-2);letter-spacing:.12em;text-transform:uppercase}
 
-.kpi {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 22px 24px;
-  position: relative;
-  overflow: hidden;
-  cursor: default;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.kpi:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
-}
-.kpi::after {
-  content: '';
-  position: absolute;
-  top: -40px; right: -40px;
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  background: var(--accent, rgba(188,148,90,0.06));
-}
-.kpi.verde  { --accent: rgba(36,92,79,0.15); border-color: rgba(36,92,79,0.3); }
-.kpi.guinda { --accent: rgba(110,21,46,0.2);  border-color: rgba(110,21,46,0.3); }
-.kpi.dorado { --accent: rgba(188,148,90,0.12); border-color: rgba(188,148,90,0.25); }
-.kpi.neutro { --accent: rgba(255,255,255,0.04); }
+  /* chart wrappers */
+  .chart-wrap{position:relative;width:100%}
+  .h-line{height:280px}
+  .h-doughnut{height:240px}
+  .h-bar{height:230px}
+  .doughnut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .doughnut-center .n{font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:700;line-height:1}
+  .doughnut-center .t{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-2);margin-top:4px}
 
-.kpi-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-}
-.kpi-num {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 48px;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--arena);
-  margin-bottom: 6px;
-  counter-reset: num;
-}
-.kpi-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-.kpi-icon {
-  position: absolute;
-  bottom: 16px; right: 20px;
-  font-size: 28px;
-  opacity: 0.2;
-}
+  /* Bitácora feed */
+  .feed{display:flex;flex-direction:column;gap:0;max-height:300px;overflow:hidden}
+  .feed-item{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line-soft);animation:slideIn .5s ease}
+  .feed-item:first-child{border-top:none}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .feed-item .when{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--muted-2);white-space:nowrap;padding-top:2px}
+  .feed-item .body{font-size:.78rem;line-height:1.45;color:var(--text)}
+  .feed-item .body .tr{font-family:'IBM Plex Mono',monospace;font-size:.66rem;font-weight:600;padding:1px 6px;border-radius:5px;margin-right:6px;color:#fff}
+  .feed-item .body .verb{color:var(--dorado-bright);font-weight:600}
 
-/* ── CHARTS GRID ── */
-.charts-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
-}
+  footer{margin-top:18px;text-align:center;font-size:.64rem;color:var(--muted-2);letter-spacing:.08em}
+  footer .mono{color:var(--muted)}
 
-.charts-grid-3 {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.panel {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 26px;
-  position: relative;
-  overflow: hidden;
-}
-
-.panel-title {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.panel-title::before {
-  content: '';
-  width: 3px;
-  height: 14px;
-  background: var(--dorado);
-  border-radius: 2px;
-  display: inline-block;
-}
-
-/* ── DETALLE PANEL ── */
-.detalle-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: var(--text-muted);
-  text-align: center;
-  gap: 10px;
-}
-.detalle-empty .icon { font-size: 36px; opacity: 0.3; }
-.detalle-empty p { font-size: 13px; }
-
-.detalle-content { display: none; }
-.detalle-content.visible { display: block; }
-
-.detalle-tramo-nombre {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--arena);
-  margin-bottom: 16px;
-}
-
-.detalle-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-.detalle-stat {
-  background: rgba(255,255,255,0.04);
-  border-radius: 12px;
-  padding: 12px 14px;
-}
-.detalle-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-.detalle-stat-val   { font-size: 22px; font-weight: 700; color: var(--arena); }
-
-.municipios-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 4px;
-}
-.municipio-tag {
-  background: rgba(188,148,90,0.1);
-  border: 1px solid rgba(188,148,90,0.2);
-  color: var(--arena);
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-/* ── DIRECCIONES TABLE ── */
-.dir-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.dir-table th {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  text-align: left;
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--border);
-}
-.dir-table td {
-  padding: 10px 10px;
-  font-size: 13px;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
-}
-.dir-table tr:last-child td { border-bottom: none; }
-.dir-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-.bar-cell {
-  width: 120px;
-}
-.bar-bg {
-  background: rgba(255,255,255,0.06);
-  border-radius: 4px;
-  height: 6px;
-  overflow: hidden;
-}
-.bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--verde), var(--verde-l));
-  transition: width 1s ease;
-}
-
-/* ── PROPIEDAD DONUT ── */
-.donut-wrap {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-.donut-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-}
-.legend-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.legend-val {
-  font-weight: 700;
-  color: var(--arena);
-  margin-left: auto;
-  padding-left: 16px;
-}
-
-/* ── ACTIVIDADES PILLS ── */
-.act-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 4px;
-}
-.act-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.act-name {
-  font-size: 12px;
-  color: var(--text-muted);
-  width: 160px;
-  flex-shrink: 0;
-}
-.act-bar-bg {
-  flex: 1;
-  background: rgba(255,255,255,0.05);
-  border-radius: 6px;
-  height: 8px;
-  overflow: hidden;
-}
-.act-bar-fill {
-  height: 100%;
-  border-radius: 6px;
-  transition: width 1.2s ease;
-}
-.act-val {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--arena);
-  width: 28px;
-  text-align: right;
-}
-
-/* ── PRODUCCION BOXES ── */
-.prod-grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 12px;
-  margin-top: 4px;
-}
-.prod-box {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-  text-align: center;
-}
-.prod-num {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--dorado);
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.prod-label {
-  font-size: 10px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* ── PULSE DOT ── */
-@keyframes pulse {
-  0%,100% { opacity:1; transform:scale(1); }
-  50%      { opacity:0.4; transform:scale(0.8); }
-}
-.live-dot {
-  width: 7px; height: 7px;
-  background: #4ade80;
-  border-radius: 50%;
-  display: inline-block;
-  animation: pulse 2s infinite;
-  margin-right: 6px;
-}
-
-/* ── RESPONSIVE ── */
-@media (max-width: 1024px) {
-  .kpi-grid { grid-template-columns: repeat(2,1fr); }
-  .charts-grid, .charts-grid-3 { grid-template-columns: 1fr; }
-}
-@media (max-width: 640px) {
-  .rail-header, .main { padding: 20px 16px; }
-  .rail-title h1 { font-size: 26px; }
-  .kpi-grid { grid-template-columns: 1fr 1fr; gap:10px; }
-  .kpi-num { font-size: 34px; }
-  .prod-grid { grid-template-columns: repeat(3,1fr); }
-}
+  /* ===== responsive ===== */
+  @media (max-width:1040px){
+    .kpi{grid-column:span 6}
+    .span8,.span4{grid-column:span 12}
+  }
+  @media (max-width:560px){
+    body{padding:12px}
+    .kpi{grid-column:span 12}
+    .rail-row{grid-template-columns:1fr;gap:10px}
+    .rail-pct{text-align:left}
+    .kpi .value{font-size:2.1rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
 </style>
 </head>
 <body>
 
-<!-- ── HEADER ── -->
-<div class="rail-header">
-  <div class="rail-meta">
-    <div class="rail-title">
-      <h1>XENDA</h1>
-      <span class="sub"><span class="live-dot"></span>Dashboard</span>
-    </div>
-    <div class="rail-nav">
-      <a href="/registros" class="btn-nav">Volver a registros</a>
-    </div>
-  </div>
-
-  <!-- Línea de tramos -->
-  <div class="tramos-rail" id="tramosRail">
-    <!-- generado por JS -->
-  </div>
-</div>
-
-<div class="main">
-
-  <!-- ── KPIs ── -->
-  <div class="kpi-grid">
-    <div class="kpi verde">
-      <div class="kpi-label">Registros totales</div>
-      <div class="kpi-num" id="kpi-registros">{{ total_registros }}</div>
-      <div class="kpi-sub">capturas en campo</div>
-      <span class="kpi-icon">📋</span>
-    </div>
-    <div class="kpi guinda">
-      <div class="kpi-label">Planos</div>
-      <div class="kpi-num" id="kpi-planos">{{ total_planos }}</div>
-      <div class="kpi-sub">generados / validados</div>
-      <span class="kpi-icon">📐</span>
-    </div>
-    <div class="kpi dorado">
-      <div class="kpi-label">Infografías</div>
-      <div class="kpi-num" id="kpi-infografias">{{ total_infografias }}</div>
-      <div class="kpi-sub">generadas / validadas</div>
-      <span class="kpi-icon">🗺️</span>
-    </div>
-    <div class="kpi neutro">
-      <div class="kpi-label">Usuarios activos</div>
-      <div class="kpi-num" id="kpi-usuarios">{{ usuarios_activos }}</div>
-      <div class="kpi-sub">equipos en campo</div>
-      <span class="kpi-icon">👥</span>
-    </div>
-  </div>
-
-  <!-- ── FILA 1: Tramos + Detalle ── -->
-  <div class="charts-grid-3" style="margin-bottom:20px;">
-
-    <div class="panel">
-      <div class="panel-title">Registros por tramo</div>
-      <canvas id="tramosChart" height="220"></canvas>
-    </div>
-
-    <div class="panel" id="detallePanel">
-      <div class="panel-title">Detalle de tramo</div>
-      <div class="detalle-empty" id="detalleEmpty">
-        <div class="icon">🛤️</div>
-        <p>Selecciona un tramo<br>en la gráfica o en la línea superior</p>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F4EADD" stroke-width="1.8" stroke-linecap="round">
+          <path d="M5 3v18M19 3v18"/><path d="M5 7h14M5 12h14M5 17h14"/>
+        </svg>
       </div>
-      <div class="detalle-content" id="detalleContent">
-        <div class="detalle-tramo-nombre" id="detalleNombre">—</div>
-        <div class="detalle-stats">
-          <div class="detalle-stat">
-            <div class="detalle-stat-label">Registros</div>
-            <div class="detalle-stat-val" id="detalleTotal">0</div>
-          </div>
-          <div class="detalle-stat">
-            <div class="detalle-stat-label">Municipios</div>
-            <div class="detalle-stat-val" id="detalleMunicipios">0</div>
-          </div>
-        </div>
-        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Municipios involucrados</div>
-        <div class="municipios-list" id="detalleMunicipiosList"></div>
+      <div>
+        <h1>XENDA</h1>
+        <div class="sub">Centro de Operaciones</div>
       </div>
     </div>
-
+    <div class="spacer"></div>
+    <div class="live"><span class="dot"></span> En vivo</div>
+    <div class="clock mono" id="clock">--:--:--</div>
+    <div class="period">
+      <select id="periodSel" aria-label="Periodo de quincena">
+        <option value="5">2ª Quincena · Jun 2026</option>
+        <option value="4">1ª Quincena · Jun 2026</option>
+        <option value="3">2ª Quincena · May 2026</option>
+        <option value="2">1ª Quincena · May 2026</option>
+      </select>
+    </div>
   </div>
 
-  <!-- ── FILA 2: Direcciones + Tipo propiedad + Actividades ── -->
-  <div class="charts-grid" style="margin-bottom:20px;">
+  <!-- TRAMO FILTER -->
+  <div class="chips" id="chips">
+    <span class="lab">Tramos</span>
+  </div>
 
-    <div class="panel">
-      <div class="panel-title">Registros por dirección</div>
-      <table class="dir-table" id="dirTable">
-        <thead>
-          <tr>
-            <th>Dirección</th>
-            <th>Registros</th>
-            <th class="bar-cell"></th>
-          </tr>
-        </thead>
-        <tbody id="dirTableBody">
-          <!-- JS -->
-        </tbody>
-      </table>
+  <!-- GRID -->
+  <div class="grid">
+
+    <!-- KPIs -->
+    <div class="panel kpi" id="kpi-act">
+      <div class="top">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#D7AE6E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 16V9M12 16V6M16 16v-5M20 16v-8"/></svg></div>
+        <span class="delta up" id="d-act">▲ 0%</span>
+      </div>
+      <div class="value mono" id="v-act">0</div>
+      <div class="label">Actividades registradas</div>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:20px;">
+    <div class="panel kpi" id="kpi-nuc">
+      <div class="top">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2F8270" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></div>
+        <span class="delta up" id="d-nuc">▲ 0%</span>
+      </div>
+      <div class="value mono" id="v-nuc">0</div>
+      <div class="label">Núcleos agrarios atendidos</div>
+    </div>
 
-      <div class="panel" style="flex:1;">
-        <div class="panel-title">Tipo de propiedad</div>
-        <div class="donut-wrap">
-          <canvas id="propiedadChart" width="120" height="120" style="flex-shrink:0;"></canvas>
-          <div class="donut-legend" id="propiedadLegend"></div>
+    <div class="panel kpi" id="kpi-fre">
+      <div class="top">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#A21E42" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4M4 4l9 2-2 4 8 1.5-3 3.5 3 3.5-8-1.5 2 4-9-2"/></svg></div>
+        <span class="delta flat" id="d-fre">● estable</span>
+      </div>
+      <div class="value mono" id="v-fre">0</div>
+      <div class="label">Frentes de trabajo activos</div>
+    </div>
+
+    <div class="panel kpi" id="kpi-avc">
+      <div class="top">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DEC9A2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 2v10l7 3"/></svg></div>
+        <span class="delta up" id="d-avc">▲ 0 pts</span>
+      </div>
+      <div class="value mono" id="v-avc">0%</div>
+      <div class="label">Avance global de liberación</div>
+    </div>
+
+    <!-- RAIL signature -->
+    <div class="panel span8">
+      <div class="panel-head">
+        <h2>Avance de liberación por tramo</h2>
+        <span class="tag">DERECHO DE VÍA</span>
+      </div>
+      <div id="rail"></div>
+    </div>
+
+    <!-- Doughnut dependencias -->
+    <div class="panel span4">
+      <div class="panel-head">
+        <h2>Dependencias participantes</h2>
+        <span class="tag">COORDINACIÓN</span>
+      </div>
+      <div class="chart-wrap h-doughnut">
+        <canvas id="depChart"></canvas>
+        <div class="doughnut-center">
+          <div class="n mono" id="depTotal">0</div>
+          <div class="t">participaciones</div>
         </div>
       </div>
+    </div>
 
-      <div class="panel" style="flex:1;">
-        <div class="panel-title">Tipo de actividad</div>
-        <div class="act-grid" id="actGrid"></div>
+    <!-- Line quincenas -->
+    <div class="panel span8">
+      <div class="panel-head">
+        <h2>Actividades por quincena</h2>
+        <span class="tag">SERIE HISTÓRICA</span>
       </div>
+      <div class="chart-wrap h-line"><canvas id="lineChart"></canvas></div>
+    </div>
 
+    <!-- Bitácora -->
+    <div class="panel span4">
+      <div class="panel-head">
+        <h2>Bitácora en campo</h2>
+        <span class="live" style="font-size:.58rem"><span class="dot"></span></span>
+      </div>
+      <div class="feed" id="feed"></div>
+    </div>
+
+    <!-- Tipos de actividad -->
+    <div class="panel span12">
+      <div class="panel-head">
+        <h2>Tipos de actividad</h2>
+        <span class="tag">CLASIFICACIÓN OPERATIVA</span>
+      </div>
+      <div class="chart-wrap h-bar"><canvas id="tipoChart"></canvas></div>
     </div>
 
   </div>
 
-  <!-- ── FILA 3: Producción técnica ── -->
-  <div class="panel">
-    <div class="panel-title">Producción técnica acumulada</div>
-    <div class="prod-grid">
-      <div class="prod-box">
-        <div class="prod-num" id="prod-mediciones">{{ total_mediciones or 0 }}</div>
-        <div class="prod-label">Mediciones</div>
-      </div>
-      <div class="prod-box">
-        <div class="prod-num" id="prod-fichas">{{ total_fichas or 0 }}</div>
-        <div class="prod-label">Fichas</div>
-      </div>
-      <div class="prod-box">
-        <div class="prod-num" id="prod-planos">{{ total_planos or 0 }}</div>
-        <div class="prod-label">Planos</div>
-      </div>
-      <div class="prod-box">
-        <div class="prod-num" id="prod-planos-gen">{{ total_planos_generados or 0 }}</div>
-        <div class="prod-label">Planos generados</div>
-      </div>
-      <div class="prod-box">
-        <div class="prod-num" id="prod-planos-val">{{ total_planos_validados or 0 }}</div>
-        <div class="prod-label">Planos validados</div>
-      </div>
-      <div class="prod-box">
-        <div class="prod-num" id="prod-infografias">{{ total_infografias or 0 }}</div>
-        <div class="prod-label">Infografías</div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /main -->
-
-<!-- DATOS -->
-<script id="dashboard-data" type="application/json">
-{
-  "tramosLabels":   {{ tramos_labels   | tojson | safe }},
-  "tramosValues":   {{ tramos_values   | tojson | safe }},
-  "detalleTramos":  {{ detalle_tramos  | tojson | safe }},
-  "direccionesLabels": {{ direcciones_labels | tojson | safe }},
-  "direccionesValues": {{ direcciones_values | tojson | safe }},
-  "propiedadLabels":   {{ propiedad_labels   | tojson | safe }},
-  "propiedadValues":   {{ propiedad_values   | tojson | safe }},
-  "actividadLabels":   {{ actividad_labels   | tojson | safe }},
-  "actividadValues":   {{ actividad_values   | tojson | safe }}
-}
-</script>
+  <footer>
+    XENDA · Sistema de captura y reporte de actividades de campo &nbsp;·&nbsp;
+    <span class="mono">SEDATU — Liberación de derecho de vía ferroviaria</span><br>
+    <span style="color:var(--muted-2)">Datos de demostración — conecta tu endpoint Flask para alimentar en tiempo real</span>
+  </footer>
 
 <script>
-const D = JSON.parse(document.getElementById('dashboard-data').textContent);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const NOMBRES = {
-  TAP:   'AIFA – Pachuca',
-  TMQ:   'México – Querétaro',
-  TQI:   'Querétaro – Irapuato',
-  TSNL:  'Saltillo – Nuevo Laredo',
-  TIGDL: 'Irapuato – Guadalajara',
-  TQSLP: 'Querétaro – S.L.P.',
-  TSLPS: 'S.L.P. – Saltillo',
-  TMLM:  'Mazatlán – Los Mochis'
+/* ============================================================
+   COLORES (de tu paleta institucional)
+   ============================================================ */
+const C = {
+  TAP:'#A21E42',   // guinda
+  TMQ:'#2F8270',   // verde
+  TQI:'#D7AE6E',   // dorado
+  TSNL:'#DEC9A2',  // arena
 };
 
-const COLORES_TRAMO = [
-  '#a42145','#6E152E','#245C4F','#BC945A',
-  '#2d7a68','#8b3a5a','#d4a85a','#4a8c7c'
+/* ============================================================
+   DATOS DEMO — generados de forma determinista.
+   Aquí es donde conectas tu backend: cada tramo trae, por
+   quincena, sus actividades / núcleos / frentes / avance, y el
+   reparto por dependencia y por tipo de actividad.
+   ============================================================ */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+const QUINCENAS = ['Q1·Abr','Q2·Abr','Q1·May','Q2·May','Q1·Jun','Q2·Jun'];
+const DEPS  = ['SEDATU','RAN','SICT','ATTRAPI','PA','Gob. Estatal'];
+const TIPOS = ['Recorrido','Reunión','Notificación','Levantamiento','Acercamiento','Verificación','Acta/Firma'];
+
+const TRAMOS = [
+  {id:'TAP',  nombre:'AIFA – Pachuca',         pk:95,  seed:11, avanceBase:0.62},
+  {id:'TMQ',  nombre:'México – Querétaro',      pk:226, seed:23, avanceBase:0.49},
+  {id:'TQI',  nombre:'Querétaro – Irapuato',    pk:108, seed:37, avanceBase:0.58},
+  {id:'TSNL', nombre:'Saltillo – Nuevo Laredo', pk:318, seed:53, avanceBase:0.34},
 ];
 
-/* ── LÍNEA DE TRAMOS ── */
-const rail = document.getElementById('tramosRail');
-D.tramosLabels.forEach((t, i) => {
-  const stop = document.createElement('div');
-  stop.className = 'tramo-stop';
-  stop.dataset.tramo = t;
-  stop.innerHTML = `
-    <div class="tramo-label">${t}</div>
-    <div class="tramo-dot"></div>
-    <div class="tramo-count">${D.tramosValues[i]}</div>
-  `;
-  stop.addEventListener('click', () => mostrarDetalle(t, i));
-  rail.appendChild(stop);
+// genera, por tramo, la serie de actividades por quincena + reparto
+TRAMOS.forEach(t=>{
+  const r = mulberry32(t.seed);
+  t.serie = QUINCENAS.map((_,i)=> Math.round(18 + i*5 + r()*22 + t.pk*0.04));
+  t.avance = QUINCENAS.map((_,i)=> Math.min(0.97, t.avanceBase + i*0.025 + r()*0.02));
+  t.depW  = DEPS.map(()=> 0.4 + r());        // pesos por dependencia
+  t.tipoW = TIPOS.map(()=> 0.3 + r());       // pesos por tipo
 });
 
-/* ── GRÁFICA TRAMOS ── */
-const tramosChart = new Chart(document.getElementById('tramosChart'), {
-  type: 'bar',
-  data: {
-    labels: D.tramosLabels,
-    datasets: [{
-      data: D.tramosValues,
-      backgroundColor: COLORES_TRAMO,
-      borderRadius: 10,
-      borderSkipped: false,
-    }]
-  },
-  options: {
-    responsive: true,
-    plugins: { legend: { display: false },
-      tooltip: {
-        callbacks: {
-          title: (items) => NOMBRES[items[0].label] || items[0].label,
-          label: (item)  => ` ${item.raw} registros`
-        },
-        backgroundColor: '#1a0810',
-        borderColor: 'rgba(188,148,90,0.3)',
-        borderWidth: 1,
-        titleColor: '#dec9a2',
-        bodyColor: '#a09080',
-        padding: 12,
-        cornerRadius: 10
-      }
-    },
-    scales: {
-      y: {
-        ticks: { color: '#a09080', font: { size: 11 } },
-        grid:  { color: 'rgba(255,255,255,0.05)' }
-      },
-      x: {
-        ticks: { color: '#a09080', font: { size: 11 } },
-        grid:  { display: false }
-      }
-    },
-    onClick: (e, els) => {
-      if (els.length) mostrarDetalle(D.tramosLabels[els[0].index], els[0].index);
-    }
-  }
-});
-
-/* ── DETALLE ── */
-function mostrarDetalle(tramo, i) {
-  const det = D.detalleTramos[tramo];
-  if (!det) return;
-
-  // Rail
-  document.querySelectorAll('.tramo-stop').forEach(s => s.classList.remove('active'));
-  const stopEl = document.querySelector(`.tramo-stop[data-tramo="${tramo}"]`);
-  if (stopEl) stopEl.classList.add('active');
-
-  document.getElementById('detalleEmpty').style.display   = 'none';
-  document.getElementById('detalleContent').classList.add('visible');
-  document.getElementById('detalleNombre').textContent = NOMBRES[tramo] || tramo;
-  document.getElementById('detalleTotal').textContent  = det.total;
-  document.getElementById('detalleMunicipios').textContent = det.municipios.length;
-
-  const list = document.getElementById('detalleMunicipiosList');
-  list.innerHTML = det.municipios.map(m =>
-    `<span class="municipio-tag">${m}</span>`
-  ).join('');
-
-  // Highlight barra
-  tramosChart.data.datasets[0].backgroundColor =
-    COLORES_TRAMO.map((c, idx) => idx === i ? '#BC945A' : c);
-  tramosChart.update();
+// snapshot acumulado/derivado de un tramo en la quincena q
+function snap(t, q){
+  const act = t.serie[q];
+  const nuc = Math.round(act * (0.26 + (t.seed%7)/40));
+  const fre = 3 + (t.seed % 4);
+  return {act, nuc, fre, avance:t.avance[q]};
 }
 
-/* ── TABLA DIRECCIONES ── */
-const maxDir = Math.max(...D.direccionesValues, 1);
-const tbody = document.getElementById('dirTableBody');
-D.direccionesLabels.forEach((d, i) => {
-  const pct = Math.round(D.direccionesValues[i] / maxDir * 100);
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td style="color:var(--text);font-size:12px;">${d}</td>
-    <td style="color:var(--dorado);font-weight:700;">${D.direccionesValues[i]}</td>
-    <td class="bar-cell">
-      <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
-    </td>
-  `;
-  tbody.appendChild(tr);
+const BITACORA = [
+  {tr:'TAP',  verb:'Se realizó recorrido', txt:'de identificación de áreas en Tizayuca, pk 31+400, con RAN y municipio.'},
+  {tr:'TMQ',  verb:'Se sostuvo reunión',   txt:'de acercamiento con Comisariado Ejidal de San Bartolo, parcela MQ-SBA-P109.'},
+  {tr:'TSNL', verb:'Se notificó',          txt:'a propietarios del Frente 3 sobre levantamiento topográfico programado.'},
+  {tr:'TQI',  verb:'Se verificó',          txt:'afectación de cruces en pk 88+150, coordinación con SICT y ATTRAPI.'},
+  {tr:'TAP',  verb:'Se levantó',           txt:'acta circunstanciada en Camino de Xolox, asistencia de PA y Gob. del Estado.'},
+  {tr:'TMQ',  verb:'Se efectuó acercamiento', txt:'con núcleo agrario El Marqués para liberación de derecho de vía.'},
+  {tr:'TSNL', verb:'Se entregó',           txt:'oficio de coordinación a FIFONAFE para predios federales en Frente 5.'},
+  {tr:'TQI',  verb:'Se realizó recorrido', txt:'conjunto en Frente 2 para revisar afectaciones de empresas.'},
+];
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+let periodo = 5;
+const activos = new Set(TRAMOS.map(t=>t.id));
+
+/* ============================================================
+   CHIPS
+   ============================================================ */
+const chipsEl = document.getElementById('chips');
+TRAMOS.forEach(t=>{
+  const b = document.createElement('button');
+  b.className='chip';b.dataset.id=t.id;
+  b.innerHTML = `<span class="swatch" style="background:${C[t.id]}"></span>${t.id} · ${t.nombre}`;
+  b.addEventListener('click',()=>{
+    if(activos.has(t.id)){ if(activos.size>1){activos.delete(t.id);b.classList.add('off');} }
+    else{ activos.add(t.id);b.classList.remove('off'); }
+    render();
+  });
+  chipsEl.appendChild(b);
 });
 
-/* ── DONUT PROPIEDAD ── */
-new Chart(document.getElementById('propiedadChart'), {
-  type: 'doughnut',
-  data: {
-    labels: D.propiedadLabels,
-    datasets: [{
-      data: D.propiedadValues,
-      backgroundColor: ['#6E152E','#245C4F'],
-      borderWidth: 0,
-      hoverOffset: 6
-    }]
-  },
-  options: {
-    cutout: '72%',
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: '#1a0810',
-        borderColor: 'rgba(188,148,90,0.3)',
-        borderWidth: 1,
-        titleColor: '#dec9a2',
-        bodyColor: '#a09080',
-        padding: 10,
-        cornerRadius: 8
-      }
-    }
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function tramosActivos(){ return TRAMOS.filter(t=>activos.has(t.id)); }
+
+function countUp(el, target, dur=1000, fmt=v=>Math.round(v).toLocaleString('es-MX')){
+  if(reduceMotion){el.textContent=fmt(target);return;}
+  const from = parseFloat((el.dataset.cur||'0'));
+  const start=performance.now();
+  function tick(now){
+    const t=Math.min(1,(now-start)/dur);
+    const e=1-Math.pow(1-t,3);
+    const val=from+(target-from)*e;
+    el.textContent=fmt(val);
+    if(t<1)requestAnimationFrame(tick); else el.dataset.cur=target;
   }
-});
+  requestAnimationFrame(tick);
+}
 
-const total_prop = D.propiedadValues.reduce((a,b)=>a+b,0) || 1;
-const legend = document.getElementById('propiedadLegend');
-const PROP_COLORS = ['#6E152E','#245C4F'];
-D.propiedadLabels.forEach((l,i) => {
-  const pct = Math.round(D.propiedadValues[i]/total_prop*100);
-  legend.innerHTML += `
-    <div class="legend-item">
-      <div class="legend-dot" style="background:${PROP_COLORS[i]}"></div>
-      <span style="font-size:13px;color:var(--text-muted);">${l}</span>
-      <span class="legend-val">${pct}%</span>
-    </div>`;
-});
+/* ============================================================
+   KPIs
+   ============================================================ */
+function renderKPIs(){
+  const ts=tramosActivos();
+  const cur=ts.map(t=>snap(t,periodo));
+  const prev=ts.map(t=>snap(t,Math.max(0,periodo-1)));
+  const sum=a=>a.reduce((x,y)=>x+y,0);
 
-/* ── ACTIVIDADES BARS ── */
-const maxAct = Math.max(...D.actividadValues, 1);
-const ACT_COLORS = ['#a42145','#245C4F','#BC945A','#2d7a68','#8b3a5a'];
-const actGrid = document.getElementById('actGrid');
-D.actividadLabels.forEach((a,i) => {
-  const pct = Math.round(D.actividadValues[i]/maxAct*100);
-  actGrid.innerHTML += `
-    <div class="act-row">
-      <div class="act-name">${a}</div>
-      <div class="act-bar-bg">
-        <div class="act-bar-fill" style="width:${pct}%;background:${ACT_COLORS[i%ACT_COLORS.length]};"></div>
+  const act=sum(cur.map(s=>s.act));
+  const actP=sum(prev.map(s=>s.act));
+  const nuc=sum(cur.map(s=>s.nuc));
+  const nucP=sum(prev.map(s=>s.nuc));
+  const fre=sum(cur.map(s=>s.fre));
+  const avc=cur.length? cur.reduce((x,s)=>x+s.avance,0)/cur.length:0;
+  const avcP=prev.length? prev.reduce((x,s)=>x+s.avance,0)/prev.length:0;
+
+  countUp(document.getElementById('v-act'),act);
+  countUp(document.getElementById('v-nuc'),nuc);
+  countUp(document.getElementById('v-fre'),fre);
+  countUp(document.getElementById('v-avc'),avc*100,1000,v=>Math.round(v)+'%');
+
+  const pct=(c,p)=> p? Math.round((c-p)/p*100):0;
+  setDelta('d-act',pct(act,actP));
+  setDelta('d-nuc',pct(nuc,nucP));
+  document.getElementById('d-avc').textContent='▲ '+Math.max(0,Math.round((avc-avcP)*100))+' pts';
+}
+function setDelta(id,p){
+  const el=document.getElementById(id);
+  if(p>0){el.className='delta up';el.textContent='▲ '+p+'%';}
+  else if(p<0){el.className='delta flat';el.textContent='▼ '+Math.abs(p)+'%';}
+  else{el.className='delta flat';el.textContent='● estable';}
+}
+
+/* ============================================================
+   RAIL (signature)
+   ============================================================ */
+function renderRail(){
+  const el=document.getElementById('rail');
+  el.innerHTML='';
+  tramosActivos().forEach(t=>{
+    const s=snap(t,periodo);
+    const pct=Math.round(s.avance*100);
+    const row=document.createElement('div');
+    row.className='rail-row';
+    row.style.setProperty('--c',C[t.id]);
+    // estaciones en 0,25,50,75,100%
+    let stations='';
+    [0,25,50,75,100].forEach(p=> stations+=`<div class="station" style="left:${p}%"></div>`);
+    row.innerHTML=`
+      <div class="rail-id">
+        <span class="badge">${t.id}</span>
+        <span class="nm">${t.nombre}</span>
+        <span class="meta">${t.pk} km · ${s.fre} frentes · ${s.nuc} núcleos</span>
       </div>
-      <div class="act-val">${D.actividadValues[i]}</div>
-    </div>`;
+      <div class="track">
+        <div class="bed"></div>
+        ${stations}
+        <div class="fill"></div>
+        <div class="train"></div>
+      </div>
+      <div class="rail-pct">
+        <div class="big">${pct}%</div>
+        <div class="sm">liberado</div>
+      </div>`;
+    el.appendChild(row);
+    requestAnimationFrame(()=>{
+      row.querySelector('.fill').style.width=pct+'%';
+      row.querySelector('.train').style.left=pct+'%';
+    });
+  });
+}
+
+/* ============================================================
+   CHART.JS — defaults oscuros
+   ============================================================ */
+Chart.defaults.color='#AB9381';
+Chart.defaults.font.family="'IBM Plex Mono', monospace";
+Chart.defaults.font.size=11;
+const GRID='rgba(255,255,255,.05)';
+
+const tip={
+  backgroundColor:'#241915',borderColor:'#39271F',borderWidth:1,
+  titleColor:'#DEC9A2',bodyColor:'#F4EADD',padding:11,cornerRadius:9,
+  titleFont:{family:"'Space Grotesk'",weight:'600'},displayColors:true,boxPadding:4,
+};
+
+let lineChart,depChart,tipoChart;
+
+function buildCharts(){
+  // LINE
+  lineChart=new Chart(document.getElementById('lineChart'),{
+    type:'line',
+    data:{labels:QUINCENAS,datasets:[]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{usePointStyle:true,pointStyle:'circle',padding:18,font:{size:11}}},tooltip:tip},
+      scales:{
+        x:{grid:{color:GRID},border:{color:'#39271F'}},
+        y:{grid:{color:GRID},border:{display:false},beginAtZero:true},
+      },
+      elements:{line:{tension:.4,borderWidth:2.5},point:{radius:3,hoverRadius:6,borderWidth:2}},
+    }
+  });
+
+  // DOUGHNUT
+  depChart=new Chart(document.getElementById('depChart'),{
+    type:'doughnut',
+    data:{labels:DEPS,datasets:[{data:DEPS.map(()=>1),
+      backgroundColor:['#A21E42','#2F8270','#D7AE6E','#DEC9A2','#6E152E','#7C6557'],
+      borderColor:'#1E1513',borderWidth:3,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',
+      plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyle:'circle',padding:11,font:{size:10}}},tooltip:tip}}
+  });
+
+  // HORIZONTAL BAR
+  tipoChart=new Chart(document.getElementById('tipoChart'),{
+    type:'bar',
+    data:{labels:TIPOS,datasets:[{data:TIPOS.map(()=>0),
+      backgroundColor:ctx=>{const g=ctx.chart.ctx.createLinearGradient(0,0,ctx.chart.width,0);g.addColorStop(0,'#6E152E');g.addColorStop(1,'#A21E42');return g;},
+      borderRadius:6,barThickness:18}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:tip},
+      scales:{x:{grid:{color:GRID},border:{display:false},beginAtZero:true},y:{grid:{display:false},border:{color:'#39271F'}}}}
+  });
+}
+
+function renderCharts(){
+  const ts=tramosActivos();
+
+  // line: una serie por tramo
+  lineChart.data.datasets=ts.map(t=>({
+    label:t.id,data:t.serie,
+    borderColor:C[t.id],
+    backgroundColor:C[t.id]+'22',
+    pointBackgroundColor:C[t.id],pointBorderColor:'#130D0C',fill:false,
+  }));
+  lineChart.update();
+
+  // doughnut: suma de pesos por dependencia, escalado por actividades
+  const dep=DEPS.map((_,i)=>{
+    let v=0;ts.forEach(t=>{const w=t.depW.reduce((a,b)=>a+b,0);v+=snap(t,periodo).act*(t.depW[i]/w);});
+    return Math.round(v);
+  });
+  depChart.data.datasets[0].data=dep;
+  depChart.update();
+  countUp(document.getElementById('depTotal'),dep.reduce((a,b)=>a+b,0),900);
+
+  // tipos
+  const tip2=TIPOS.map((_,i)=>{
+    let v=0;ts.forEach(t=>{const w=t.tipoW.reduce((a,b)=>a+b,0);v+=snap(t,periodo).act*(t.tipoW[i]/w);});
+    return Math.round(v);
+  });
+  tipoChart.data.datasets[0].data=tip2;
+  tipoChart.update();
+}
+
+/* ============================================================
+   BITÁCORA (feed)
+   ============================================================ */
+const feedEl=document.getElementById('feed');
+let feedIdx=0;
+function feedTime(off){
+  const d=new Date(Date.now()-off*1000*137);
+  return d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+}
+function addFeed(prepend=true){
+  const ts=tramosActivos();
+  let item=BITACORA[feedIdx%BITACORA.length];feedIdx++;
+  // si su tramo está filtrado, busca uno activo
+  let guard=0;
+  while(!activos.has(item.tr)&&guard<BITACORA.length){item=BITACORA[feedIdx%BITACORA.length];feedIdx++;guard++;}
+  const node=document.createElement('div');
+  node.className='feed-item';
+  node.innerHTML=`<span class="when">${feedTime(prepend?0:feedIdx)}</span>
+    <span class="body"><span class="tr" style="background:${C[item.tr]}">${item.tr}</span>
+    <span class="verb">${item.verb}</span> ${item.txt}</span>`;
+  if(prepend)feedEl.prepend(node);else feedEl.appendChild(node);
+  while(feedEl.children.length>6)feedEl.lastChild.remove();
+}
+function seedFeed(){feedEl.innerHTML='';feedIdx=0;for(let i=0;i<5;i++)addFeed(false);}
+
+/* ============================================================
+   RENDER + EVENTOS
+   ============================================================ */
+function render(){renderKPIs();renderRail();renderCharts();}
+
+document.getElementById('periodSel').addEventListener('change',e=>{
+  periodo=+e.target.value;render();
 });
 
+// reloj
+function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('es-MX',{hour12:false});}
+tick();setInterval(tick,1000);
+
+// init
+buildCharts();
+render();
+seedFeed();
+if(!reduceMotion)setInterval(()=>addFeed(true),5200);
 </script>
 </body>
 </html>
