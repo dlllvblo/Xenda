@@ -1,64 +1,202 @@
-# ============================================================
-# XENDA - Dashboard de conteo
-# Pegar en app.py. Solo admin, igual que los pre-reportes.
-# ============================================================
-# ⚠️ VERIFICA los nombres de columna del modelo Registro antes
-#    de pegar. Asumí estos (ajusta si difieren en tu models):
-#      Registro.tramo       -> tramo (str)
-#      Registro.direccion   -> dirección (str)
-#      Registro.propiedad   -> "PROPIEDAD SOCIAL" / "PROPIEDAD PRIVADA"
-#      Registro.actividad   -> tipo de actividad (str, viene del select)
-#      Registro.fecha       -> fecha/timestamp del registro
-# ============================================================
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XENDA · Conteo de Actividades</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#d7d7d7;
+    --panel:#FFFFFF;
+    --panel-2:#FBF7EF;
+    --line:#a42145;
+    --line-soft:#ECE0CC;
+    --guinda-deep:#6E152E; --guinda:#8E1B3A;
+    --verde-deep:#245C4F; --verde:#2F8270;
+    --dorado:#A8803F; --dorado-bright:#BC945A; --arena:#C9A86A;
+    --text:#3A2A22;
+    --text-strong:#6E152E;
+    --muted:#5A4636;
+    --muted-2:#74604C;
+    --radius:14px;
+    --shadow:0 10px 30px -12px rgba(110,21,46,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1100px 560px at 82% -10%, rgba(188,148,90,.18), transparent 60%),
+      radial-gradient(900px 500px at 0% 110%, rgba(162,30,66,.07), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased; min-height:100vh; padding:18px;
+  }
+  .mono{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
 
-from sqlalchemy import func, extract
+  .topbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 20px;margin-bottom:16px;
+    background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .topbar h1{font-family:'Space Grotesk',sans-serif;font-size:19px;color:var(--text-strong);letter-spacing:.02em}
+  .topbar .sub{font-size:12px;color:var(--muted-2)}
+  .topbar .spacer{flex:1}
+  .filtro{display:flex;align-items:center;gap:6px}
+  .filtro label{font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .filtro select{
+    font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--text-strong);
+    background:var(--panel-2);border:1.5px solid var(--line-soft);border-radius:9px;padding:7px 10px;cursor:pointer;
+    max-width:210px;
+  }
+  .filtro select:focus{outline:none;border-color:var(--dorado-bright)}
 
+  .totalbar{display:flex;justify-content:center;align-items:baseline;gap:14px;padding:18px 20px;margin-bottom:16px;
+    background:linear-gradient(135deg,var(--guinda-deep),var(--guinda));border-radius:var(--radius);box-shadow:var(--shadow)}
+  .totalbar .num{font-family:'IBM Plex Mono',monospace;font-size:44px;font-weight:700;color:#fff;line-height:1}
+  .totalbar .lbl{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--arena);
+    text-transform:uppercase;letter-spacing:.12em}
 
-@app.route('/conteo')
-def conteo():
-    if session.get('usuario') not in ADMIN_CORREOS:
-        return 'No autorizado', 403
-    return render_template('conteo.html')
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:16px}
+  .card{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);
+    padding:16px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;
+    border-top:3px solid var(--guinda)}
+  .card:nth-child(4n+2){border-top-color:var(--verde)}
+  .card:nth-child(4n+3){border-top-color:var(--dorado)}
+  .card:nth-child(4n+4){border-top-color:var(--guinda-deep)}
+  .card .nombre{font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:600;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.04em;line-height:1.35;overflow-wrap:anywhere}
+  .card .valor{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:700;color:var(--text-strong);line-height:1}
+  .card .desglose{display:flex;gap:12px;font-size:11.5px;color:var(--muted-2)}
+  .card .desglose b{color:var(--verde-deep);font-weight:600}
+  .card .desglose b.pp{color:var(--dorado)}
 
+  .vacio{grid-column:1/-1;text-align:center;padding:34px;color:var(--muted-2);
+    font-family:'Space Grotesk',sans-serif;font-size:14px;background:var(--panel);
+    border:1px dashed var(--line-soft);border-radius:var(--radius)}
 
-@app.route('/api/conteo')
-def api_conteo():
-    if session.get('usuario') not in ADMIN_CORREOS:
-        return jsonify({'error': 'No autorizado'}), 403
+  .pie{text-align:center;font-size:11px;color:var(--muted-2);padding:8px}
 
-    q = db.session.query(
-        Registro.tramo,
-        Registro.direccion,
-        Registro.propiedad,
-        Registro.actividad,
-        func.count(Registro.id)
-    )
+  @media (max-width:560px){
+    .topbar{gap:10px}
+    .totalbar .num{font-size:36px}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  }
+</style>
+</head>
+<body>
 
-    # Filtro opcional por periodo: ?anio=2026&mes=5  |  ?anio=2026&trimestre=2
-    anio = request.args.get('anio', type=int)
-    mes = request.args.get('mes', type=int)
-    trimestre = request.args.get('trimestre', type=int)
-    if anio:
-        q = q.filter(extract('year', Registro.fecha) == anio)
-    if mes:
-        q = q.filter(extract('month', Registro.fecha) == mes)
-    elif trimestre:
-        meses_tri = {1: (1, 2, 3), 2: (4, 5, 6), 3: (7, 8, 9), 4: (10, 11, 12)}
-        q = q.filter(extract('month', Registro.fecha).in_(meses_tri.get(trimestre, (1, 2, 3))))
+<div class="topbar">
+  <div>
+    <h1>Conteo de Actividades</h1>
+    <div class="sub">XENDA · Registro Agrario Nacional</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="filtro">
+    <label for="f-tramo">Tramo</label>
+    <select id="f-tramo"><option value="">TODOS</option></select>
+  </div>
+  <div class="filtro">
+    <label for="f-dir">Dirección</label>
+    <select id="f-dir"><option value="">TODAS</option></select>
+  </div>
+  <div class="filtro">
+    <label for="f-prop">Propiedad</label>
+    <select id="f-prop"><option value="">TODAS</option></select>
+  </div>
+</div>
 
-    q = q.group_by(
-        Registro.tramo, Registro.direccion,
-        Registro.propiedad, Registro.actividad
-    )
+<div class="totalbar">
+  <span class="num mono" id="total">0</span>
+  <span class="lbl">actividades en total</span>
+</div>
 
-    rows = [
-        {
-            'tramo': t or 'SIN TRAMO',
-            'direccion': d or 'SIN DIRECCIÓN',
-            'propiedad': p or 'SIN ESPECIFICAR',
-            'actividad': a or 'SIN ACTIVIDAD',
-            'n': n
-        }
-        for t, d, p, a, n in q.all()
-    ]
-    return jsonify({'rows': rows})
+<div class="grid" id="cards"></div>
+
+<div class="pie" id="pie"></div>
+
+<script>
+let ROWS = [];
+const $ = id => document.getElementById(id);
+
+// Espacio de ancho cero tras diagonales para que los nombres largos quiebren bien
+const quiebra = s => s.replace(/\//g, '/\u200B');
+
+function llenarSelect(sel, valores){
+  const actual = sel.value;
+  sel.length = 1; // conserva la opción TODOS/TODAS
+  [...valores].sort().forEach(v => {
+    const o = document.createElement('option');
+    o.value = v; o.textContent = v;
+    sel.appendChild(o);
+  });
+  if ([...sel.options].some(o => o.value === actual)) sel.value = actual;
+}
+
+function render(){
+  const ft = $('f-tramo').value, fd = $('f-dir').value, fp = $('f-prop').value;
+  const filtradas = ROWS.filter(r =>
+    (!ft || r.tramo === ft) && (!fd || r.direccion === fd) && (!fp || r.propiedad === fp)
+  );
+
+  // total
+  const total = filtradas.reduce((s, r) => s + r.n, 0);
+  $('total').textContent = total.toLocaleString('es-MX');
+
+  // agregación por actividad, con desglose PS/PP
+  const porAct = {};
+  for (const r of filtradas){
+    if (!porAct[r.actividad]) porAct[r.actividad] = {n:0, ps:0, pp:0};
+    porAct[r.actividad].n += r.n;
+    if (r.propiedad.includes('SOCIAL')) porAct[r.actividad].ps += r.n;
+    else if (r.propiedad.includes('PRIVADA')) porAct[r.actividad].pp += r.n;
+  }
+
+  const cards = $('cards');
+  cards.innerHTML = '';
+  const acts = Object.entries(porAct).sort((a, b) => b[1].n - a[1].n);
+
+  if (!acts.length){
+    cards.innerHTML = '<div class="vacio">Sin registros para este filtro</div>';
+    return;
+  }
+
+  for (const [nombre, d] of acts){
+    const card = document.createElement('div');
+    card.className = 'card';
+    let desglose = '';
+    if (d.ps || d.pp){
+      desglose = `<div class="desglose">
+        ${d.ps ? `<span><b>${d.ps}</b> social</span>` : ''}
+        ${d.pp ? `<span><b class="pp">${d.pp}</b> privada</span>` : ''}
+      </div>`;
+    }
+    card.innerHTML = `
+      <div class="nombre">${quiebra(nombre)}</div>
+      <div class="valor mono">${d.n.toLocaleString('es-MX')}</div>
+      ${desglose}`;
+    cards.appendChild(card);
+  }
+}
+
+async function cargar(){
+  try{
+    const res = await fetch('/api/conteo');
+    const data = await res.json();
+    ROWS = data.rows || [];
+    llenarSelect($('f-tramo'), new Set(ROWS.map(r => r.tramo)));
+    llenarSelect($('f-dir'),   new Set(ROWS.map(r => r.direccion)));
+    llenarSelect($('f-prop'),  new Set(ROWS.map(r => r.propiedad)));
+    render();
+    $('pie').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX');
+  }catch(e){
+    $('cards').innerHTML = '<div class="vacio">Error al cargar los datos</div>';
+  }
+}
+
+['f-tramo','f-dir','f-prop'].forEach(id => $(id).addEventListener('change', render));
+cargar();
+setInterval(cargar, 60000); // auto-refresh cada 60 s, igual que agenda
+</script>
+</body>
+</html>
