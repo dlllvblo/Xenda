@@ -307,13 +307,7 @@ class Registro(db.Model):
 
     nucleo = db.Column(db.String(200))
 
-    localidad = db.Column(db.String(200))
-
-    frente = db.Column(db.String(20))
-
-    descripcion = db.Column(db.Text)
-
-    trabajo_campo = db.Column(db.String(300))
+    frente = db.Column(db.Integer)
 
     actividad = db.Column(db.String(100))
 
@@ -387,6 +381,8 @@ class SubActividad(db.Model):
     municipio = db.Column(db.String(100))
 
     nucleo = db.Column(db.String(200))
+
+    localidad = db.Column(db.String(200))
 
     frente = db.Column(db.String(20))
 
