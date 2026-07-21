@@ -572,7 +572,7 @@
                     Tipo de Propiedad *
                 </label>
 
-                <select name="tipo_propiedad" required>
+                <select name="tipo_propiedad" id="tipo_propiedad" required>
 
                     <option value="">
                         Seleccione una opción
@@ -930,6 +930,7 @@
                     <option value="EN PROCESO">EN PROCESO</option>
                     <option value="FINALIZADO">FINALIZADO</option>
                     <option value="PENDIENTE DE INICIAR">PENDIENTE DE INICIAR</option>
+                    <option value="INSPECCIONES EN SITIO">INSPECCIONES EN SITIO</option>
                 </select>
             </div>
 
@@ -971,9 +972,9 @@
                         <option value="VARIOS">VARIOS</option>
                     </select>
                     <div style="position:relative;">
-                        <input id="sr_frente" type="number" min="0" step="1" placeholder="FRENTE" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; width:100%;" class="bloquear-numero">
+                        <input id="sr_frente" type="text" inputmode="text" placeholder="FRENTE (número o N/A)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; width:100%; text-transform: uppercase;">
                     </div>
-                    <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
+                    <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO, INSPECCIONES EN SITIO, PRÁCTICAS DE CAMPO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
                     <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
                 <button type="button" onclick="agregarSubRealizada()" style="background:#245C4F;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad</button>
@@ -1272,9 +1273,9 @@ const responsableTexto = document.getElementById('responsable-texto');
 const responsables = {
     'PLANEACIÓN': 'GEOG. JORGE DANIEL LAZCANO SÁNCHEZ',
     'TOPOGRAFÍA CENTRO': 'GEOG. RODRIGO SANDOVAL PIÑA',
-    'TOPOGRAFÍA OCCIDENTE': 'ING. MARTÍN FLORES BAILÓN',
+    'TOPOGRAFÍA OCCIDENTE': 'ING. JOSÉ MARTÍN FLORES BAILÓN',
     'TOPOGRAFÍA NORTE': 'ING. LUIS HUMBERTO QUIROZ ESCAMILLA',
-    'TOPOGRAFÍA OCCIDENTE PACÍFICO': 'ARQ. MIGUEL ÁNGEL SÁNCHEZ CORTES',
+    'TOPOGRAFÍA OCCIDENTE PACÍFICO': 'ARQ. MIGUEL ÁNGEL SÁNCHEZ CORTÉS',
     'TOPOGRAFÍA NORTE ORIENTE': 'ING. AGUSTIN TAPIA VIVEROS',
     'PRODUCTOS Y SISTEMAS GEOESPACIALES': 'MTRA. VICTORIA ERIKA VELÁSQUEZ ALFARO',
     "BDT'S CONSTRUCCIÓN": 'ARQ. RAÚL IVAN PÉREZ JUÁREZ',
@@ -1445,18 +1446,23 @@ if (frenteInput) {
 const srFrenteInput = document.getElementById('sr_frente');
 if (srFrenteInput) {
     srFrenteInput.addEventListener('keydown', function(e) {
-        const teclasPermitidas = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab'];
+        const teclasPermitidas = ['Backspace','Delete','ArrowLeft','ArrowRight', 'Tab','Home','End'];
         if (teclasPermitidas.includes(e.key)) return;
-        if (!/[0-9]/.test(e.key)) {
-            e.preventDefault();
+        if (e.ctrlKey || e.metaKey) return; // permite copiar y pegar
+        // Permite dígitos 0-9, N, A y /
+        if (!/^[0-9nNaA/]$/.test(e.key)) {
+            e,preventDefault();
             if (document.getElementById('tooltip-sr-frente')) return;
             const tooltip = document.createElement('div');
             tooltip.id = 'tooltip-sr-frente';
             tooltip.className = 'tooltip-error';
-            tooltip.textContent = '⚠️ Solo números';
+            tooltip.textContent = 'Ingrese números, N, A o / solamente';
             srFrenteInput.parentElement.appendChild(tooltip);
-            setTimeout(function() { tooltip.remove(); }, 2000);
+            setTimeout(function() {tooltip.remove();}, 2000);
         }
+    });
+    srFrenteInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
     });
 }
 
@@ -1775,10 +1781,40 @@ function poblarSelectsSub() {
         const el = document.getElementById(id);
         if (el) el.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     });
+    if (esPropiedadPrivada()) aplicarNucleoPrivadaSR();
 }
 
 document.getElementById('tramo').addEventListener('change', poblarSelectsSub);
 poblarSelectsSub();
+
+// =====================================
+// PROPIEDAD PRIVADA -> NÚCLEO = "PROPIEDAD PRIVADA"
+// =====================================
+function esPropiedadPrivada() {
+    const s = document.getElementById('tipo_propiedad');
+    return !!(s && s.value === 'PRIVADA');
+}
+function aplicarNucleoPrivadaSR() {
+    const sel = document.getElementById('sr_nucleo');
+    if (!sel) return;
+    sel.innerHTML = '<option value="PROPIEDAD PRIVADA">PROPIEDAD PRIVADA</option>';
+    sel.value = 'PROPIEDAD PRIVADA';
+    sel.disabled = true;
+}
+function restaurarNucleoSR() {
+    const sel = document.getElementById('sr_nucleo');
+    if (!sel) return;
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
+}
+const tipoPropiedadSelect = document.getElementById('tipo_propiedad');
+if (tipoPropiedadSelect) {
+    tipoPropiedadSelect.addEventListener('change', function() {
+        if (esPropiedadPrivada()) aplicarNucleoPrivadaSR();
+        else restaurarNucleoSR();
+    });
+    if (esPropiedadPrivada()) aplicarNucleoPrivadaSR(); // estado correcto al cargar
+}
 
 
 document.getElementById('sr_entidad').addEventListener('change', function() {
@@ -1789,10 +1825,13 @@ document.getElementById('sr_entidad').addEventListener('change', function() {
     const sel = document.getElementById('sr_municipio');
     sel.innerHTML = '<option value="">Municipio</option>';
     municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
-    document.getElementById('sr_nucleo').innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
+    if (!esPropiedadPrivada()) {
+        document.getElementById('sr_nucleo').innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
+    }
 });
 
 document.getElementById('sr_municipio').addEventListener('change', function() {
+    if (esPropiedadPrivada()) { aplicarNucleoPrivadaSR(); return; }
     const tramo = document.getElementById('tramo').value;
     const entidad = document.getElementById('sr_entidad').value;
     const nucleos = [...new Set(
@@ -1882,7 +1921,7 @@ function agregarSubRealizada() {
     const item = {
         entidad: document.getElementById('sr_entidad').value,
         municipio: document.getElementById('sr_municipio').value,
-        nucleo: document.getElementById('sr_nucleo').value,
+        nucleo: esPropiedadPrivada() ? 'PROPIEDAD PRIVADA' : document.getElementById('sr_nucleo').value,
         frente: document.getElementById('sr_frente').value,
         trabajo_campo: document.getElementById('sr_trabajo_campo').value.toUpperCase(),
         descripcion: document.getElementById('sr_descripcion').value.toUpperCase()
