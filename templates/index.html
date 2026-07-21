@@ -972,6 +972,7 @@
                         <option value="">NÚCLEO AGRARIO</option>
                         <option value="VARIOS">VARIOS</option>
                     </select>
+                    <input id="sr_localidad" placeholder="LOCALIDAD" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
                     <div style="position:relative;">
                         <input id="sr_frente" type="text" inputmode="text" placeholder="FRENTE (número o N/A)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; width:100%; text-transform: uppercase;">
                     </div>
@@ -1452,7 +1453,7 @@ if (srFrenteInput) {
         if (e.ctrlKey || e.metaKey) return; // permite copiar y pegar
         // Permite dígitos 0-9, N, A y /
         if (!/^[0-9nNaA/]$/.test(e.key)) {
-            e,preventDefault();
+            e.preventDefault();
             if (document.getElementById('tooltip-sr-frente')) return;
             const tooltip = document.createElement('div');
             tooltip.id = 'tooltip-sr-frente';
@@ -1885,6 +1886,7 @@ function renderTabla(lista, containerId) {
             <th style="padding:8px;">Entidad</th>
             <th style="padding:8px;">Municipio</th>
             <th style="padding:8px;">Núcleo</th>
+            <th style="padding:8px;">Localidad</th>
             <th style="padding:8px;">Frente</th>
             <th style="padding:8px;">Descripción</th>
             <th style="padding:8px;"></th>
@@ -1895,6 +1897,7 @@ function renderTabla(lista, containerId) {
             <td style="padding:6px;">${item.entidad}</td>
             <td style="padding:6px;">${item.municipio}</td>
             <td style="padding:6px;">${item.nucleo}</td>
+            <td style="padding:6px;">${item.localidad || ''}</td>
             <td style="padding:6px;">${item.frente}</td>
             <td style="padding:6px;">${item.descripcion}</td>
             <td style="padding:6px;text-align:center;">
@@ -1923,6 +1926,7 @@ function agregarSubRealizada() {
         entidad: document.getElementById('sr_entidad').value,
         municipio: document.getElementById('sr_municipio').value,
         nucleo: esPropiedadPrivada() ? 'PROPIEDAD PRIVADA' : document.getElementById('sr_nucleo').value,
+        localidad: document.getElementById('sr_localidad').value.toUpperCase(),
         frente: document.getElementById('sr_frente').value,
         trabajo_campo: document.getElementById('sr_trabajo_campo').value.toUpperCase(),
         descripcion: document.getElementById('sr_descripcion').value.toUpperCase()
@@ -1931,6 +1935,7 @@ function agregarSubRealizada() {
     subRealizadas.push(item);
     document.getElementById('sub_actividades_realizadas').value = JSON.stringify(subRealizadas);
     renderTabla(subRealizadas, 'tabla_sub_realizadas');
+    document.getElementById('sr_localidad').value = '';
     document.getElementById('sr_frente').value = '';
     document.getElementById('sr_descripcion').value = '';
     document.getElementById('sr_trabajo_campo').value = '';
