@@ -307,7 +307,13 @@ class Registro(db.Model):
 
     nucleo = db.Column(db.String(200))
 
-    frente = db.Column(db.Integer)
+    localidad = db.Column(db.String(200))
+
+    frente = db.Column(db.String(20))
+
+    descripcion = db.Column(db.Text)
+
+    trabajo_campo = db.Column(db.String(300))
 
     actividad = db.Column(db.String(100))
 
@@ -989,7 +995,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{contador}</td>
                             <td>{sub.entidad or ''}</td>
                             <td>{sub.municipio or ''}</td>
-                            <td>{sub.nucleo or ''}</td>
+                            <td>{sub.localidad or ''}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
@@ -1015,7 +1021,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <th>No.</th>
                             <th>Entidad Federativa</th>
                             <th>Municipio</th>
-                            <th>N&uacute;cleo Agrario</th>
+                            <th>Localidad</th>
                             <th>Frente</th>
                             <th>Actividades Realizadas</th>
                         </tr>
@@ -1038,7 +1044,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{contador}</td>
                             <td>{sub.entidad or ''}</td>
                             <td>{sub.municipio or ''}</td>
-                            <td>{sub.nucleo or ''}</td>
+                            <td>{sub.localidad or ''}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
@@ -1062,7 +1068,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                     <table class="tabla-nucleos">
                         <thead><tr>
                             <th>No.</th><th>Entidad Federativa</th><th>Municipio</th>
-                            <th>N&uacute;cleo Agrario</th><th>Frente</th><th>Actividades Programadas</th>
+                            <th>Localidad</th><th>Frente</th><th>Actividades Programadas</th>
                         </tr></thead>
                         <tbody>{filas_prog_privada}</tbody>
                     </table>
@@ -1806,6 +1812,7 @@ def index():
                     entidad=item.get('entidad', ''),
                     municipio=item.get('municipio', ''),
                     nucleo=item.get('nucleo', ''),
+                    localidad=item.get('localidad', ''),
                     frente=item.get('frente', ''),
                     descripcion=item.get('descripcion', ''),
                     trabajo_campo=item.get('trabajo_campo', '')
@@ -1822,6 +1829,7 @@ def index():
                     entidad=item.get('entidad', ''),
                     municipio=item.get('municipio', ''),
                     nucleo=item.get('nucleo', ''),
+                    localidad=item.get('localidad', ''),
                     frente=item.get('frente', ''),
                     descripcion=item.get('descripcion', ''),
                     trabajo_campo=item.get('trabajo_campo', '')
@@ -2056,7 +2064,7 @@ def registros():
         tt = 'realizada' if kind == 'realizado' else 'programada'
         for s in subs:
             if s.tipo == tt and (s.descripcion or s.trabajo_campo):
-                ubic = ', '.join(x for x in [s.entidad, s.municipio, s.nucleo,
+                ubic = ', '.join(x for x in [s.entidad, s.municipio, s.nucleo, s.localidad,
                                              ('F' + str(s.frente)) if s.frente else ''] if x)
                 act = s.descripcion or ''
                 if ubic:
@@ -2291,7 +2299,7 @@ def descargar_registros():
         est_campo = reg.estatus_trabajo_realizado if kind == 'realizado' else reg.estatus_trabajo_programado
         if campo:
             filas.append({'tipo': tipo_campo or '', 'estatus': est_campo or '', 'actividad': campo,
-                          'entidad': '', 'municipio': '', 'nucleo': '', 'frente': ''})
+                          'entidad': '', 'municipio': '', 'nucleo': '', 'localidad': '', 'frente': ''})
         tb = 'trabajo_' + kind
         for s in subs:
             if s.tipo == tb and s.descripcion:
@@ -2303,14 +2311,15 @@ def descargar_registros():
                         est = desc[1:fin]
                         desc = desc[fin + 1:].strip()
                 filas.append({'tipo': (s.frente or '').strip(), 'estatus': est, 'actividad': desc,
-                              'entidad': '', 'municipio': '', 'nucleo': '', 'frente': ''})
+                              'entidad': '', 'municipio': '', 'nucleo': '', 'localidad': '', 'frente': ''})
         tt = 'realizada' if kind == 'realizado' else 'programada'
         for s in subs:
             if s.tipo == tt and (s.descripcion or s.trabajo_campo):
                 filas.append({'tipo': 'CAMPO', 'estatus': s.trabajo_campo or '',
                               'actividad': s.descripcion or '',
                               'entidad': s.entidad or '', 'municipio': s.municipio or '',
-                              'nucleo': s.nucleo or '', 'frente': str(s.frente) if s.frente else ''})
+                              'nucleo': s.nucleo or '', 'localidad': s.localidad or '',
+                              'frente': str(s.frente) if s.frente else ''})
         return filas
 
     registros = Registro.query.order_by(
@@ -2356,6 +2365,7 @@ def descargar_registros():
             fila['ENTIDAD (TABLA)']               = dr.get('entidad', '')
             fila['MUNICIPIO (TABLA)']             = dr.get('municipio', '')
             fila['NÚCLEO AGRARIO (TABLA)']        = dr.get('nucleo', '')
+            fila['LOCALIDAD (TABLA)']             = dr.get('localidad', '')
             fila['FRENTE (TABLA)']                = dr.get('frente', '')
             fila['TIPO TRABAJO PROGRAMADO']       = dp.get('tipo', '')
             fila['ESTATUS PROGRAMADO']            = dp.get('estatus', '')
