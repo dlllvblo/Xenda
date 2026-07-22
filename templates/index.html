@@ -1306,6 +1306,29 @@ const DIRECCIONES_SIN_TRAMO = [
     'PRODUCTOS Y SISTEMAS GEOESPACIALES'
 ];
 
+// Direcciones que capturan solo gabinete: sin tramo ni tipo de propiedad
+const DIRECCIONES_GABINETE = [
+    'PRODUCTOS Y SISTEMAS GEOESPACIALES'
+];
+
+function aplicarModoGabinete(activar) {
+    const tramoSelect   = document.getElementById('tramo');
+    const propiedadCont = document.getElementById('propiedad-container');
+    const propiedadSel  = document.getElementById('tipo_propiedad');
+    const tramoGroup    = tramoSelect ? tramoSelect.closest('.input-group') : null;
+
+    if (activar) {
+        if (tramoGroup)    tramoGroup.style.display = 'none';
+        if (tramoSelect)   { tramoSelect.removeAttribute('required'); tramoSelect.value = ''; }
+        if (propiedadCont) propiedadCont.style.display = 'none';
+        if (propiedadSel)  { propiedadSel.removeAttribute('required'); propiedadSel.value = ''; }
+    } else {
+        if (tramoGroup)    tramoGroup.style.display = '';
+        if (propiedadCont) propiedadCont.style.display = 'flex';
+        if (propiedadSel)  propiedadSel.setAttribute('required', 'required');
+    }
+}
+
 const CONFIG_DIRECCION = {
     "BDT'S AGROFORESTALES":               { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
     "BDT'S CONSTRUCCIÓN":                 { campoActividad: 'Tipo de Actividad', labelRealizada: 'Actividad realizada en campo y/o gabinete', labelProgramada: 'Actividades programadas para la quincena' },
@@ -1426,6 +1449,9 @@ direccionSelect.addEventListener('change', function() {
     } else {
         tramoSelect.setAttribute('required', 'required');
     }
+
+    // Modo gabinete: oculta tramo y tipo de propiedad para esa dirección
+    aplicarModoGabinete(DIRECCIONES_GABINETE.includes(direccion));
 
     if (!direccion) {
         mostrarAviso(false);
