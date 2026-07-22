@@ -1389,6 +1389,14 @@ function aplicarConfigDireccion(direccion) {
                 <option value="REVISIÓN">REVISIÓN</option>
                 <option value="VALIDACIÓN">VALIDACIÓN</option>
             `;
+        } else if (direccion === 'PRODUCTOS Y SISTEMAS GEOESPACIALES') {
+            selectActividad.innerHTML = `
+                <option value="">Seleccione una opción</option>
+                <option value="MEDICIÓN">MEDICIÓN</option>
+                <option value="REUNIÓN DE SEGUIMIENTO">REUNIÓN DE SEGUIMIENTO</option>
+                <option value="ASAMBLEA">ASAMBLEA</option>
+                <option value="CAPACITACIÓN">CAPACITACIÓN</option>
+            `;
         } else {
             selectActividad.innerHTML = `
                 <option value="">Seleccione una opción</option>

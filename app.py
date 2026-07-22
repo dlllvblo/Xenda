@@ -729,19 +729,21 @@ def generar_reporte_quincenal_html(registros, periodo_label):
         'TSLPS': 'SAN LUIS POTOSÍ - SALTILLO',
     }
 
-    # Agrupar por dirección y tramo
+    # Agrupar por dirección, tramo y proceso (Liberación DDV vs Capacitación)
     grupos = {}
     for r in registros:
-        key = (r.direccion or 'SIN DIRECCIÓN', r.tramo or '')
+        proceso = 'CAPACITACIÓN' if (r.actividad or '').strip().upper() == 'CAPACITACIÓN' else 'LIBERACIÓN'
+        key = (r.direccion or 'SIN DIRECCIÓN', r.tramo or '', proceso)
         if key not in grupos:
             grupos[key] = []
         grupos[key].append(r)
 
     secciones_html = ''
 
-    for (direccion, tramo), regs in sorted(grupos.items()):
+    for (direccion, tramo, proceso), regs in sorted(grupos.items()):
 
         tramo_nombre = tramos_nombres.get(tramo, '') if tramo else ''
+        proceso_label = 'Capacitación' if proceso == 'CAPACITACIÓN' else 'Liberación del derecho de vía'
 
         # Separar por tipo de propiedad
         social = [r for r in regs if r.tipo_propiedad and 'SOCIAL' in r.tipo_propiedad.upper()]
@@ -807,7 +809,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                     <div class="encabezado-texto">
                         <p class="proyecto">Proyecto ferroviario</p>
                         <p class="tramo-nombre">{tramo_nombre if tramo_nombre else 'DIRECCIÓN DE ' + direccion}</p>
-                        <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Social)</span></p>
+                        <p class="liberacion">{proceso_label} <span style="color:#6E152E;">(Propiedad Social)</span></p>
                     </div>
                     <div class="encabezado-logo"></div>
                 </div>
@@ -849,7 +851,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                     <div class="encabezado-texto">
                         <p class="proyecto">Proyecto ferroviario</p>
                         <p class="tramo-nombre">{tramo_nombre if tramo_nombre else 'DIRECCIÓN DE ' + direccion}</p>
-                        <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Social)</span></p>
+                        <p class="liberacion">{proceso_label} <span style="color:#6E152E;">(Propiedad Social)</span></p>
                     </div>
                     <div class="encabezado-logo"></div>
                 </div>
@@ -899,7 +901,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         <div class="encabezado-texto">
                             <p class="proyecto">Proyecto ferroviario</p>
                             <p class="tramo-nombre">{tramo_nombre if tramo_nombre else 'DIRECCIÓN DE ' + direccion}</p>
-                            <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Social)</span></p>
+                            <p class="liberacion">{proceso_label} <span style="color:#6E152E;">(Propiedad Social)</span></p>
                         </div>
                         <div class="encabezado-logo"></div>
                     </div>
@@ -962,7 +964,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                     <div class="encabezado-texto">
                         <p class="proyecto">Proyecto ferroviario</p>
                         <p class="tramo-nombre">{tramo_nombre if tramo_nombre else 'DIRECCIÓN DE ' + direccion}</p>
-                        <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Privada)</span></p>
+                        <p class="liberacion">{proceso_label} <span style="color:#6E152E;">(Propiedad Privada)</span></p>
                     </div>
                     <div class="encabezado-logo"></div>
                 </div>
@@ -1004,7 +1006,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                     <div class="encabezado-texto">
                         <p class="proyecto">Proyecto ferroviario</p>
                         <p class="tramo-nombre">{tramo_nombre if tramo_nombre else 'DIRECCIÓN DE ' + direccion}</p>
-                        <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Privada)</span></p>
+                        <p class="liberacion">{proceso_label} <span style="color:#6E152E;">(Propiedad Privada)</span></p>
                     </div>
                     <div class="encabezado-logo"></div>
                 </div>
@@ -1054,7 +1056,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                         <div class="encabezado-texto">
                             <p class="proyecto">Proyecto ferroviario</p>
                             <p class="tramo-nombre">{tramo_nombre if tramo_nombre else 'DIRECCIÓN DE ' + direccion}</p>
-                            <p class="liberacion">Liberación del derecho de vía <span style="color:#6E152E;">(Propiedad Privada)</span></p>
+                            <p class="liberacion">{proceso_label} <span style="color:#6E152E;">(Propiedad Privada)</span></p>
                         </div>
                         <div class="encabezado-logo"></div>
                     </div>
