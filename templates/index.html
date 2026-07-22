@@ -126,6 +126,8 @@
 
             margin-bottom: 28px;
 
+            position: relative;
+
             border:
                 1px solid rgba(255,255,255,0.25);
 
@@ -144,6 +146,15 @@
             margin-bottom: 24px;
 
             text-align: center;
+        }
+
+        .req-nota {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #dc2626;
         }
 
         #titulo-programado {
@@ -441,6 +452,7 @@
 
     <div class="card">
 
+        <span class="req-nota">* campo obligatorio</span>
         <div class="section-title">
             Información Territorial
         </div>
@@ -543,7 +555,7 @@
                 <select 
                     name="tramo" 
                     id="tramo"
-                    required>
+                    >
 
                     <option value="">
                         Seleccione un tramo
@@ -572,7 +584,7 @@
                     Tipo de Propiedad *
                 </label>
 
-                <select name="tipo_propiedad" id="tipo_propiedad" required>
+                <select name="tipo_propiedad" id="tipo_propiedad">
 
                     <option value="">
                         Seleccione una opción
@@ -672,6 +684,7 @@
 
     <div class="card">
 
+    <span class="req-nota">* campo obligatorio</span>
     <div class="section-title">
         Actividad Operativa
     </div>
