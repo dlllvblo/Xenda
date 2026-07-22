@@ -749,6 +749,19 @@ def generar_reporte_quincenal_html(registros, periodo_label):
         social = [r for r in regs if r.tipo_propiedad and 'SOCIAL' in r.tipo_propiedad.upper()]
         privada = [r for r in regs if r.tipo_propiedad and 'PRIVADA' in r.tipo_propiedad.upper()]
 
+        # ---- PORTADA DE SECCIÓN ----
+        secciones_html += f'''
+        <div class="pagina portada-seccion">
+            <div class="portada-bandera"></div>
+            <div class="portada-contenido">
+                <p class="portada-subtitulo">Reporte de actividades</p>
+                <div class="portada-divider"></div>
+                <p class="portada-periodo">Proyectos Ferroviarios &middot; {quincena}</p>
+                <p class="portada-tramo">{'TRAMO ' + tramo_nombre if tramo_nombre else 'DIRECCIÓN DE ' + direccion}</p>
+                <p class="portada-dir">{direccion}</p>
+            </div>
+        </div>
+        '''
 
         # ---- PROPIEDAD SOCIAL ----
         filas_tabla_social = ''
