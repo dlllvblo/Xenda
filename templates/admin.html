@@ -47,6 +47,18 @@
             margin-bottom: 4px;
         }
 
+        .titulo-link {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            display: inline-block;
+            transition: opacity 0.2s ease;
+        }
+
+        .titulo-link:hover {
+            opacity: 0.8;
+        }
+
         .topbar p {
             font-size: 13px;
             color: rgba(222,201,162,0.8);
@@ -248,7 +260,9 @@
 <div class="container">
 
     <div class="topbar">
-        <h1>XENDA</h1>
+        <a href="/" class="titulo-link">
+            <h1>XENDA</h1>
+        </a>
         <p>Panel de Administración</p>
     </div>
 
