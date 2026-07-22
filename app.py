@@ -2867,6 +2867,189 @@ def test_html():
         return 'NO ENCONTRADO'
 
 # =========================================
+# CONTEO DETALLADO (quincenal / mensual / trimestral)
+# =========================================
+
+MESES_ES = {1:'Enero',2:'Febrero',3:'Marzo',4:'Abril',5:'Mayo',6:'Junio',
+            7:'Julio',8:'Agosto',9:'Septiembre',10:'Octubre',11:'Noviembre',12:'Diciembre'}
+
+@app.route('/conteo_reporte')
+def conteo_reporte():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+
+    import calendar
+    ahora = hora_cdmx()
+
+    periodo   = request.args.get('periodo', 'mensual')
+    anio      = request.args.get('anio', type=int) or ahora.year
+    mes       = request.args.get('mes', type=int) or ahora.month
+    quincena  = request.args.get('quincena', type=int) or (1 if ahora.day <= 15 else 2)
+    trimestre = request.args.get('trimestre', type=int) or ((ahora.month - 1) // 3 + 1)
+
+    # ---- Filtro por periodo (usa extract, igual que el resto del código) ----
+    q = Registro.query.filter(db.extract('year', Registro.fecha) == anio)
+    if periodo == 'trimestral':
+        meses_tri = {1:(1,2,3), 2:(4,5,6), 3:(7,8,9), 4:(10,11,12)}
+        q = q.filter(db.extract('month', Registro.fecha).in_(meses_tri.get(trimestre, (1,2,3))))
+        etiqueta = f"{trimestre}º Trimestre {anio}"
+    elif periodo == 'quincenal':
+        q = q.filter(db.extract('month', Registro.fecha) == mes)
+        if quincena == 1:
+            q = q.filter(db.extract('day', Registro.fecha) <= 15)
+            etiqueta = f"01–15 de {MESES_ES.get(mes, mes)} {anio}"
+        else:
+            ult = calendar.monthrange(anio, mes)[1]
+            q = q.filter(db.extract('day', Registro.fecha) >= 16)
+            etiqueta = f"16–{ult} de {MESES_ES.get(mes, mes)} {anio}"
+    else:
+        periodo = 'mensual'
+        q = q.filter(db.extract('month', Registro.fecha) == mes)
+        etiqueta = f"{MESES_ES.get(mes, mes)} {anio}"
+
+    registros = q.all()
+
+    # ---- Sub-actividades de esos registros (1 sola query) ----
+    ids = [r.id for r in registros]
+    subs = SubActividad.query.filter(SubActividad.registro_id.in_(ids)).all() if ids else []
+    sub_por_registro = {}
+    for s in subs:
+        sub_por_registro.setdefault(s.registro_id, []).append(s)
+
+    PLACEHOLDERS = {'', 'VARIOS', 'PROPIEDAD PRIVADA', 'N/A'}
+
+    def metricas(regs):
+        m = dict(registros=len(regs), mediciones=0, fichas=0, planos=0, planos_gen=0,
+                 planos_val=0, infografias=0, info_gen=0, info_val=0, nucleos=0)
+        nucleos = set()
+        for r in regs:
+            m['mediciones']  += int(r.mediciones_agroforestales or 0)
+            m['fichas']      += int(r.mediciones_bdts or 0)
+            m['planos']      += int(r.planos or 0)
+            m['planos_gen']  += int(r.planos_generados or 0)
+            m['planos_val']  += int(r.planos_validados or 0)
+            m['infografias'] += int(r.num_infografias or 0)
+            m['info_gen']    += int(r.infografias_generadas or 0)
+            m['info_val']    += int(r.infografias_validadas or 0)
+            for s in sub_por_registro.get(r.id, []):
+                if s.tipo == 'realizada' and s.nucleo and s.nucleo.strip().upper() not in PLACEHOLDERS:
+                    nucleos.add(s.nucleo.strip().upper())
+        m['nucleos'] = len(nucleos)
+        return m
+
+    glob = metricas(registros)
+
+    por_dir = {}
+    por_tramo = {}
+    for r in registros:
+        por_dir.setdefault(r.direccion or 'SIN DIRECCIÓN', []).append(r)
+        por_tramo.setdefault(r.tramo or 'SIN TRAMO', []).append(r)
+
+    def celda_gv(total, g, v):
+        return f"{total} <span style='color:#999;font-size:11px;'>({g}/{v})</span>" if (g or v) else str(total)
+
+    def fila(nombre, m, i):
+        return f'''<tr>
+            <td style="text-align:center;">{i}</td>
+            <td style="font-weight:600;color:#6E152E;">{nombre}</td>
+            <td style="text-align:center;">{m['registros']}</td>
+            <td style="text-align:center;">{m['nucleos']}</td>
+            <td style="text-align:center;">{m['mediciones']}</td>
+            <td style="text-align:center;">{m['fichas']}</td>
+            <td style="text-align:center;">{celda_gv(m['planos'], m['planos_gen'], m['planos_val'])}</td>
+            <td style="text-align:center;">{celda_gv(m['infografias'], m['info_gen'], m['info_val'])}</td>
+        </tr>'''
+
+    def fila_total(m):
+        return f'''<tr style="background:#dec9a2;font-weight:bold;">
+            <td></td><td style="color:#6E152E;">TOTAL</td>
+            <td style="text-align:center;">{m['registros']}</td>
+            <td style="text-align:center;">{m['nucleos']}</td>
+            <td style="text-align:center;">{m['mediciones']}</td>
+            <td style="text-align:center;">{m['fichas']}</td>
+            <td style="text-align:center;">{celda_gv(m['planos'], m['planos_gen'], m['planos_val'])}</td>
+            <td style="text-align:center;">{celda_gv(m['infografias'], m['info_gen'], m['info_val'])}</td>
+        </tr>'''
+
+    filas_dir = ''.join(fila(d, metricas(rs), i+1)
+                        for i, (d, rs) in enumerate(sorted(por_dir.items()))) + fila_total(glob)
+    filas_tramo = ''.join(fila(TRAMOS_NOMBRES.get(t, t), metricas(rs), i+1)
+                          for i, (t, rs) in enumerate(sorted(por_tramo.items()))) + fila_total(glob)
+
+    def kpi(valor, label):
+        return f'<div class="kpi"><div class="kpi-num">{valor}</div><div class="kpi-lbl">{label}</div></div>'
+
+    kpis = (kpi(glob['registros'], 'Registros') + kpi(glob['nucleos'], 'Núcleos atendidos') +
+            kpi(glob['mediciones'], 'Mediciones') + kpi(glob['fichas'], 'Fichas') +
+            kpi(glob['planos'], 'Planos') + kpi(glob['infografias'], 'Infografías'))
+
+    def sel(nombre, opciones, actual):
+        ops = ''.join(f'<option value="{v}"{" selected" if str(v)==str(actual) else ""}>{txt}</option>'
+                      for v, txt in opciones)
+        return f'<select name="{nombre}">{ops}</select>'
+
+    sel_periodo = sel('periodo', [('quincenal','Quincenal'),('mensual','Mensual'),('trimestral','Trimestral')], periodo)
+    sel_mes = sel('mes', [(k, v) for k, v in MESES_ES.items()], mes)
+    sel_quin = sel('quincena', [(1,'1ª quincena'),(2,'2ª quincena')], quincena)
+    sel_tri = sel('trimestre', [(1,'1º'),(2,'2º'),(3,'3º'),(4,'4º')], trimestre)
+
+    return f'''<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conteo detallado · {etiqueta}</title>
+<style>
+  * {{ box-sizing:border-box; margin:0; padding:0; }}
+  body {{ font-family:'Segoe UI',Arial,sans-serif; background:#f0f0f0; color:#1a1a1a; padding:30px 20px; }}
+  .wrap {{ max-width:1080px; margin:auto; }}
+  .head {{ background:#6E152E; color:#dec9a2; border-radius:16px 16px 0 0; padding:22px 28px; }}
+  .head h1 {{ font-size:22px; color:white; letter-spacing:2px; }}
+  .head p {{ font-size:14px; margin-top:4px; }}
+  .filtro {{ background:white; padding:16px 28px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; border-bottom:2px solid #f0e6ec; }}
+  .filtro select, .filtro input {{ padding:9px 12px; border-radius:10px; border:1.5px solid #d1d5db; font-size:14px; }}
+  .filtro button {{ padding:9px 20px; border:none; border-radius:10px; background:#245C4F; color:white; font-weight:bold; cursor:pointer; }}
+  .kpis {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; padding:24px 28px; background:white; }}
+  .kpi {{ background:#f9f6f0; border-left:4px solid #BC945A; border-radius:10px; padding:16px; text-align:center; }}
+  .kpi-num {{ font-size:30px; font-weight:bold; color:#6E152E; }}
+  .kpi-lbl {{ font-size:12px; color:#555; text-transform:uppercase; letter-spacing:0.4px; margin-top:4px; }}
+  .bloque {{ background:white; padding:8px 28px 28px; }}
+  .bloque h2 {{ font-size:13px; color:#245C4F; text-transform:uppercase; letter-spacing:1px; margin:20px 0 12px; }}
+  table {{ width:100%; border-collapse:collapse; font-size:13px; }}
+  th {{ background:#245C4F; color:#dec9a2; padding:10px 8px; text-transform:uppercase; font-size:11px; border:1px solid #1a4438; }}
+  td {{ padding:9px 8px; border:1px solid #e0e0e0; }}
+  tr:nth-child(even) td {{ background:#f9f6f0; }}
+  .foot {{ background:white; border-radius:0 0 16px 16px; padding:16px 28px; font-size:11px; color:#aaa; text-align:center; }}
+  .foot a {{ color:#6E152E; text-decoration:none; font-weight:bold; }}
+</style></head>
+<body><div class="wrap">
+  <div class="head">
+    <h1>CONTEO DETALLADO</h1>
+    <p>Proyectos Ferroviarios · {etiqueta}</p>
+  </div>
+  <form method="get" class="filtro">
+    {sel_periodo}
+    <input type="number" name="anio" value="{anio}" style="width:90px;">
+    {sel_mes} {sel_quin} {sel_tri}
+    <button type="submit">Ver</button>
+  </form>
+  <div class="kpis">{kpis}</div>
+  <div class="bloque">
+    <h2>Por Dirección</h2>
+    <table>
+      <thead><tr><th>No.</th><th>Dirección</th><th>Registros</th><th>Núcleos</th>
+        <th>Mediciones</th><th>Fichas</th><th>Planos (gen/val)</th><th>Infografías (gen/val)</th></tr></thead>
+      <tbody>{filas_dir}</tbody>
+    </table>
+    <h2>Por Tramo</h2>
+    <table>
+      <thead><tr><th>No.</th><th>Tramo</th><th>Registros</th><th>Núcleos</th>
+        <th>Mediciones</th><th>Fichas</th><th>Planos (gen/val)</th><th>Infografías (gen/val)</th></tr></thead>
+      <tbody>{filas_tramo}</tbody>
+    </table>
+  </div>
+  <div class="foot">Generado por Xenda · <a href="/admin">Volver al panel</a></div>
+</div></body></html>'''
+
+# =========================================
 # CREAR TABLAS
 # =========================================
 
