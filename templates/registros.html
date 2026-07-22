@@ -131,13 +131,25 @@
             z-index: 2;
         }
 
+        .titulo-link {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            display: inline-block;
+            transition: opacity 0.2s ease;
+        }
+
+        .titulo-link:hover {
+            opacity: 0.7;
+        }
+
     </style>
 
 </head>
 
 <body>
 
-<h1>Xenda v1.0</h1>
+<a href="/" class="titulo-link"><h1>Xenda v1.0</h1></a>
 <h2>Registros capturados</h2>
 
 <form method="GET" class="filtros">
