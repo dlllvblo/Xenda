@@ -2612,6 +2612,124 @@ def api_conteo():
     ]
     return jsonify({'rows': rows})
 
+@app.route('/api/dashboard')
+def api_dashboard():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return jsonify({'error': 'No autorizado'}), 403
+
+    ahora = hora_cdmx()
+    periodo   = request.args.get('periodo', 'mensual')
+    anio      = request.args.get('anio', type=int) or ahora.year
+    mes       = request.args.get('mes', type=int) or ahora.month
+    quincena  = request.args.get('quincena', type=int) or (1 if ahora.day <= 15 else 2)
+    trimestre = request.args.get('trimestre', type=int) or ((ahora.month - 1)//3 + 1)
+    tramo_f   = request.args.get('tramo')
+
+    q = Registro.query.filter(db.extract('year', Registro.fecha) == anio)
+    if periodo == 'trimestral':
+        meses_tri = {1:(1,2,3), 2:(4,5,6), 3:(7,8,9), 4:(10,11,12)}
+        q = q.filter(db.extract('month', Registro.fecha).in_(meses_tri.get(trimestre,(1,2,3))))
+        etiqueta = f"{trimestre}º Trimestre {anio}"
+    elif periodo == 'quincenal':
+        q = q.filter(db.extract('month', Registro.fecha) == mes)
+        if quincena == 1:
+            q = q.filter(db.extract('day', Registro.fecha) <= 15)
+            etiqueta = f"01–15 de {MESES_ES.get(mes,mes)} {anio}"
+        else:
+            q = q.filter(db.extract('day', Registro.fecha) >= 16)
+            etiqueta = f"16–fin de {MESES_ES.get(mes,mes)} {anio}"
+    else:
+        periodo = 'mensual'
+        q = q.filter(db.extract('month', Registro.fecha) == mes)
+        etiqueta = f"{MESES_ES.get(mes,mes)} {anio}"
+
+    if tramo_f:
+        q = q.filter(Registro.tramo == tramo_f)
+
+    registros = q.all()
+    ids = [r.id for r in registros]
+    subs = SubActividad.query.filter(SubActividad.registro_id.in_(ids)).all() if ids else []
+    sub_por_reg = {}
+    for s in subs:
+        sub_por_reg.setdefault(s.registro_id, []).append(s)
+
+    PLACEHOLDERS = {'', 'VARIOS', 'PROPIEDAD PRIVADA', 'N/A'}
+
+    def metricas(regs):
+        med = fic = pla = info = 0
+        nucleos, frentes = set(), set()
+        for r in regs:
+            med  += int(r.mediciones_agroforestales or 0)
+            fic  += int(r.mediciones_bdts or 0)
+            pla  += int(r.planos or 0)
+            info += int(r.num_infografias or 0)
+            for s in sub_por_reg.get(r.id, []):
+                if s.tipo == 'realizada':
+                    if s.nucleo and s.nucleo.strip().upper() not in PLACEHOLDERS:
+                        nucleos.add(s.nucleo.strip().upper())
+                    if s.frente and str(s.frente).strip().upper() not in PLACEHOLDERS:
+                        frentes.add(str(s.frente).strip().upper())
+        return {'registros': len(regs), 'mediciones': med, 'fichas': fic,
+                'planos': pla, 'infografias': info,
+                'nucleos': len(nucleos), 'frentes': len(frentes)}
+
+    kpis = metricas(registros)
+
+    por_tramo_map = {}
+    for r in registros:
+        por_tramo_map.setdefault(r.tramo or 'SIN', []).append(r)
+    por_tramo = [{'id': t, 'nombre': TRAMOS_NOMBRES.get(t, t or 'SIN TRAMO'), **metricas(rs)}
+                 for t, rs in sorted(por_tramo_map.items())]
+
+    tipos = {}
+    for r in registros:
+        k = (r.actividad or 'SIN ACTIVIDAD').upper()
+        tipos[k] = tipos.get(k, 0) + 1
+    tipos_ord = sorted(tipos.items(), key=lambda x: x[1], reverse=True)
+
+    # por tipo de propiedad (reemplaza el doughnut de dependencias)
+    props = {}
+    for r in registros:
+        k = (r.tipo_propiedad or 'SIN ESPECIFICAR').upper()
+        props[k] = props.get(k, 0) + 1
+    por_propiedad = sorted(props.items(), key=lambda x: x[1], reverse=True)
+
+    reg_hist = Registro.query.filter(Registro.fecha.isnot(None)).all()
+    buckets = {}
+    for r in reg_hist:
+        if tramo_f and r.tramo != tramo_f:
+            continue
+        qn = 1 if r.fecha.day <= 15 else 2
+        key = (r.fecha.year, r.fecha.month, qn)
+        buckets.setdefault(key, {})
+        buckets[key][r.tramo or 'SIN'] = buckets[key].get(r.tramo or 'SIN', 0) + 1
+    keys_ord = sorted(buckets.keys())[-6:]
+    serie_labels = [f"Q{qn}·{MESES_ES.get(m, m)[:3]}" for (y, m, qn) in keys_ord]
+    tramos_serie = sorted({t for k in keys_ord for t in buckets[k]})
+    serie_por_tramo = {t: [buckets[k].get(t, 0) for k in keys_ord] for t in tramos_serie}
+
+    recientes = sorted(registros, key=lambda r: r.fecha or ahora, reverse=True)[:8]
+    bitacora = []
+    for r in recientes:
+        texto = (r.actividades_realizadas or r.actividad or '').strip()
+        if len(texto) > 120:
+            texto = texto[:117] + '...'
+        bitacora.append({'tramo': r.tramo or 'SIN',
+                         'tramo_nombre': TRAMOS_NOMBRES.get(r.tramo, r.tramo or ''),
+                         'direccion': r.direccion or '',
+                         'fecha': r.fecha.strftime('%d/%m %H:%M') if r.fecha else '',
+                         'texto': texto})
+
+    return jsonify({
+        'periodo_label': etiqueta,
+        'kpis': kpis,
+        'por_tramo': por_tramo,
+        'tipos_actividad': {'labels': [t for t, _ in tipos_ord], 'values': [v for _, v in tipos_ord]},
+        'por_propiedad': {'labels': [p for p, _ in por_propiedad], 'values': [v for _, v in por_propiedad]},
+        'serie': {'labels': serie_labels, 'por_tramo': serie_por_tramo},
+        'bitacora': bitacora
+    })
+
 # =========================================
 # MAPA GENERAL
 # =========================================

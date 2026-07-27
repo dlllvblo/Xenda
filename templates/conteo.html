@@ -3,200 +3,577 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XENDA · Conteo de Actividades</title>
+<title>XENDA · Centro de Operaciones</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
-    --bg:#d7d7d7;
-    --panel:#FFFFFF;
-    --panel-2:#FBF7EF;
-    --line:#a42145;
-    --line-soft:#ECE0CC;
-    --guinda-deep:#6E152E; --guinda:#8E1B3A;
-    --verde-deep:#245C4F; --verde:#2F8270;
-    --dorado:#A8803F; --dorado-bright:#BC945A; --arena:#C9A86A;
-    --text:#3A2A22;
-    --text-strong:#6E152E;
-    --muted:#5A4636;
-    --muted-2:#74604C;
+    --bg:#130D0C;
+    --bg-grain:#170F0E;
+    --panel:#1E1513;
+    --panel-2:#241915;
+    --line:#39271F;
+    --line-soft:#2C1E19;
+
+    --guinda-deep:#6E152E;
+    --guinda:#A21E42;
+    --verde-deep:#245C4F;
+    --verde:#2F8270;
+    --dorado:#BC945A;
+    --dorado-bright:#D7AE6E;
+    --arena:#DEC9A2;
+
+    --text:#F4EADD;
+    --muted:#AB9381;
+    --muted-2:#7C6557;
+
     --radius:14px;
-    --shadow:0 10px 30px -12px rgba(110,21,46,.18);
+    --shadow:0 18px 40px -18px rgba(0,0,0,.7);
   }
+
   *{box-sizing:border-box;margin:0;padding:0}
+
   html,body{height:100%}
   body{
     background:
-      radial-gradient(1100px 560px at 82% -10%, rgba(188,148,90,.18), transparent 60%),
-      radial-gradient(900px 500px at 0% 110%, rgba(162,30,66,.07), transparent 60%),
+      radial-gradient(1200px 600px at 78% -10%, rgba(162,30,66,.10), transparent 60%),
+      radial-gradient(900px 500px at 5% 110%, rgba(47,130,112,.08), transparent 60%),
       var(--bg);
     color:var(--text);
     font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    -webkit-font-smoothing:antialiased; min-height:100vh; padding:18px;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding:18px;
   }
+
   .mono{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+  .display{font-family:'Space Grotesk',system-ui,sans-serif}
 
-  .topbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 20px;margin-bottom:16px;
-    background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);box-shadow:var(--shadow)}
-  .topbar h1{font-family:'Space Grotesk',sans-serif;font-size:19px;color:var(--text-strong);letter-spacing:.02em}
-  .topbar .sub{font-size:12px;color:var(--muted-2)}
-  .topbar .spacer{flex:1}
-  .filtro{display:flex;align-items:center;gap:6px}
-  .filtro label{font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
-  .filtro select{
-    font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--text-strong);
-    background:var(--panel-2);border:1.5px solid var(--line-soft);border-radius:9px;padding:7px 10px;cursor:pointer;
-    max-width:210px;
+  /* ===== TOP BAR ===== */
+  .topbar{
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:14px 20px;margin-bottom:16px;
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
   }
-  .filtro select:focus{outline:none;border-color:var(--dorado-bright)}
+  .brand{display:flex;align-items:center;gap:14px;min-width:0}
+  .brand .logo{
+    width:42px;height:42px;border-radius:10px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--guinda) 0%,var(--guinda-deep) 100%);
+    display:grid;place-items:center;
+    box-shadow:0 0 0 1px rgba(215,174,110,.25), inset 0 1px 0 rgba(255,255,255,.12);
+    position:relative;
+  }
+  .brand .logo svg{width:24px;height:24px}
+  .brand h1{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:.06em;line-height:1}
+  .brand .sub{font-size:.62rem;letter-spacing:.34em;color:var(--dorado);text-transform:uppercase;margin-top:5px;font-weight:600}
 
-  .totalbar{display:flex;justify-content:center;align-items:baseline;gap:14px;padding:18px 20px;margin-bottom:16px;
-    background:linear-gradient(135deg,var(--guinda-deep),var(--guinda));border-radius:var(--radius);box-shadow:var(--shadow)}
-  .totalbar .num{font-family:'IBM Plex Mono',monospace;font-size:44px;font-weight:700;color:#fff;line-height:1}
-  .totalbar .lbl{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--arena);
-    text-transform:uppercase;letter-spacing:.12em}
+  .topbar .spacer{flex:1 1 40px}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:16px}
-  .card{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);
-    padding:16px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;
-    border-top:3px solid var(--guinda)}
-  .card:nth-child(4n+2){border-top-color:var(--verde)}
-  .card:nth-child(4n+3){border-top-color:var(--dorado)}
-  .card:nth-child(4n+4){border-top-color:var(--guinda-deep)}
-  .card .nombre{font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:600;color:var(--muted);
-    text-transform:uppercase;letter-spacing:.04em;line-height:1.35;overflow-wrap:anywhere}
-  .card .valor{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:700;color:var(--text-strong);line-height:1}
-  .card .desglose{display:flex;gap:12px;font-size:11.5px;color:var(--muted-2)}
-  .card .desglose b{color:var(--verde-deep);font-weight:600}
-  .card .desglose b.pp{color:var(--dorado)}
+  .live{display:flex;align-items:center;gap:9px;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .live .dot{width:9px;height:9px;border-radius:50%;background:var(--verde);box-shadow:0 0 0 0 rgba(47,130,112,.6);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,130,112,.55)}70%{box-shadow:0 0 0 9px rgba(47,130,112,0)}100%{box-shadow:0 0 0 0 rgba(47,130,112,0)}}
+  .clock{font-size:.82rem;color:var(--arena);letter-spacing:.05em}
 
-  .vacio{grid-column:1/-1;text-align:center;padding:34px;color:var(--muted-2);
-    font-family:'Space Grotesk',sans-serif;font-size:14px;background:var(--panel);
-    border:1px dashed var(--line-soft);border-radius:var(--radius)}
+  .period{position:relative}
+  .period select{
+    appearance:none;-webkit-appearance:none;
+    background:var(--bg);color:var(--text);
+    border:1px solid var(--line);border-radius:9px;
+    padding:9px 34px 9px 14px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;
+    cursor:pointer;letter-spacing:.02em;
+  }
+  .period select:focus-visible{outline:2px solid var(--dorado);outline-offset:2px}
+  .period::after{content:"";position:absolute;right:13px;top:50%;transform:translateY(-30%) rotate(45deg);width:7px;height:7px;border-right:2px solid var(--dorado);border-bottom:2px solid var(--dorado);pointer-events:none}
 
-  .pie{text-align:center;font-size:11px;color:var(--muted-2);padding:8px}
+  /* ===== TRAMO CHIPS ===== */
+  .chips{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+  .chips .lab{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--muted-2);font-weight:600;margin-right:4px}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--panel);border:1px solid var(--line);
+    color:var(--muted);padding:7px 14px 7px 11px;border-radius:999px;
+    font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;
+    cursor:pointer;transition:all .18s ease;letter-spacing:.02em;user-select:none;
+  }
+  .chip .swatch{width:9px;height:9px;border-radius:3px;flex:0 0 auto;transition:opacity .18s}
+  .chip:hover{border-color:var(--muted-2);color:var(--text)}
+  .chip.off{opacity:.42;text-decoration:line-through;text-decoration-color:var(--muted-2)}
+  .chip.off .swatch{opacity:.3}
+  .chip:focus-visible{outline:2px solid var(--dorado);outline-offset:2px}
 
+  /* ===== GRID ===== */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+
+  .panel{
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    box-shadow:var(--shadow);
+    position:relative;overflow:hidden;
+  }
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
+  .panel-head h2{font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--arena)}
+  .panel-head .tag{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted-2);letter-spacing:.1em;border:1px solid var(--line);padding:3px 8px;border-radius:6px}
+
+  /* KPI cards */
+  .kpi{grid-column:span 3}
+  .kpi .top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+  .kpi .icon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;border:1px solid var(--line);background:var(--bg)}
+  .kpi .icon svg{width:18px;height:18px}
+  .kpi .delta{font-family:'IBM Plex Mono',monospace;font-size:.66rem;font-weight:600;padding:3px 7px;border-radius:6px;letter-spacing:.02em}
+  .delta.up{color:var(--verde);background:rgba(47,130,112,.12)}
+  .delta.flat{color:var(--dorado);background:rgba(188,148,90,.12)}
+  .kpi .value{font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:700;line-height:1;letter-spacing:-.02em}
+  .kpi .label{font-size:.72rem;color:var(--muted);margin-top:8px;letter-spacing:.02em}
+
+  /* KPI triple (produccion) */
+  .kpi-triple .trio{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-top:2px}
+  .kpi-triple .trio .cell{flex:1;text-align:center;padding:6px 4px;border-radius:9px;background:var(--bg);border:1px solid var(--line-soft)}
+  .kpi-triple .trio .cell .n{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;line-height:1}
+  .kpi-triple .trio .cell .t{font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);margin-top:5px}
+  .kpi-triple .trio .cell.pla .n{color:var(--dorado-bright)}
+  .kpi-triple .trio .cell.fic .n{color:var(--verde)}
+  .kpi-triple .trio .cell.inf .n{color:var(--guinda)}
+
+  /* spans */
+  .span8{grid-column:span 8}
+  .span4{grid-column:span 4}
+  .span12{grid-column:span 12}
+
+  /* ===== RAIL (signature) ===== */
+  .rail-row{display:grid;grid-template-columns:150px 1fr 96px;align-items:center;gap:18px;padding:15px 0;border-top:1px solid var(--line-soft)}
+  .rail-row:first-child{border-top:none}
+  .rail-id{display:flex;flex-direction:column;gap:3px}
+  .rail-id .badge{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.82rem;letter-spacing:.04em;display:inline-flex;align-items:center;gap:7px}
+  .rail-id .badge::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--c)}
+  .rail-id .nm{font-size:.72rem;color:var(--muted)}
+  .rail-id .meta{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted-2);letter-spacing:.04em;margin-top:2px}
+
+  .track{position:relative;height:30px;display:flex;align-items:center}
+  .track .bed{
+    position:absolute;left:0;right:0;height:8px;border-radius:5px;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 9px, rgba(255,255,255,.05) 9px 11px),
+      var(--bg);
+    border:1px solid var(--line);
+  }
+  .track .fill{
+    position:absolute;left:0;height:8px;border-radius:5px;width:0;
+    background:linear-gradient(90deg, color-mix(in srgb,var(--c) 55%,#000), var(--c));
+    box-shadow:0 0 12px -1px var(--c);
+    transition:width 1.1s cubic-bezier(.2,.8,.2,1);
+  }
+  .track .train{
+    position:absolute;top:50%;transform:translate(-50%,-50%);
+    width:18px;height:18px;border-radius:50%;
+    background:var(--c);border:2px solid var(--bg);
+    box-shadow:0 0 0 2px var(--c), 0 0 14px var(--c);
+    left:0;transition:left 1.1s cubic-bezier(.2,.8,.2,1);z-index:3;
+  }
+  .track .station{position:absolute;top:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--panel);border:1.5px solid var(--muted-2);z-index:2}
+  .rail-pct{text-align:right;font-family:'Space Grotesk',sans-serif}
+  .rail-pct .big{font-size:1.5rem;font-weight:700;color:var(--c)}
+  .rail-pct .sm{font-size:.6rem;color:var(--muted-2);letter-spacing:.12em;text-transform:uppercase}
+
+  /* chart wrappers */
+  .chart-wrap{position:relative;width:100%}
+  .h-line{height:280px}
+  .h-doughnut{height:240px}
+  .h-bar{height:230px}
+  .doughnut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .doughnut-center .n{font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:700;line-height:1}
+  .doughnut-center .t{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-2);margin-top:4px}
+
+  /* Bitácora feed */
+  .feed{display:flex;flex-direction:column;gap:0;max-height:300px;overflow:hidden}
+  .feed-item{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line-soft);animation:slideIn .5s ease}
+  .feed-item:first-child{border-top:none}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .feed-item .when{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--muted-2);white-space:nowrap;padding-top:2px}
+  .feed-item .body{font-size:.78rem;line-height:1.45;color:var(--text)}
+  .feed-item .body .tr{font-family:'IBM Plex Mono',monospace;font-size:.66rem;font-weight:600;padding:1px 6px;border-radius:5px;margin-right:6px;color:#fff}
+  .feed-item .body .verb{color:var(--dorado-bright);font-weight:600}
+
+  .empty{padding:30px 10px;text-align:center;color:var(--muted-2);font-size:.8rem}
+
+  footer{margin-top:18px;text-align:center;font-size:.64rem;color:var(--muted-2);letter-spacing:.08em}
+  footer .mono{color:var(--muted)}
+  footer a{color:var(--dorado);text-decoration:none;font-weight:600}
+
+  /* ===== responsive ===== */
+  @media (max-width:1040px){
+    .kpi{grid-column:span 6}
+    .span8,.span4{grid-column:span 12}
+  }
   @media (max-width:560px){
-    .topbar{gap:10px}
-    .totalbar .num{font-size:36px}
-    .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+    body{padding:12px}
+    .kpi{grid-column:span 12}
+    .rail-row{grid-template-columns:1fr;gap:10px}
+    .rail-pct{text-align:left}
+    .kpi .value{font-size:2.1rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div>
-    <h1>Conteo de Actividades</h1>
-    <div class="sub">XENDA · Registro Agrario Nacional</div>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F4EADD" stroke-width="1.8" stroke-linecap="round">
+          <path d="M5 3v18M19 3v18"/><path d="M5 7h14M5 12h14M5 17h14"/>
+        </svg>
+      </div>
+      <div>
+        <h1>XENDA</h1>
+        <div class="sub">Centro de Operaciones</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="live"><span class="dot"></span> En vivo</div>
+    <div class="clock mono" id="clock">--:--:--</div>
+    <div class="period">
+      <select id="periodSel" aria-label="Periodo">
+        <option value="mensual">Mensual · actual</option>
+        <option value="quincenal">Quincenal · actual</option>
+        <option value="trimestral">Trimestral · actual</option>
+      </select>
+    </div>
   </div>
-  <div class="spacer"></div>
-  <div class="filtro">
-    <label for="f-tramo">Tramo</label>
-    <select id="f-tramo"><option value="">TODOS</option></select>
-  </div>
-  <div class="filtro">
-    <label for="f-dir">Dirección</label>
-    <select id="f-dir"><option value="">TODAS</option></select>
-  </div>
-  <div class="filtro">
-    <label for="f-prop">Propiedad</label>
-    <select id="f-prop"><option value="">TODAS</option></select>
-  </div>
-</div>
 
-<div class="totalbar">
-  <span class="num mono" id="total">0</span>
-  <span class="lbl">actividades en total</span>
-</div>
+  <!-- TRAMO FILTER -->
+  <div class="chips" id="chips">
+    <span class="lab">Tramos</span>
+  </div>
 
-<div class="grid" id="cards"></div>
+  <!-- GRID -->
+  <div class="grid">
 
-<div class="pie" id="pie"></div>
+    <!-- KPIs -->
+    <div class="panel kpi" id="kpi-act">
+      <div class="top">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#D7AE6E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 16V9M12 16V6M16 16v-5M20 16v-8"/></svg></div>
+        <span class="delta flat" id="lbl-periodo">—</span>
+      </div>
+      <div class="value mono" id="v-act">0</div>
+      <div class="label">Actividades registradas</div>
+    </div>
+
+    <div class="panel kpi" id="kpi-nuc">
+      <div class="top">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2F8270" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></div>
+      </div>
+      <div class="value mono" id="v-nuc">0</div>
+      <div class="label">Núcleos agrarios atendidos</div>
+    </div>
+
+    <div class="panel kpi" id="kpi-fre">
+      <div class="top">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#A21E42" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4M4 4l9 2-2 4 8 1.5-3 3.5 3 3.5-8-1.5 2 4-9-2"/></svg></div>
+      </div>
+      <div class="value mono" id="v-fre">0</div>
+      <div class="label">Frentes de trabajo activos</div>
+    </div>
+
+    <!-- KPI TRIPLE: Producción técnica -->
+    <div class="panel kpi kpi-triple" id="kpi-prod">
+      <div class="top">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DEC9A2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M14 4v6h6M8 13h8M8 17h5"/></svg></div>
+        <span class="delta flat">Producción</span>
+      </div>
+      <div class="trio">
+        <div class="cell pla"><div class="n mono" id="v-pla">0</div><div class="t">Planos</div></div>
+        <div class="cell fic"><div class="n mono" id="v-fic">0</div><div class="t">Fichas</div></div>
+        <div class="cell inf"><div class="n mono" id="v-inf">0</div><div class="t">Infogr.</div></div>
+      </div>
+    </div>
+
+    <!-- RAIL signature -->
+    <div class="panel span8">
+      <div class="panel-head">
+        <h2>Actividad por tramo</h2>
+        <span class="tag">NORMALIZADA AL MÁXIMO</span>
+      </div>
+      <div id="rail"></div>
+    </div>
+
+    <!-- Doughnut tipo de propiedad -->
+    <div class="panel span4">
+      <div class="panel-head">
+        <h2>Por tipo de propiedad</h2>
+        <span class="tag">SOCIAL / PRIVADA</span>
+      </div>
+      <div class="chart-wrap h-doughnut">
+        <canvas id="propChart"></canvas>
+        <div class="doughnut-center">
+          <div class="n mono" id="propTotal">0</div>
+          <div class="t">registros</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line quincenas -->
+    <div class="panel span8">
+      <div class="panel-head">
+        <h2>Actividades por quincena</h2>
+        <span class="tag">SERIE HISTÓRICA</span>
+      </div>
+      <div class="chart-wrap h-line"><canvas id="lineChart"></canvas></div>
+    </div>
+
+    <!-- Bitácora -->
+    <div class="panel span4">
+      <div class="panel-head">
+        <h2>Bitácora en campo</h2>
+        <span class="live" style="font-size:.58rem"><span class="dot"></span></span>
+      </div>
+      <div class="feed" id="feed"></div>
+    </div>
+
+    <!-- Tipos de actividad -->
+    <div class="panel span12">
+      <div class="panel-head">
+        <h2>Tipos de actividad</h2>
+        <span class="tag">CLASIFICACIÓN OPERATIVA</span>
+      </div>
+      <div class="chart-wrap h-bar"><canvas id="tipoChart"></canvas></div>
+    </div>
+
+  </div>
+
+  <footer>
+    XENDA · Sistema de captura y reporte de actividades de campo &nbsp;·&nbsp;
+    <span class="mono">SEDATU — Liberación de derecho de vía ferroviaria</span><br>
+    <a href="/admin">Volver al panel</a>
+  </footer>
 
 <script>
-let ROWS = [];
-const $ = id => document.getElementById(id);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Espacio de ancho cero tras diagonales para que los nombres largos quiebren bien
-const quiebra = s => s.replace(/\//g, '/\u200B');
+/* Colores por tramo (paleta institucional). Fallback dorado si aparece un tramo nuevo. */
+const C = {
+  TAP:'#A21E42', TMQ:'#2F8270', TQI:'#D7AE6E', TSNL:'#DEC9A2',
+  TIGDL:'#6E152E', TMLM:'#BC945A', TQSLP:'#8C6A3F', TSLPS:'#4A7C6F', SIN:'#7C6557'
+};
+function colorTramo(id){ return C[id] || '#BC945A'; }
 
-function llenarSelect(sel, valores){
-  const actual = sel.value;
-  sel.length = 1; // conserva la opción TODOS/TODAS
-  [...valores].sort().forEach(v => {
-    const o = document.createElement('option');
-    o.value = v; o.textContent = v;
-    sel.appendChild(o);
-  });
-  if ([...sel.options].some(o => o.value === actual)) sel.value = actual;
+/* Estado */
+let periodo = 'mensual';
+let ultimoData = null;          // último payload del backend (para re-render al filtrar chips)
+const tramosOff = new Set();    // tramos desactivados por el usuario
+
+let lineChart, propChart, tipoChart;
+
+/* ---------- utilidades ---------- */
+function countUp(el, target, dur=900, fmt=v=>Math.round(v).toLocaleString('es-MX')){
+  if(!el) return;
+  if(reduceMotion){el.textContent=fmt(target);return;}
+  const from = parseFloat((el.dataset.cur||'0'));
+  const start=performance.now();
+  function tick(now){
+    const t=Math.min(1,(now-start)/dur);
+    const e=1-Math.pow(1-t,3);
+    const val=from+(target-from)*e;
+    el.textContent=fmt(val);
+    if(t<1)requestAnimationFrame(tick); else el.dataset.cur=target;
+  }
+  requestAnimationFrame(tick);
 }
 
-function render(){
-  const ft = $('f-tramo').value, fd = $('f-dir').value, fp = $('f-prop').value;
-  const filtradas = ROWS.filter(r =>
-    (!ft || r.tramo === ft) && (!fd || r.direccion === fd) && (!fp || r.propiedad === fp)
-  );
+/* ---------- Chart.js defaults ---------- */
+Chart.defaults.color='#AB9381';
+Chart.defaults.font.family="'IBM Plex Mono', monospace";
+Chart.defaults.font.size=11;
+const GRID='rgba(255,255,255,.05)';
+const tip={
+  backgroundColor:'#241915',borderColor:'#39271F',borderWidth:1,
+  titleColor:'#DEC9A2',bodyColor:'#F4EADD',padding:11,cornerRadius:9,
+  titleFont:{family:"'Space Grotesk'",weight:'600'},displayColors:true,boxPadding:4,
+};
 
-  // total
-  const total = filtradas.reduce((s, r) => s + r.n, 0);
-  $('total').textContent = total.toLocaleString('es-MX');
-
-  // agregación por actividad, con desglose PS/PP
-  const porAct = {};
-  for (const r of filtradas){
-    if (!porAct[r.actividad]) porAct[r.actividad] = {n:0, ps:0, pp:0};
-    porAct[r.actividad].n += r.n;
-    if (r.propiedad.includes('SOCIAL')) porAct[r.actividad].ps += r.n;
-    else if (r.propiedad.includes('PRIVADA')) porAct[r.actividad].pp += r.n;
-  }
-
-  const cards = $('cards');
-  cards.innerHTML = '';
-  const acts = Object.entries(porAct).sort((a, b) => b[1].n - a[1].n);
-
-  if (!acts.length){
-    cards.innerHTML = '<div class="vacio">Sin registros para este filtro</div>';
-    return;
-  }
-
-  for (const [nombre, d] of acts){
-    const card = document.createElement('div');
-    card.className = 'card';
-    let desglose = '';
-    if (d.ps || d.pp){
-      desglose = `<div class="desglose">
-        ${d.ps ? `<span><b>${d.ps}</b> social</span>` : ''}
-        ${d.pp ? `<span><b class="pp">${d.pp}</b> privada</span>` : ''}
-      </div>`;
+function buildCharts(){
+  lineChart=new Chart(document.getElementById('lineChart'),{
+    type:'line',
+    data:{labels:[],datasets:[]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{usePointStyle:true,pointStyle:'circle',padding:18,font:{size:11}}},tooltip:tip},
+      scales:{x:{grid:{color:GRID},border:{color:'#39271F'}},y:{grid:{color:GRID},border:{display:false},beginAtZero:true}},
+      elements:{line:{tension:.4,borderWidth:2.5},point:{radius:3,hoverRadius:6,borderWidth:2}},
     }
-    card.innerHTML = `
-      <div class="nombre">${quiebra(nombre)}</div>
-      <div class="valor mono">${d.n.toLocaleString('es-MX')}</div>
-      ${desglose}`;
-    cards.appendChild(card);
-  }
+  });
+
+  propChart=new Chart(document.getElementById('propChart'),{
+    type:'doughnut',
+    data:{labels:[],datasets:[{data:[],
+      backgroundColor:['#2F8270','#A21E42','#D7AE6E','#DEC9A2','#6E152E','#7C6557'],
+      borderColor:'#1E1513',borderWidth:3,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',
+      plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyle:'circle',padding:11,font:{size:10}}},tooltip:tip}}
+  });
+
+  tipoChart=new Chart(document.getElementById('tipoChart'),{
+    type:'bar',
+    data:{labels:[],datasets:[{data:[],
+      backgroundColor:ctx=>{const g=ctx.chart.ctx.createLinearGradient(0,0,ctx.chart.width,0);g.addColorStop(0,'#6E152E');g.addColorStop(1,'#A21E42');return g;},
+      borderRadius:6,barThickness:18}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:tip},
+      scales:{x:{grid:{color:GRID},border:{display:false},beginAtZero:true},y:{grid:{display:false},border:{color:'#39271F'}}}}
+  });
 }
 
-async function cargar(){
+/* ---------- CHIPS (se pueblan con los tramos que trae el backend) ---------- */
+function renderChips(porTramo){
+  const el=document.getElementById('chips');
+  el.querySelectorAll('.chip').forEach(c=>c.remove());
+  porTramo.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='chip'+(tramosOff.has(t.id)?' off':'');
+    b.dataset.id=t.id;
+    b.innerHTML=`<span class="swatch" style="background:${colorTramo(t.id)}"></span>${t.id} · ${t.nombre}`;
+    b.addEventListener('click',()=>{
+      if(tramosOff.has(t.id)) tramosOff.delete(t.id);
+      else tramosOff.add(t.id);
+      b.classList.toggle('off');
+      pintar(ultimoData); // re-render local, sin re-fetch
+    });
+    el.appendChild(b);
+  });
+}
+
+/* ---------- RAIL: actividad por tramo normalizada al máximo ---------- */
+function renderRail(porTramo){
+  const el=document.getElementById('rail');
+  el.innerHTML='';
+  const activos=porTramo.filter(t=>!tramosOff.has(t.id));
+  if(!activos.length){ el.innerHTML='<div class="empty">Sin datos en el periodo seleccionado.</div>'; return; }
+  const max=Math.max(...activos.map(t=>t.registros),1);
+  activos.forEach(t=>{
+    const pct=Math.round(t.registros/max*100);
+    const c=colorTramo(t.id);
+    const row=document.createElement('div');
+    row.className='rail-row';
+    row.style.setProperty('--c',c);
+    let stations='';[0,25,50,75,100].forEach(p=>stations+=`<div class="station" style="left:${p}%"></div>`);
+    row.innerHTML=`
+      <div class="rail-id">
+        <span class="badge">${t.id}</span>
+        <span class="nm">${t.nombre}</span>
+        <span class="meta">${t.registros} act · ${t.frentes} frentes · ${t.nucleos} núcleos</span>
+      </div>
+      <div class="track">
+        <div class="bed"></div>${stations}
+        <div class="fill"></div><div class="train"></div>
+      </div>
+      <div class="rail-pct"><div class="big">${t.registros}</div><div class="sm">actividades</div></div>`;
+    el.appendChild(row);
+    requestAnimationFrame(()=>{
+      row.querySelector('.fill').style.width=pct+'%';
+      row.querySelector('.train').style.left=pct+'%';
+    });
+  });
+}
+
+/* ---------- FEED (bitácora real) ---------- */
+function renderFeed(bitacora){
+  const el=document.getElementById('feed');
+  el.innerHTML='';
+  const items=(bitacora||[]).filter(b=>!tramosOff.has(b.tramo));
+  if(!items.length){ el.innerHTML='<div class="empty">Sin actividad reciente.</div>'; return; }
+  items.slice(0,6).forEach(b=>{
+    const node=document.createElement('div');
+    node.className='feed-item';
+    node.innerHTML=`<span class="when">${b.fecha||''}</span>
+      <span class="body"><span class="tr" style="background:${colorTramo(b.tramo)}">${b.tramo}</span>
+      <span class="verb">${b.direccion||''}</span> ${b.texto||''}</span>`;
+    el.appendChild(node);
+  });
+}
+
+/* ---------- PINTAR todo con el payload (aplica filtro de chips localmente) ---------- */
+function pintar(d){
+  if(!d) return;
+  ultimoData=d;
+
+  document.getElementById('lbl-periodo').textContent=d.periodo_label||'—';
+
+  // tramos activos según chips
+  const porTramoAct=d.por_tramo.filter(t=>!tramosOff.has(t.id));
+  const sum=(arr,k)=>arr.reduce((a,t)=>a+(t[k]||0),0);
+
+  // KPIs (recalculados sobre tramos activos)
+  countUp(document.getElementById('v-act'), sum(porTramoAct,'registros'));
+  countUp(document.getElementById('v-nuc'), sum(porTramoAct,'nucleos'));
+  countUp(document.getElementById('v-fre'), sum(porTramoAct,'frentes'));
+  countUp(document.getElementById('v-pla'), sum(porTramoAct,'planos'));
+  countUp(document.getElementById('v-fic'), sum(porTramoAct,'fichas'));
+  countUp(document.getElementById('v-inf'), sum(porTramoAct,'infografias'));
+
+  // Rail + feed
+  renderRail(d.por_tramo);
+  renderFeed(d.bitacora);
+
+  // Line: una serie por tramo activo
+  lineChart.data.labels=d.serie.labels;
+  lineChart.data.datasets=Object.entries(d.serie.por_tramo)
+    .filter(([id])=>!tramosOff.has(id))
+    .map(([id,vals])=>({label:id,data:vals,borderColor:colorTramo(id),
+      backgroundColor:colorTramo(id)+'22',pointBackgroundColor:colorTramo(id),
+      pointBorderColor:'#130D0C',fill:false}));
+  lineChart.update();
+
+  // Doughnut: tipo de propiedad (global del periodo; no depende de chips de tramo)
+  propChart.data.labels=d.por_propiedad.labels;
+  propChart.data.datasets[0].data=d.por_propiedad.values;
+  propChart.update();
+  countUp(document.getElementById('propTotal'),
+          d.por_propiedad.values.reduce((a,b)=>a+b,0));
+
+  // Bar: tipos de actividad
+  tipoChart.data.labels=d.tipos_actividad.labels;
+  tipoChart.data.datasets[0].data=d.tipos_actividad.values;
+  tipoChart.update();
+}
+
+/* ---------- FETCH ---------- */
+async function cargarDashboard(){
   try{
-    const res = await fetch('/api/conteo');
-    const data = await res.json();
-    ROWS = data.rows || [];
-    llenarSelect($('f-tramo'), new Set(ROWS.map(r => r.tramo)));
-    llenarSelect($('f-dir'),   new Set(ROWS.map(r => r.direccion)));
-    llenarSelect($('f-prop'),  new Set(ROWS.map(r => r.propiedad)));
-    render();
-    $('pie').textContent = 'Actualizado: ' + new Date().toLocaleString('es-MX');
-  }catch(e){
-    $('cards').innerHTML = '<div class="vacio">Error al cargar los datos</div>';
+    const res=await fetch(`/api/dashboard?periodo=${encodeURIComponent(periodo)}`,{credentials:'same-origin'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const d=await res.json();
+    renderChips(d.por_tramo);
+    pintar(d);
+  }catch(err){
+    console.error('Error cargando dashboard:',err);
+    document.getElementById('rail').innerHTML='<div class="empty">No se pudo cargar la información. Revisa tu sesión de admin.</div>';
   }
 }
 
-['f-tramo','f-dir','f-prop'].forEach(id => $(id).addEventListener('change', render));
-cargar();
-setInterval(cargar, 60000); // auto-refresh cada 60 s, igual que agenda
+document.getElementById('periodSel').addEventListener('change',e=>{
+  periodo=e.target.value;
+  tramosOff.clear();          // al cambiar periodo, reactiva todos los tramos
+  cargarDashboard();
+});
+
+/* reloj */
+function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('es-MX',{hour12:false});}
+tick();setInterval(tick,1000);
+
+/* init */
+buildCharts();
+cargarDashboard();
+setInterval(cargarDashboard, 60000); // refresco automático cada 60 s
 </script>
 </body>
 </html>
