@@ -147,7 +147,7 @@
   .span12{grid-column:span 12}
 
   /* ===== RAIL (signature) ===== */
-  .rail-row{display:grid;grid-template-columns:150px 1fr 96px;align-items:center;gap:18px;padding:15px 0;border-top:1px solid var(--line-soft)}
+  .rail-row{display:grid;grid-template-columns:150px 1fr;align-items:center;gap:18px;padding:15px 0;border-top:1px solid var(--line-soft)}
   .rail-row:first-child{border-top:none}
   .rail-id{display:flex;flex-direction:column;gap:3px}
   .rail-id .badge{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.82rem;letter-spacing:.04em;display:inline-flex;align-items:center;gap:7px}
@@ -301,7 +301,7 @@
     <div class="panel span8">
       <div class="panel-head">
         <h2>Actividad por tramo</h2>
-        <span class="tag">NORMALIZADA AL MÁXIMO</span>
+        
       </div>
       <div id="rail"></div>
     </div>
@@ -470,13 +470,11 @@ function renderRail(porTramo){
       <div class="rail-id">
         <span class="badge">${t.id}</span>
         <span class="nm">${t.nombre}</span>
-        <span class="meta">${t.registros} act · ${t.nucleos} núcleos</span>
       </div>
       <div class="track">
         <div class="bed"></div>${stations}
         <div class="fill"></div><div class="train"></div>
-      </div>
-      <div class="rail-pct"><div class="big">${t.registros}</div><div class="sm">actividades</div></div>`;
+      </div>`;
     el.appendChild(row);
     requestAnimationFrame(()=>{
       row.querySelector('.fill').style.width=pct+'%';
