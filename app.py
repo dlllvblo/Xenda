@@ -21,6 +21,9 @@ from shapely.geometry import Point
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+import openpyxl
+import copy 
+
 
 # =========================================
 # HORA CDMX
@@ -2444,6 +2447,109 @@ def descargar_registros():
         ruta_archivo,
         as_attachment=True
     )
+
+# ============================================================
+# EXPORT MATRIZ INFORMES_PROPUESTA (columnas K–V del REPORTE)
+# ============================================================
+_MATRIZ_COL = {s: v['col'] for s, v in ACTIVIDADES_CANONICAS.items()}   # slug -> letra K..V
+PLANTILLA_MATRIZ = os.path.join(os.path.dirname(__file__), 'plantillas', 'INFORMES_PROPUESTA.xlsx')
+_MESES_MAY = {1:'ENERO',2:'FEBRERO',3:'MARZO',4:'ABRIL',5:'MAYO',6:'JUNIO',
+              7:'JULIO',8:'AGOSTO',9:'SEPTIEMBRE',10:'OCTUBRE',11:'NOVIEMBRE',12:'DICIEMBRE'}
+
+def _periodo_excel(anio, mes, q):
+    import calendar
+    d1, d2 = (1, 15) if q == 1 else (16, calendar.monthrange(anio, mes)[1])
+    return f"{d1:02d} AL {d2:02d} DE {_MESES_MAY[mes]} DEL {anio}"
+
+def _prop_excel(v):
+    u = (v or '').upper()
+    if 'SOCIAL' in u:  return 'PROPIEDAD SOCIAL'
+    if 'PRIVADA' in u: return 'PROPIEDAD PRIVADA'
+    return u or 'N/A'
+
+def _rellenar_matriz(rows, tpl_path, out_path):
+    wb = openpyxl.load_workbook(tpl_path)
+    if 'TABLAS DINAMICAS' in wb.sheetnames:          # sin pivotes (las haces a mano)
+        del wb['TABLAS DINAMICAS']
+    ws = wb['REPORTE']; F0 = 7
+    est = {c: (copy.copy(ws.cell(F0,c).font), copy.copy(ws.cell(F0,c).border),
+               copy.copy(ws.cell(F0,c).fill), copy.copy(ws.cell(F0,c).alignment),
+               ws.cell(F0,c).number_format) for c in range(2, 26)}     # estilos plantilla B..Y
+    for r in range(F0, ws.max_row + 1):              # limpia datos viejos
+        for c in range(2, 26):
+            ws.cell(r, c).value = None
+    for i, row in enumerate(rows):
+        r = F0 + i
+        base = {2:i+1, 3:row['periodo'], 4:row['direccion'], 5:row['tramo'], 6:row['estado'],
+                7:row['municipio'], 8:row['nucleo_localidad'] or 'N/A', 9:row['frente'] or 'N/A',
+                10:row['tipo_propiedad']}
+        for c, v in base.items():
+            ws.cell(r, c).value = v
+        for c in range(11, 23):                      # K..V = 0
+            ws.cell(r, c).value = 0
+        col = _MATRIZ_COL.get(row['slug'])
+        if col:
+            ws[f'{col}{r}'].value = int(row['cantidad'] or 0)
+        ws.cell(r, 23).value = row['soporte']         # W
+        ws.cell(r, 24).value = row['descripcion']     # X
+        ws.cell(r, 25).value = f'=SUM(K{r}:V{r})'     # Y (TOTAL)
+        for c in range(2, 26):                        # re-aplica estilos
+            f, b, fl, al, nf = est[c]
+            cel = ws.cell(r, c)
+            cel.font, cel.border, cel.fill, cel.alignment = copy.copy(f), copy.copy(b), copy.copy(fl), copy.copy(al)
+            cel.number_format = nf
+    ult = F0 + len(rows) - 1 if rows else F0
+    ws['AA7'].value = f'=SUM(Y{F0}:Y{max(ult, F0)})'  # ACTIVIDADES TOTALES
+    wb.save(out_path)
+    return len(rows)
+
+
+@app.route('/export_matriz')
+def export_matriz():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+
+    import calendar
+    hoy = hora_cdmx()
+    anio = int(request.args.get('anio', hoy.year))
+    mes  = int(request.args.get('mes',  hoy.month))
+    q    = int(request.args.get('q',    1 if hoy.day <= 15 else 2))
+
+    d1, d2 = (1, 15) if q == 1 else (16, calendar.monthrange(anio, mes)[1])
+    ini = datetime(anio, mes, d1, 0, 0, 0)
+    fin = datetime(anio, mes, d2, 23, 59, 59)
+    periodo_txt = _periodo_excel(anio, mes, q)
+
+    registros = Registro.query.filter(
+        Registro.fecha >= ini, Registro.fecha <= fin
+    ).order_by(Registro.fecha.asc()).all()
+
+    rows = []
+    for reg in registros:
+        for s in SubActividad.query.filter_by(registro_id=reg.id).all():
+            if not s.actividad_canonica:              # omite las sin actividad canónica
+                continue
+            nucleo = (reg.nucleo or '').strip()
+            loc = (s.localidad or '').strip()          # localidad solo existe en la sub
+            nuc_loc = f"{nucleo}/{loc}" if (nucleo and loc) else (nucleo or loc or 'N/A')
+            rows.append({
+                'periodo':          periodo_txt,
+                'direccion':        DIRECCIONES_HOMOLOGACION.get(reg.direccion, reg.direccion or ''),
+                'tramo':            TRAMOS_NOMBRES.get(reg.tramo, reg.tramo or ''),
+                'estado':           reg.entidad or '',
+                'municipio':        reg.municipio or '',
+                'nucleo_localidad': nuc_loc,
+                'frente':           str(reg.frente) if reg.frente is not None else 'N/A',
+                'tipo_propiedad':   _prop_excel(reg.tipo_propiedad),
+                'slug':             s.actividad_canonica,
+                'cantidad':         s.cantidad,
+                'soporte':          s.soporte_documental or '',
+                'descripcion':      s.descripcion or '',
+            })
+
+    out = os.path.join('/tmp', f'REPORTE_MATRIZ_{anio}_{mes:02d}_Q{q}.xlsx')
+    _rellenar_matriz(rows, PLANTILLA_MATRIZ, out)
+    return send_file(out, as_attachment=True, download_name=os.path.basename(out))
 
 # =========================================
 # DASHBOARD
