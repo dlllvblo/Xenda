@@ -923,6 +923,71 @@
 
     </div>
 
+    <!-- ACTIVIDAD DEL REPORTE (matriz oficial K–V) -->
+    <div class="card">
+        <div class="section-title" style="color:#404040;">Reporte Matriz</div>
+        <div class="grid">
+            <div class="input-group" id="sub_reporte_container" style="grid-column: 1 / -1;">
+                <!-- <label>Renglones para la matriz INFORMES_PROPUESTA · entidad, municipio, núcleo y frente se toman del registro principal</label> -->
+                <div id="tabla_sub_reporte" style="margin-bottom: 12px;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <select id="rep_actividad_canonica" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2;">
+                        <!-- <option value="">SELECCIONE UNA ACTIVIDAD</option>
+                        <option value="ASAMBLEAS_COP">ASISTENCIA A ASAMBLEAS (COP USO COMÚN)</option>
+                        <option value="REUNIONES_SENSIBILIZACION">REUNIONES DE SENSIBILIZACIÓN</option>
+                        <option value="MEDICION_TOPOGRAFICA">INSPECCIÓN OCULAR / MEDICIÓN (LEVANTAMIENTO TOPOGRÁFICO)</option>
+                        <option value="MEDICION_BDT">MEDICIÓN BDT's AGROFORESTAL - CONSTRUCCIÓN EN P. PRIVADA Y SOCIAL</option>
+                        <option value="REVISION_VALIDACION_CAMPO">REVISIÓN / VALIDACIÓN INFORMACIÓN DE CAMPO</option>
+                        <option value="FICHAS_BDT_CONSTRUCCION">FICHAS BDT'S CONSTRUCCIÓN ENVIADAS</option>
+                        <option value="FICHAS_BDT_AGROFORESTAL">FICHAS BDT'S AGROFORESTALES ENVIADAS</option>
+                        <option value="PLANOS_CARTOGRAFICOS">ELABORACIÓN / VALIDACIÓN DE PLANOS CARTOGRÁFICOS PARA LIBERACIÓN (DdV)</option>
+                        <option value="INFOGRAFIAS_GEOPORTAL">INFOGRAFÍAS / GEOPORTAL</option>
+                        <option value="CARPETA_BASICA_ASISTENCIA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA (ASISTENCIA TÉCNICA)</option>
+                        <option value="TRABAJOS_EXPROPIACION">TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>
+                        <option value="CARPETA_BASICA_AGA">CARPETA BÁSICA ANTE AGA (EXPROPIACIÓN)</option> -->
+                        <option value="">SELECCIONE UNA OPCIÓN</option>
+                        <option value="ASAMBLEAS_COP">ASISTENCIA A ASAMBLEAS DE LOS NÚCLEOS AGRARIOS INVOLUCRADOS, SUSCRIPCIÓN PARA SOLICITUD DE ANUENCIA Y FIRMA DE COP DE USO COMÚN</option>
+                        <option value="REUNIONES_SENSIBILIZACION">ASISTENCIA A REUNIONES INFORMATIVAS DE SENSIBILIZACIÓN CON LOS NÚCLEOS AGRARIOS INVOLUCRADOS</option>
+                        <option value="FICHAS_BDT_AGROFORESTAL">ELABORACIÓN DE FICHAS DE BIENES DISTINTOS A LA TIERRA AGROFORESTALES Y ENVIADAS</option>
+                        <option value="FICHAS_BDT_CONSTRUCCION">ELABORACIÓN DE FICHAS DE BIENES DISTINTOS A LA TIERRA DE CONSTRUCCIÓN Y ENVIADAS</option>                        
+                        <option value="TRABAJOS_EXPROPIACION">ELABORACIÓN DE TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>
+                        <option value="PLANOS_CARTOGRAFICOS">ELABORACIÓN Y VALIDACIÓN DE PLANOS CARTOGRÁFICOS PARA LIBERACIÓN DE DERECHO DE VÍA</option>
+                        <option value="INFOGRAFIAS_GEOPORTAL">GENERACIÓN Y/O VALIDACIÓN DE INFOGRAFÍAS, ACTUALIZACIÓN DEL GEOPORTAL</option>
+                        <option value="CARPETA_BASICA_ASISTENCIA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA PARA BRINDAR ASISTENCIA TÉCNICA (ANÁLISIS DOCUMENTAL — MEDICIÓN EN CAMPO)</option>                        
+                        <option value="CARPETA_BASICA_AGA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA ANTE EL AGA, PARA LA INTEGRACIÓN DE TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>                        
+                        <option value="MEDICION_TOPOGRAFICA">INSPECCIÓN OCULAR Y TRABAJOS DE MEDICIÓN (LEVANTAMIENTO TOPOGRÁFICO)</option>
+                        <option value="MEDICION_BDT">INSPECCIÓN OCULAR Y TRABAJOS DE MEDICIÓN EN PROPIEDAD SOCIAL Y PRIVADA PARA LOS BDT'S AGROFORESTALES — CONSTRUCCIÓN</option>
+                        <option value="REVISION_VALIDACION_CAMPO">REVISIÓN Y VALIDACIÓN DE INFORMACIÓN RECOPILADA EN CAMPO POR LA BRIGADA</option>
+                    </select>
+                    <input id="rep_cantidad" type="number" min="0" step="1" value="1" placeholder="CANTIDAD" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <input id="rep_soporte" list="soportes_dl" placeholder="SOPORTE DOCUMENTAL / PRODUCTO" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
+                    <select id="rep_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                        <option value="">ENTIDAD</option>
+                    </select>
+                    <select id="rep_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                        <option value="">MUNICIPIO</option>
+                    </select>
+                    <select id="rep_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                        <option value="">NÚCLEO AGRARIO</option>
+                        <option value="VARIOS">VARIOS</option>
+                    </select>
+                    <input id="rep_localidad" placeholder="LOCALIDAD (opcional)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
+                    <textarea id="rep_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
+                    <datalist id="soportes_dl">
+                        <option value="FICHAS"></option>
+                        <option value="MINUTAS"></option>
+                        <option value="PLANOS"></option>
+                        <option value="INFOGRAFÍAS"></option>
+                        <option value="MINUTAS Y ARCHIVOS DIGITALES"></option>
+                        <option value="CARPETAS DIGITALES"></option>
+                    </datalist>
+                </div>
+                <button type="button" onclick="agregarSubReporte()" style="background:#404040;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad a la matriz</button>
+                <input type="hidden" name="sub_actividades_reporte" id="sub_actividades_reporte" value="[]">
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="section-title" id="titulo-realizado">Trabajo Realizado</div>
         <div class="grid">
@@ -1000,60 +1065,7 @@
         </div>
     </div>
 
-    <!-- ACTIVIDAD DEL REPORTE (matriz oficial K–V) -->
-    <div class="card">
-        <div class="section-title" style="color:#404040;">Reporte Matriz</div>
-        <div class="grid">
-            <div class="input-group" id="sub_reporte_container" style="grid-column: 1 / -1;">
-                <!-- <label>Renglones para la matriz INFORMES_PROPUESTA · entidad, municipio, núcleo y frente se toman del registro principal</label> -->
-                <div id="tabla_sub_reporte" style="margin-bottom: 12px;"></div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <select id="rep_actividad_canonica" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2;">
-                        <!-- <option value="">SELECCIONE UNA ACTIVIDAD</option>
-                        <option value="ASAMBLEAS_COP">ASISTENCIA A ASAMBLEAS (COP USO COMÚN)</option>
-                        <option value="REUNIONES_SENSIBILIZACION">REUNIONES DE SENSIBILIZACIÓN</option>
-                        <option value="MEDICION_TOPOGRAFICA">INSPECCIÓN OCULAR / MEDICIÓN (LEVANTAMIENTO TOPOGRÁFICO)</option>
-                        <option value="MEDICION_BDT">MEDICIÓN BDT's AGROFORESTAL - CONSTRUCCIÓN EN P. PRIVADA Y SOCIAL</option>
-                        <option value="REVISION_VALIDACION_CAMPO">REVISIÓN / VALIDACIÓN INFORMACIÓN DE CAMPO</option>
-                        <option value="FICHAS_BDT_CONSTRUCCION">FICHAS BDT'S CONSTRUCCIÓN ENVIADAS</option>
-                        <option value="FICHAS_BDT_AGROFORESTAL">FICHAS BDT'S AGROFORESTALES ENVIADAS</option>
-                        <option value="PLANOS_CARTOGRAFICOS">ELABORACIÓN / VALIDACIÓN DE PLANOS CARTOGRÁFICOS PARA LIBERACIÓN (DdV)</option>
-                        <option value="INFOGRAFIAS_GEOPORTAL">INFOGRAFÍAS / GEOPORTAL</option>
-                        <option value="CARPETA_BASICA_ASISTENCIA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA (ASISTENCIA TÉCNICA)</option>
-                        <option value="TRABAJOS_EXPROPIACION">TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>
-                        <option value="CARPETA_BASICA_AGA">CARPETA BÁSICA ANTE AGA (EXPROPIACIÓN)</option> -->
-                        <option value="">SELECCIONE UNA OPCIÓN</option>
-                        <option value="ASAMBLEAS_COP">ASISTENCIA A ASAMBLEAS DE LOS NÚCLEOS AGRARIOS INVOLUCRADOS, SUSCRIPCIÓN PARA SOLICITUD DE ANUENCIA Y FIRMA DE COP DE USO COMÚN</option>
-                        <option value="REUNIONES_SENSIBILIZACION">ASISTENCIA A REUNIONES INFORMATIVAS DE SENSIBILIZACIÓN CON LOS NÚCLEOS AGRARIOS INVOLUCRADOS</option>
-                        <option value="FICHAS_BDT_AGROFORESTAL">ELABORACIÓN DE FICHAS DE BIENES DISTINTOS A LA TIERRA AGROFORESTALES Y ENVIADAS</option>
-                        <option value="FICHAS_BDT_CONSTRUCCION">ELABORACIÓN DE FICHAS DE BIENES DISTINTOS A LA TIERRA DE CONSTRUCCIÓN Y ENVIADAS</option>                        
-                        <option value="TRABAJOS_EXPROPIACION">ELABORACIÓN DE TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>
-                        <option value="PLANOS_CARTOGRAFICOS">ELABORACIÓN Y VALIDACIÓN DE PLANOS CARTOGRÁFICOS PARA LIBERACIÓN DE DERECHO DE VÍA</option>
-                        <option value="INFOGRAFIAS_GEOPORTAL">GENERACIÓN Y/O VALIDACIÓN DE INFOGRAFÍAS, ACTUALIZACIÓN DEL GEOPORTAL</option>
-                        <option value="CARPETA_BASICA_ASISTENCIA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA PARA BRINDAR ASISTENCIA TÉCNICA (ANÁLISIS DOCUMENTAL — MEDICIÓN EN CAMPO)</option>                        
-                        <option value="CARPETA_BASICA_AGA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA ANTE EL AGA, PARA LA INTEGRACIÓN DE TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>                        
-                        <option value="MEDICION_TOPOGRAFICA">INSPECCIÓN OCULAR Y TRABAJOS DE MEDICIÓN (LEVANTAMIENTO TOPOGRÁFICO)</option>
-                        <option value="MEDICION_BDT">INSPECCIÓN OCULAR Y TRABAJOS DE MEDICIÓN EN PROPIEDAD SOCIAL Y PRIVADA PARA LOS BDT'S AGROFORESTALES — CONSTRUCCIÓN</option>
-                        <option value="REVISION_VALIDACION_CAMPO">REVISIÓN Y VALIDACIÓN DE INFORMACIÓN RECOPILADA EN CAMPO POR LA BRIGADA</option>
-                    </select>
-                    <input id="rep_cantidad" type="number" min="0" step="1" value="1" placeholder="CANTIDAD" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                    <input id="rep_soporte" list="soportes_dl" placeholder="SOPORTE DOCUMENTAL / PRODUCTO" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
-                    <input id="rep_localidad" placeholder="LOCALIDAD (opcional)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; text-transform:uppercase;">
-                    <textarea id="rep_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
-                    <datalist id="soportes_dl">
-                        <option value="FICHAS"></option>
-                        <option value="MINUTAS"></option>
-                        <option value="PLANOS"></option>
-                        <option value="INFOGRAFÍAS"></option>
-                        <option value="MINUTAS Y ARCHIVOS DIGITALES"></option>
-                        <option value="CARPETAS DIGITALES"></option>
-                    </datalist>
-                </div>
-                <button type="button" onclick="agregarSubReporte()" style="background:#404040;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad a la matriz</button>
-                <input type="hidden" name="sub_actividades_reporte" id="sub_actividades_reporte" value="[]">
-            </div>
-        </div>
-    </div>
+    
 
     <div class="card">
         <div class="section-title" id="titulo-programado">Trabajo Programado</div>
@@ -1847,18 +1859,18 @@ function poblarSelectsSub() {
             .map(r => r.ENTIDAD_FEDERATIVA)
     )].sort();
 
-    ['sr_entidad', 'sp_entidad'].forEach(id => {
+    ['sr_entidad', 'sp_entidad', 'rep_entidad'].forEach(id => {
         const sel = document.getElementById(id);
         if (sel) {
             sel.innerHTML = '<option value="">Entidad</option>';
             entidades.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
         }
     });
-    ['sr_municipio', 'sp_municipio'].forEach(id => {
+    ['sr_municipio', 'sp_municipio', 'rep_municipio'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = '<option value="">Municipio</option>';
     });
-    ['sr_nucleo', 'sp_nucleo'].forEach(id => {
+    ['sr_nucleo', 'sp_nucleo', 'rep_nucleo'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     });
@@ -1919,6 +1931,28 @@ document.getElementById('sr_municipio').addEventListener('change', function() {
         CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
     )].sort();
     const sel = document.getElementById('sr_nucleo');
+    sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
+    nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
+});
+
+document.getElementById('rep_entidad').addEventListener('change', function() {
+    const tramo = document.getElementById('tramo').value;
+    const municipios = [...new Set(
+        CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
+    )].sort();
+    const sel = document.getElementById('rep_municipio');
+    sel.innerHTML = '<option value="">Municipio</option>';
+    municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
+    document.getElementById('rep_nucleo').innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
+});
+
+document.getElementById('rep_municipio').addEventListener('change', function() {
+    const tramo = document.getElementById('tramo').value;
+    const entidad = document.getElementById('rep_entidad').value;
+    const nucleos = [...new Set(
+        CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
+    )].sort();
+    const sel = document.getElementById('rep_nucleo');
     sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
 });
@@ -2078,6 +2112,9 @@ function agregarSubReporte() {
         actividad_canonica: document.getElementById('rep_actividad_canonica').value,
         cantidad: document.getElementById('rep_cantidad').value,
         soporte_documental: document.getElementById('rep_soporte').value.toUpperCase(),
+        entidad: document.getElementById('rep_entidad').value,
+        municipio: document.getElementById('rep_municipio').value,
+        nucleo: document.getElementById('rep_nucleo').value,
         localidad: document.getElementById('rep_localidad').value.toUpperCase(),
         descripcion: document.getElementById('rep_descripcion').value.toUpperCase()
     };
@@ -2089,6 +2126,9 @@ function agregarSubReporte() {
     document.getElementById('rep_cantidad').value = '1';
     document.getElementById('rep_soporte').value = '';
     document.getElementById('rep_localidad').value = '';
+    document.getElementById('rep_entidad').value = '';
+    document.getElementById('rep_municipio').innerHTML = '<option value="">MUNICIPIO</option>';
+    document.getElementById('rep_nucleo').innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
     document.getElementById('rep_descripcion').value = '';
 }
 

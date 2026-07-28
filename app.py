@@ -1953,6 +1953,9 @@ def index():
                 sub = SubActividad(
                     registro_id=nuevo.id,
                     tipo='reporte',
+                    entidad=item.get('entidad', ''),
+                    municipio=item.get('municipio', ''),
+                    nucleo=item.get('nucleo', ''),
                     localidad=item.get('localidad', ''),
                     descripcion=item.get('descripcion', ''),
                     actividad_canonica=item.get('actividad_canonica', ''),
@@ -2601,15 +2604,15 @@ def export_matriz():
     rows = []
     for reg in registros:
         for s in SubActividad.query.filter_by(registro_id=reg.id, tipo='reporte').all():
-            nucleo = (reg.nucleo or '').strip()
+            nucleo = (s.nucleo or reg.nucleo or '').strip()
             loc = (s.localidad or '').strip()          # localidad solo existe en la sub
             nuc_loc = f"{nucleo}/{loc}" if (nucleo and loc) else (nucleo or loc or 'N/A')
             rows.append({
                 'periodo':          periodo_txt,
                 'direccion':        DIRECCIONES_HOMOLOGACION.get(reg.direccion, reg.direccion or ''),
                 'tramo':            TRAMOS_NOMBRES.get(reg.tramo, reg.tramo or ''),
-                'estado':           reg.entidad or '',
-                'municipio':        reg.municipio or '',
+                'estado':           s.entidad or reg.entidad or '',
+                'municipio':        s.municipio or reg.municipio or '',
                 'nucleo_localidad': nuc_loc,
                 'frente':           str(reg.frente) if reg.frente is not None else 'N/A',
                 'tipo_propiedad':   _prop_excel(reg.tipo_propiedad),
