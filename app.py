@@ -390,6 +390,53 @@ class SubActividad(db.Model):
 
     trabajo_campo = db.Column(db.String(300))
 
+    # --- Taxonomía del Excel (columnas K–V del REPORTE) ---
+    actividad_canonica = db.Column(db.String(60))    # slug de la actividad K–V
+    cantidad = db.Column(db.Integer)                 # conteo -> columna Y/TOTAL
+    soporte_documental = db.Column(db.String(200))   # columna W (FICHAS, MINUTAS, PLANOS...)
+
+    # =========================================
+# CATÁLOGO CANÓNICO DE ACTIVIDADES (columnas K–V del REPORTE)
+# slug -> {col Excel, corto (UI), completo (header oficial)}
+# =========================================
+ACTIVIDADES_CANONICAS = {
+    'ASAMBLEAS_COP':             {'col': 'K', 'corto': 'Asambleas (COP uso común)',
+        'completo': 'ASISTENCIA A ASAMBLEAS DE LOS NÚCLEOS AGRARIOS INVOLUCRADOS, DE SUSCRIPCIÓN PARA LA SOLICITUD DE ANUENCIA, PARA LA FIRMA DE CONVENIOS DE OCUPACIÓN PREVIA DE USO COMÚN.'},
+    'REUNIONES_SENSIBILIZACION': {'col': 'L', 'corto': 'Reuniones de sensibilización',
+        'completo': 'ASISTENCIA A REUNIONES INFORMATIVAS DE SENSIBILIZACIÓN CON LOS NÚCLEOS AGRARIOS INVOLUCRADOS.'},
+    'MEDICION_TOPOGRAFICA':      {'col': 'M', 'corto': 'Medición / levantamiento topográfico',
+        'completo': 'INSPECCIÓN OCULAR Y TRABAJOS DE MEDICIÓN (LEVANTAMIENTO TOPOGRAFICO)'},
+    'MEDICION_BDT':              {'col': 'N', 'corto': 'Medición BDT agroforestal-construcción',
+        'completo': 'INSPECCIÓN OCULAR Y TRABAJOS DE MEDICIÓN EN PROPIEDAD SOCIAL Y PRIVADA PARA LOS BDT´S AGROFORESTALES- CONSTRUCCIÓN.'},
+    'REVISION_VALIDACION_CAMPO': {'col': 'O', 'corto': 'Revisión/validación info de campo',
+        'completo': 'REVISIÓN Y VALIDACIÓN DE INFORMACIÓN RECOPILADA EN CAMPO POR LA BRIGADA'},
+    'FICHAS_BDT_CONSTRUCCION':   {'col': 'P', 'corto': 'Fichas BDT construcción enviadas',
+        'completo': 'ELABORACIÓN DE FICHAS DE BIENES DISTINTOS A LA TIERRA DE CONSTRUCCIÓN Y ENVIADAS.'},
+    'FICHAS_BDT_AGROFORESTAL':   {'col': 'Q', 'corto': 'Fichas BDT agroforestales enviadas',
+        'completo': 'ELABORACIÓN DE FICHAS DE BIENES DISTINTOS A LA TIERRA AGROFORESTALES Y ENVIADAS.'},
+    'PLANOS_CARTOGRAFICOS':      {'col': 'R', 'corto': 'Planos cartográficos (DDV)',
+        'completo': 'ELABORACIÓN Y VALIDACIÓN DE PLANOS CARTOGRÁFICOS PARA LIBERACIÓN DE DERECHO DE VÍA.'},
+    'INFOGRAFIAS_GEOPORTAL':     {'col': 'S', 'corto': 'Infografías / geoportal',
+        'completo': 'GENERACIÓN Y/O VALIDACIÓN DE INFOGRAFÍAS, ACTUALIZACIÓN DEL GEOPORTAL.'},
+    'CARPETA_BASICA_ASISTENCIA': {'col': 'T', 'corto': 'Carpeta básica (asistencia técnica)',
+        'completo': 'GESTIÓN DOCUMENTAL DE CARPETA BÁSICA PARA BRINDAR ASISTENCIA TÉCNICA (ANÁLISIS DOCUMENTAL- MEDICIÓN EN CAMPO)'},
+    'TRABAJOS_EXPROPIACION':     {'col': 'U', 'corto': 'Trabajos técnicos de expropiación',
+        'completo': 'ELABORACIÓN DE TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN'},
+    'CARPETA_BASICA_AGA':        {'col': 'V', 'corto': 'Carpeta básica ante AGA (expropiación)',
+        'completo': 'GESTIÓN DOCUMENTAL DE CARPETA BÁSICA ANTE EL AGA, PARA LA INTEGRACIÓN DE TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN'},
+}
+
+# Homologación DIRECCIÓN: valor Xenda -> valor oficial del Excel (para el export)
+DIRECCIONES_HOMOLOGACION = {
+    'PRODUCTOS Y SISTEMAS GEOESPACIALES':            'PRODUCCIÓN Y SISTEMAS GEOESPACIALES',
+    'TOPOGRAFÍA CENTRO':                             'TOPOGRAFIA CENTRO',
+    'TOPOGRAFÍA OCCIDENTE':                          'TOPOGRAFIA OCCIDENTE',
+    'TOPOGRAFÍA NORTE':                              'TOPOGRAFIA NORTE',
+    'TOPOGRAFÍA OCCIDENTE PACÍFICO':                 'TOPOGRAFIA OCCIDENTE PACÍFICO',
+    'TOPOGRAFÍA NORTE ORIENTE':                      'TOPOGRAFIA NORTE ORIENTE',
+    'TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN':'TRABAJOS TÉCNICOS INFORMATIVOS DE EXPROPIACIÓN',
+}
+
 # =========================================
 # REGISTROS ELIMINADOS
 # =========================================
@@ -1813,7 +1860,10 @@ def index():
                     localidad=item.get('localidad', ''),
                     frente=item.get('frente', ''),
                     descripcion=item.get('descripcion', ''),
-                    trabajo_campo=item.get('trabajo_campo', '')
+                    trabajo_campo=item.get('trabajo_campo', ''),
+                    actividad_canonica=item.get('actividad_canonica', ''),
+                    cantidad=int(item.get('cantidad') or 0) or None,
+                    soporte_documental=item.get('soporte_documental', '')
                 )
                 db.session.add(sub)
         except:
@@ -2061,10 +2111,16 @@ def registros():
                 filas.append({'tipo': (s.frente or '').strip(), 'estatus': est, 'actividad': desc})
         tt = 'realizada' if kind == 'realizado' else 'programada'
         for s in subs:
-            if s.tipo == tt and (s.descripcion or s.trabajo_campo):
+            if s.tipo == tt and (s.descripcion or s.trabajo_campo or s.actividad_canonica):
                 ubic = ', '.join(x for x in [s.entidad, s.municipio, s.nucleo, s.localidad,
                                              ('F' + str(s.frente)) if s.frente else ''] if x)
                 act = s.descripcion or ''
+                if s.actividad_canonica:
+                    etq = ACTIVIDADES_CANONICAS.get(s.actividad_canonica, {}).get('corto', s.actividad_canonica)
+                    qty = f" ×{s.cantidad}" if s.cantidad else ''
+                    act = f"[{etq}{qty}] {act}"
+                if s.soporte_documental:
+                    act = f"{act}  ·  Soporte: {s.soporte_documental}"
                 if ubic:
                     act = f"({ubic}) {act}"
                 filas.append({'tipo': 'CAMPO', 'estatus': s.trabajo_campo or '', 'actividad': act})
@@ -3058,14 +3114,14 @@ def conteo_reporte():
 with app.app_context():
     
     db.create_all()
-
-    for correo_admin in ADMIN_CORREOS:
-        admin = Usuario.query.filter_by(correo=correo_admin).first()
-        if not admin:
-            nuevo_admin = Usuario(correo=correo_admin)
-            db.session.add(nuevo_admin)
-            db.session.commit()
-            print(f'ADMIN CREADO: {correo_admin}')   
+    # --- Auto-migración: columnas nuevas de sub_actividad (PostgreSQL) ---
+    try:
+        with db.engine.begin() as conn:
+            conn.execute(db.text("ALTER TABLE sub_actividad ADD COLUMN IF NOT EXISTS actividad_canonica VARCHAR(60)"))
+            conn.execute(db.text("ALTER TABLE sub_actividad ADD COLUMN IF NOT EXISTS cantidad INTEGER"))
+            conn.execute(db.text("ALTER TABLE sub_actividad ADD COLUMN IF NOT EXISTS soporte_documental VARCHAR(200)"))
+    except Exception as _e:
+        print('Auto-migración sub_actividad:', _e)  
 
 # =========================================
 # INICIO

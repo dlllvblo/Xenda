@@ -989,6 +989,32 @@
                     <div style="position:relative;">
                         <input id="sr_frente" type="text" inputmode="text" placeholder="FRENTE (número o N/A)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; width:100%; text-transform: uppercase;">
                     </div>
+                    <select id="sr_actividad_canonica" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2;">
+                        <option value="">ACTIVIDAD DEL REPORTE (columna K–V del Excel)…</option>
+                        <option value="ASAMBLEAS_COP">K · Asambleas (COP uso común)</option>
+                        <option value="REUNIONES_SENSIBILIZACION">L · Reuniones de sensibilización</option>
+                        <option value="MEDICION_TOPOGRAFICA">M · Medición / levantamiento topográfico</option>
+                        <option value="MEDICION_BDT">N · Medición BDT agroforestal-construcción</option>
+                        <option value="REVISION_VALIDACION_CAMPO">O · Revisión/validación info de campo</option>
+                        <option value="FICHAS_BDT_CONSTRUCCION">P · Fichas BDT construcción enviadas</option>
+                        <option value="FICHAS_BDT_AGROFORESTAL">Q · Fichas BDT agroforestales enviadas</option>
+                        <option value="PLANOS_CARTOGRAFICOS">R · Planos cartográficos (DDV)</option>
+                        <option value="INFOGRAFIAS_GEOPORTAL">S · Infografías / geoportal</option>
+                        <option value="CARPETA_BASICA_ASISTENCIA">T · Carpeta básica (asistencia técnica)</option>
+                        <option value="TRABAJOS_EXPROPIACION">U · Trabajos técnicos de expropiación</option>
+                        <option value="CARPETA_BASICA_AGA">V · Carpeta básica ante AGA (expropiación)</option>
+                    </select>
+                    <input id="sr_cantidad" type="number" min="0" step="1" value="1" placeholder="CANTIDAD (columna TOTAL)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <input id="sr_soporte" list="soportes_dl" placeholder="SOPORTE DOCUMENTAL / PRODUCTO" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
+                    <datalist id="soportes_dl">
+                        <option value="FICHAS"></option>
+                        <option value="MINUTAS"></option>
+                        <option value="PLANOS"></option>
+                        <option value="INFOGRAFÍAS"></option>
+                        <option value="MINUTAS Y ARCHIVOS DIGITALES"></option>
+                        <option value="NOTA INFORMATIVA"></option>
+                        <option value="ARCHIVOS DIGITALES"></option>
+                    </datalist>
                     <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO, INSPECCIONES EN SITIO, PRÁCTICAS DE CAMPO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
                     <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
@@ -1898,6 +1924,15 @@ if (spMunicipio) {
     });
 }
 
+const ACT_CANON_CORTO = {
+    ASAMBLEAS_COP: 'Asambleas', REUNIONES_SENSIBILIZACION: 'Reuniones sens.',
+    MEDICION_TOPOGRAFICA: 'Medición topo.', MEDICION_BDT: 'Medición BDT',
+    REVISION_VALIDACION_CAMPO: 'Revisión campo', FICHAS_BDT_CONSTRUCCION: 'Fichas constr.',
+    FICHAS_BDT_AGROFORESTAL: 'Fichas agro.', PLANOS_CARTOGRAFICOS: 'Planos',
+    INFOGRAFIAS_GEOPORTAL: 'Infografías', CARPETA_BASICA_ASISTENCIA: 'Carpeta asist.',
+    TRABAJOS_EXPROPIACION: 'Trab. exprop.', CARPETA_BASICA_AGA: 'Carpeta AGA'
+};
+
 function renderTabla(lista, containerId) {
     const container = document.getElementById(containerId);
     if (lista.length === 0) { container.innerHTML = ''; return; }
@@ -1909,6 +1944,9 @@ function renderTabla(lista, containerId) {
             <th style="padding:8px;">Núcleo</th>
             <th style="padding:8px;">Localidad</th>
             <th style="padding:8px;">Frente</th>
+            <th style="padding:8px;">Actividad</th>
+            <th style="padding:8px;">Cant.</th>
+            <th style="padding:8px;">Soporte</th>
             <th style="padding:8px;">Descripción</th>
             <th style="padding:8px;"></th>
         </tr></thead><tbody>`;
@@ -1920,6 +1958,9 @@ function renderTabla(lista, containerId) {
             <td style="padding:6px;">${item.nucleo}</td>
             <td style="padding:6px;">${item.localidad || ''}</td>
             <td style="padding:6px;">${item.frente}</td>
+            <td style="padding:6px;">${ACT_CANON_CORTO[item.actividad_canonica] || ''}</td>
+            <td style="padding:6px;text-align:center;">${item.cantidad || ''}</td>
+            <td style="padding:6px;">${item.soporte_documental || ''}</td>
             <td style="padding:6px;">${item.descripcion}</td>
             <td style="padding:6px;text-align:center;">
                 <button type="button" onclick="eliminarSub('${containerId}',${i})" style="background:#a42145;color:white;border:none;border-radius:8px;padding:4px 10px;cursor:pointer;">✕</button>
@@ -1949,6 +1990,9 @@ function agregarSubRealizada() {
         nucleo: esPropiedadPrivada() ? 'PROPIEDAD PRIVADA' : document.getElementById('sr_nucleo').value,
         localidad: document.getElementById('sr_localidad').value.toUpperCase(),
         frente: document.getElementById('sr_frente').value,
+        actividad_canonica: document.getElementById('sr_actividad_canonica').value,
+        cantidad: document.getElementById('sr_cantidad').value,
+        soporte_documental: document.getElementById('sr_soporte').value.toUpperCase(),
         trabajo_campo: document.getElementById('sr_trabajo_campo').value.toUpperCase(),
         descripcion: document.getElementById('sr_descripcion').value.toUpperCase()
     };
@@ -1958,6 +2002,9 @@ function agregarSubRealizada() {
     renderTabla(subRealizadas, 'tabla_sub_realizadas');
     document.getElementById('sr_localidad').value = '';
     document.getElementById('sr_frente').value = '';
+    document.getElementById('sr_actividad_canonica').value = '';
+    document.getElementById('sr_cantidad').value = '1';
+    document.getElementById('sr_soporte').value = '';
     document.getElementById('sr_descripcion').value = '';
     document.getElementById('sr_trabajo_campo').value = '';
 }
