@@ -1122,6 +1122,65 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                     </table>
                 </div>
                 '''
+        # ---- GABINETE / SIN PROPIEDAD ESPECÍFICA ----
+        sin_prop = [r for r in regs if not (r.tipo_propiedad and
+                    ('SOCIAL' in r.tipo_propiedad.upper() or 'PRIVADA' in r.tipo_propiedad.upper()))]
+        if sin_prop:
+            bloques_g = ''
+            for r in sin_prop:
+                trabajos_r = SubActividad.query.filter_by(registro_id=r.id, tipo='trabajo_realizado').all()
+                if trabajos_r:
+                    for tr in trabajos_r:
+                        tipo_tr = tr.frente or ''
+                        desc_tr = tr.descripcion or ''
+                        estatus_tr = ''
+                        if desc_tr.startswith('['):
+                            end = desc_tr.find(']')
+                            if end > 0:
+                                estatus_tr = desc_tr[1:end]
+                                desc_tr = desc_tr[end+2:]
+                        bloques_g += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
+                elif r.trabajo_realizado:
+                    bloques_g += f'<p><strong>Trabajo de {(r.trabajo_realizado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_realizado or ""}</span></p><p class="acts-texto">{(r.actividades_realizadas or "").replace(chr(10), "<br>")}</p>'
+
+            bloques_gp = ''
+            for r in sin_prop:
+                trabajos_p = SubActividad.query.filter_by(registro_id=r.id, tipo='trabajo_programado').all()
+                if trabajos_p:
+                    for tp in trabajos_p:
+                        tipo_tp = tp.frente or ''
+                        desc_tp = tp.descripcion or ''
+                        estatus_tp = ''
+                        if desc_tp.startswith('['):
+                            end = desc_tp.find(']')
+                            if end > 0:
+                                estatus_tp = desc_tp[1:end]
+                                desc_tp = desc_tp[end+2:]
+                        bloques_gp += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
+                elif r.trabajo_programado:
+                    bloques_gp += f'<p><strong>Trabajo de {(r.trabajo_programado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_programado or ""}</span></p><p class="acts-texto">{(r.actividades_programadas or "").replace(chr(10), "<br>")}</p>'
+
+            if bloques_g or bloques_gp:
+                secciones_html += f'''
+                <div class="pagina">
+                    <div class="encabezado-pagina">
+                        <div class="encabezado-texto">
+                            <p class="proyecto">Proyecto ferroviario</p>
+                            <p class="tramo-nombre">{tramo_nombre if tramo_nombre else 'DIRECCIÓN DE ' + direccion}</p>
+                            <p class="liberacion">{proceso_label}</p>
+                        </div>
+                        <div class="encabezado-logo"></div>
+                    </div>
+                    <div class="seccion-header verde">
+                        ACTIVIDADES REALIZADAS EN GABINETE
+                    </div>
+                    <div class="seccion-body">{bloques_g}</div>
+                    <div class="seccion-header guinda">
+                        ACTIVIDADES PROGRAMADAS DEL {quincena}
+                    </div>
+                    <div class="seccion-body">{bloques_gp}</div>
+                </div>
+                '''        
 
     html = f'''<!DOCTYPE html>
 <html lang="es">

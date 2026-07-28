@@ -966,6 +966,7 @@
                     font-weight: bold;
                     cursor: pointer;
                     font-size: 14px;
+                    width: 100%;
                 ">+ Añadir trabajo realizado</button>
                 <input type="hidden" name="trabajos_realizados_json" id="trabajos_realizados_json" value="[]">
             </div>
@@ -1001,14 +1002,14 @@
 
     <!-- ACTIVIDAD DEL REPORTE (matriz oficial K–V) -->
     <div class="card">
-        <div class="section-title">Actividad del Reporte (matriz oficial)</div>
+        <div class="section-title" style="color:#404040;">Actividad Quincenal (Matriz Oficial)</div>
         <div class="grid">
             <div class="input-group" id="sub_reporte_container" style="grid-column: 1 / -1;">
-                <label>Renglones para la matriz INFORMES_PROPUESTA · entidad, municipio, núcleo y frente se toman del registro principal</label>
+                <!-- <label>Renglones para la matriz INFORMES_PROPUESTA · entidad, municipio, núcleo y frente se toman del registro principal</label> -->
                 <div id="tabla_sub_reporte" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <select id="rep_actividad_canonica" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2;">
-                        <option value="">ACTIVIDAD DEL REPORTE (columna K–V del Excel)</option>
+                        <!-- <option value="">SELECCIONE UNA ACTIVIDAD</option>
                         <option value="ASAMBLEAS_COP">ASISTENCIA A ASAMBLEAS (COP USO COMÚN)</option>
                         <option value="REUNIONES_SENSIBILIZACION">REUNIONES DE SENSIBILIZACIÓN</option>
                         <option value="MEDICION_TOPOGRAFICA">INSPECCIÓN OCULAR / MEDICIÓN (LEVANTAMIENTO TOPOGRÁFICO)</option>
@@ -1020,9 +1021,22 @@
                         <option value="INFOGRAFIAS_GEOPORTAL">INFOGRAFÍAS / GEOPORTAL</option>
                         <option value="CARPETA_BASICA_ASISTENCIA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA (ASISTENCIA TÉCNICA)</option>
                         <option value="TRABAJOS_EXPROPIACION">TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>
-                        <option value="CARPETA_BASICA_AGA">CARPETA BÁSICA ANTE AGA (EXPROPIACIÓN)</option>
+                        <option value="CARPETA_BASICA_AGA">CARPETA BÁSICA ANTE AGA (EXPROPIACIÓN)</option> -->
+                        <option value="">SELECCIONE UNA ACTIVIDAD</option>
+                        <option value="ASAMBLEAS_COP">ASISTENCIA A ASAMBLEAS DE LOS NÚCLEOS AGRARIOS INVOLUCRADOS, DE SUSCRIPCIÓN PARA LA SOLICITUD DE ANUENCIA, PARA LA FIRMA DE CONVENIOS DE OCUPACIÓN PREVIA DE USO COMÚN</option>
+                        <option value="REUNIONES_SENSIBILIZACION">ASISTENCIA A REUNIONES INFORMATIVAS DE SENSIBILIZACIÓN CON LOS NÚCLEOS AGRARIOS INVOLUCRADOS</option>
+                        <option value="MEDICION_TOPOGRAFICA">INSPECCIÓN OCULAR Y TRABAJOS DE MEDICIÓN  (LEVANTAMIENTO TOPOGRÁFICO)</option>
+                        <option value="MEDICION_BDT">INSPECCIÓN OCULAR Y TRABAJOS DE MEDICIÓN EN PROPIEDAD SOCIAL Y PRIVADA PARA LOS BDT'S AGROFORESTALES — CONSTRUCCIÓN</option>
+                        <option value="REVISION_VALIDACION_CAMPO">REVISIÓN Y VALIDACIÓN DE INFORMACIÓN RECOPILADA EN CAMPO POR LA BRIGADA</option>
+                        <option value="FICHAS_BDT_CONSTRUCCION">ELABORACIÓN DE FICHAS DE BIENES DISTINTOS A LA TIERRA DE CONSTRUCCIÓN Y ENVIADAS</option>
+                        <option value="FICHAS_BDT_AGROFORESTAL">ELABORACIÓN DE FICHAS DE BIENES DISTINTOS A LA TIERRA AGROFORESTALES Y ENVIADAS</option>
+                        <option value="PLANOS_CARTOGRAFICOS">ELABORACIÓN Y VALIDACIÓN DE PLANOS CARTOGRÁFICOS PARA LIBERACIÓN DE DERECHO DE VÍA</option>
+                        <option value="INFOGRAFIAS_GEOPORTAL">GENERACIÓN Y/O VALIDACIÓN DE INFOGRAFÍAS, ACTUALIZACIÓN DEL GEOPORTAL</option>
+                        <option value="CARPETA_BASICA_ASISTENCIA">"GESTIÓN DOCUMENTAL DE CARPETA BÁSICA PARA BRINDAR ASISTENCIA TÉCNICA (ANÁNALISIS DOCUMENTAL — MEDICIÓN EN CAMPO)</option>
+                        <option value="TRABAJOS_EXPROPIACION">ELABORACIÓN DE TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>
+                        <option value="CARPETA_BASICA_AGA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA ANTE EL AGA, PARA LA INTEGRACIÓN DE TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>
                     </select>
-                    <input id="rep_cantidad" type="number" min="0" step="1" value="1" placeholder="CANTIDAD (columna TOTAL)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <input id="rep_cantidad" type="number" min="0" step="1" value="1" placeholder="CANTIDAD" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                     <input id="rep_soporte" list="soportes_dl" placeholder="SOPORTE DOCUMENTAL / PRODUCTO" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
                     <input id="rep_localidad" placeholder="LOCALIDAD (opcional)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; text-transform:uppercase;">
                     <textarea id="rep_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
@@ -1035,7 +1049,7 @@
                         <option value="CARPETAS DIGITALES"></option>
                     </datalist>
                 </div>
-                <button type="button" onclick="agregarSubReporte()" style="background:#BC945A;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir renglón del reporte</button>
+                <button type="button" onclick="agregarSubReporte()" style="background:#404040;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad a la matriz</button>
                 <input type="hidden" name="sub_actividades_reporte" id="sub_actividades_reporte" value="[]">
             </div>
         </div>
@@ -1082,6 +1096,7 @@
                     font-weight: bold;
                     cursor: pointer;
                     font-size: 14px;
+                    width: 100%;
                 ">+ Añadir trabajo programado</button>
                 <input type="hidden" name="trabajos_programados_json" id="trabajos_programados_json" value="[]">
             </div>
