@@ -1863,10 +1863,7 @@ def index():
                     localidad=item.get('localidad', ''),
                     frente=item.get('frente', ''),
                     descripcion=item.get('descripcion', ''),
-                    trabajo_campo=item.get('trabajo_campo', ''),
-                    actividad_canonica=item.get('actividad_canonica', ''),
-                    cantidad=int(item.get('cantidad') or 0) or None,
-                    soporte_documental=item.get('soporte_documental', '')
+                    trabajo_campo=item.get('trabajo_campo', '')
                 )
                 db.session.add(sub)
         except:
@@ -1888,6 +1885,24 @@ def index():
                 db.session.add(sub)
         except:
             pass
+
+        sub_reporte = request.form.get('sub_actividades_reporte', '[]')
+        try:
+            for item in json.loads(sub_reporte):
+                if not item.get('actividad_canonica'):
+                    continue
+                sub = SubActividad(
+                    registro_id=nuevo.id,
+                    tipo='reporte',
+                    localidad=item.get('localidad', ''),
+                    descripcion=item.get('descripcion', ''),
+                    actividad_canonica=item.get('actividad_canonica', ''),
+                    cantidad=int(item.get('cantidad') or 0) or None,
+                    soporte_documental=item.get('soporte_documental', '')
+                )
+                db.session.add(sub)
+        except:
+            pass    
 
         trabajos_realizados_json = request.form.get('trabajos_realizados_json', '[]')
         trabajos_programados_json = request.form.get('trabajos_programados_json', '[]')
@@ -2526,9 +2541,7 @@ def export_matriz():
 
     rows = []
     for reg in registros:
-        for s in SubActividad.query.filter_by(registro_id=reg.id).all():
-            if not s.actividad_canonica:              # omite las sin actividad canónica
-                continue
+        for s in SubActividad.query.filter_by(registro_id=reg.id, tipo='reporte').all():
             nucleo = (reg.nucleo or '').strip()
             loc = (s.localidad or '').strip()          # localidad solo existe en la sub
             nuc_loc = f"{nucleo}/{loc}" if (nucleo and loc) else (nucleo or loc or 'N/A')

@@ -972,7 +972,7 @@
 
             <!-- SUB-ACTIVIDADES REALIZADAS -->
             <div class="input-group" id="sub_realizadas_container" style="grid-column: 1 / -1;">
-                <label>Actividades en tabla del reporte</label>
+                <label>Actividades realizadas (detalle de campo)</label>
                 <div id="tabla_sub_realizadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <select id="sr_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
@@ -989,8 +989,26 @@
                     <div style="position:relative;">
                         <input id="sr_frente" type="text" inputmode="text" placeholder="FRENTE (número o N/A)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; width:100%; text-transform: uppercase;">
                     </div>
-                    <select id="sr_actividad_canonica" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2;">
-                        <option value="">ACTIVIDAD DEL REPORTE</option>
+                    <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO, INSPECCIONES EN SITIO, PRÁCTICAS DE CAMPO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
+                    <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
+                </div>
+                <button type="button" onclick="agregarSubRealizada()" style="background:#245C4F;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad</button>
+                <input type="hidden" name="sub_actividades_realizadas" id="sub_actividades_realizadas" value="[]">
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ACTIVIDAD DEL REPORTE (matriz oficial K–V) -->
+    <div class="card">
+        <div class="section-title">Actividad del Reporte (matriz oficial)</div>
+        <div class="grid">
+            <div class="input-group" id="sub_reporte_container" style="grid-column: 1 / -1;">
+                <label>Renglones para la matriz INFORMES_PROPUESTA · entidad, municipio, núcleo y frente se toman del registro principal</label>
+                <div id="tabla_sub_reporte" style="margin-bottom: 12px;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <select id="rep_actividad_canonica" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2;">
+                        <option value="">ACTIVIDAD DEL REPORTE (columna K–V del Excel)</option>
                         <option value="ASAMBLEAS_COP">ASISTENCIA A ASAMBLEAS (COP USO COMÚN)</option>
                         <option value="REUNIONES_SENSIBILIZACION">REUNIONES DE SENSIBILIZACIÓN</option>
                         <option value="MEDICION_TOPOGRAFICA">INSPECCIÓN OCULAR / MEDICIÓN (LEVANTAMIENTO TOPOGRÁFICO)</option>
@@ -1000,28 +1018,26 @@
                         <option value="FICHAS_BDT_AGROFORESTAL">FICHAS BDT'S AGROFORESTALES ENVIADAS</option>
                         <option value="PLANOS_CARTOGRAFICOS">ELABORACIÓN / VALIDACIÓN DE PLANOS CARTOGRÁFICOS PARA LIBERACIÓN (DdV)</option>
                         <option value="INFOGRAFIAS_GEOPORTAL">INFOGRAFÍAS / GEOPORTAL</option>
-                        <option value="CARPETA_BASICA_ASISTENCIA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA (ASISTENCIA TÉCNICA, ANÁLISIS DOCUMENTAL - MEDICIÓN EN CAMPO)</option>
+                        <option value="CARPETA_BASICA_ASISTENCIA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA (ASISTENCIA TÉCNICA)</option>
                         <option value="TRABAJOS_EXPROPIACION">TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>
                         <option value="CARPETA_BASICA_AGA">CARPETA BÁSICA ANTE AGA (EXPROPIACIÓN)</option>
                     </select>
-                    <input id="sr_cantidad" type="number" min="0" step="1" value="1" placeholder="CANTIDAD (columna TOTAL)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                    <input id="sr_soporte" list="soportes_dl" placeholder="SOPORTE DOCUMENTAL / PRODUCTO" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
+                    <input id="rep_cantidad" type="number" min="0" step="1" value="1" placeholder="CANTIDAD (columna TOTAL)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <input id="rep_soporte" list="soportes_dl" placeholder="SOPORTE DOCUMENTAL / PRODUCTO" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
+                    <input id="rep_localidad" placeholder="LOCALIDAD (opcional)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; text-transform:uppercase;">
+                    <textarea id="rep_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                     <datalist id="soportes_dl">
                         <option value="FICHAS"></option>
                         <option value="MINUTAS"></option>
                         <option value="PLANOS"></option>
                         <option value="INFOGRAFÍAS"></option>
                         <option value="MINUTAS Y ARCHIVOS DIGITALES"></option>
-                        <!-- <option value="NOTA INFORMATIVA"></option> -->
                         <option value="CARPETAS DIGITALES"></option>
                     </datalist>
-                    <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (ej. EN PROCESO, FINALIZADO, INSPECCIONES EN SITIO, PRÁCTICAS DE CAMPO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
-                    <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
                 </div>
-                <button type="button" onclick="agregarSubRealizada()" style="background:#245C4F;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad</button>
-                <input type="hidden" name="sub_actividades_realizadas" id="sub_actividades_realizadas" value="[]">
+                <button type="button" onclick="agregarSubReporte()" style="background:#BC945A;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir renglón del reporte</button>
+                <input type="hidden" name="sub_actividades_reporte" id="sub_actividades_reporte" value="[]">
             </div>
-
         </div>
     </div>
 
@@ -1805,6 +1821,7 @@ document.getElementById('trabajo_programado').addEventListener('change', functio
 // SUB-ACTIVIDADES
 let subRealizadas = [];
 let subProgramadas = [];
+let subReporte = [];
 
 function poblarSelectsSub() {
     const tramo = document.getElementById('tramo').value;
@@ -1943,10 +1960,7 @@ function renderTabla(lista, containerId) {
             <th style="padding:8px;">Municipio</th>
             <th style="padding:8px;">Núcleo</th>
             <th style="padding:8px;">Localidad</th>
-            <th style="padding:8px;">Frente</th>
-            <th style="padding:8px;">Actividad</th>
-            <th style="padding:8px;">Cant.</th>
-            <th style="padding:8px;">Soporte</th>
+            <th style="padding:8px;">Frente</th>            
             <th style="padding:8px;">Descripción</th>
             <th style="padding:8px;"></th>
         </tr></thead><tbody>`;
@@ -1957,10 +1971,7 @@ function renderTabla(lista, containerId) {
             <td style="padding:6px;">${item.municipio}</td>
             <td style="padding:6px;">${item.nucleo}</td>
             <td style="padding:6px;">${item.localidad || ''}</td>
-            <td style="padding:6px;">${item.frente}</td>
-            <td style="padding:6px;">${ACT_CANON_CORTO[item.actividad_canonica] || ''}</td>
-            <td style="padding:6px;text-align:center;">${item.cantidad || ''}</td>
-            <td style="padding:6px;">${item.soporte_documental || ''}</td>
+            <td style="padding:6px;">${item.frente}</td>            
             <td style="padding:6px;">${item.descripcion}</td>
             <td style="padding:6px;text-align:center;">
                 <button type="button" onclick="eliminarSub('${containerId}',${i})" style="background:#a42145;color:white;border:none;border-radius:8px;padding:4px 10px;cursor:pointer;">✕</button>
@@ -1989,10 +2000,7 @@ function agregarSubRealizada() {
         municipio: document.getElementById('sr_municipio').value,
         nucleo: esPropiedadPrivada() ? 'PROPIEDAD PRIVADA' : document.getElementById('sr_nucleo').value,
         localidad: document.getElementById('sr_localidad').value.toUpperCase(),
-        frente: document.getElementById('sr_frente').value,
-        actividad_canonica: document.getElementById('sr_actividad_canonica').value,
-        cantidad: document.getElementById('sr_cantidad').value,
-        soporte_documental: document.getElementById('sr_soporte').value.toUpperCase(),
+        frente: document.getElementById('sr_frente').value,        
         trabajo_campo: document.getElementById('sr_trabajo_campo').value.toUpperCase(),
         descripcion: document.getElementById('sr_descripcion').value.toUpperCase()
     };
@@ -2001,10 +2009,7 @@ function agregarSubRealizada() {
     document.getElementById('sub_actividades_realizadas').value = JSON.stringify(subRealizadas);
     renderTabla(subRealizadas, 'tabla_sub_realizadas');
     document.getElementById('sr_localidad').value = '';
-    document.getElementById('sr_frente').value = '';
-    document.getElementById('sr_actividad_canonica').value = '';
-    document.getElementById('sr_cantidad').value = '1';
-    document.getElementById('sr_soporte').value = '';
+    document.getElementById('sr_frente').value = '';    
     document.getElementById('sr_descripcion').value = '';
     document.getElementById('sr_trabajo_campo').value = '';
 }
@@ -2025,6 +2030,57 @@ function agregarSubProgramada() {
     document.getElementById('sp_frente').value = '';
     document.getElementById('sp_descripcion').value = '';
     document.getElementById('sp_trabajo_campo').value = '';
+}
+
+function renderTablaReporte(lista) {
+    const container = document.getElementById('tabla_sub_reporte');
+    if (lista.length === 0) { container.innerHTML = ''; return; }
+    let html = `<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;">
+        <thead><tr style="background:#BC945A;color:white;">
+            <th style="padding:8px;">No.</th><th style="padding:8px;">Actividad</th>
+            <th style="padding:8px;">Cant.</th><th style="padding:8px;">Soporte</th>
+            <th style="padding:8px;">Localidad</th><th style="padding:8px;">Descripción</th>
+            <th style="padding:8px;"></th>
+        </tr></thead><tbody>`;
+    lista.forEach((item, i) => {
+        html += `<tr style="border-bottom:1px solid #e0e0e0;">
+            <td style="padding:6px;text-align:center;">${i+1}</td>
+            <td style="padding:6px;">${ACT_CANON_CORTO[item.actividad_canonica] || ''}</td>
+            <td style="padding:6px;text-align:center;">${item.cantidad || ''}</td>
+            <td style="padding:6px;">${item.soporte_documental || ''}</td>
+            <td style="padding:6px;">${item.localidad || ''}</td>
+            <td style="padding:6px;">${item.descripcion}</td>
+            <td style="padding:6px;text-align:center;">
+                <button type="button" onclick="eliminarSubReporte(${i})" style="background:#a42145;color:white;border:none;border-radius:8px;padding:4px 10px;cursor:pointer;">✕</button>
+            </td>
+        </tr>`;
+    });
+    container.innerHTML = html + '</tbody></table>';
+}
+
+function agregarSubReporte() {
+    const item = {
+        actividad_canonica: document.getElementById('rep_actividad_canonica').value,
+        cantidad: document.getElementById('rep_cantidad').value,
+        soporte_documental: document.getElementById('rep_soporte').value.toUpperCase(),
+        localidad: document.getElementById('rep_localidad').value.toUpperCase(),
+        descripcion: document.getElementById('rep_descripcion').value.toUpperCase()
+    };
+    if (!item.actividad_canonica) { alert('Selecciona la actividad del reporte'); return; }
+    subReporte.push(item);
+    document.getElementById('sub_actividades_reporte').value = JSON.stringify(subReporte);
+    renderTablaReporte(subReporte);
+    document.getElementById('rep_actividad_canonica').value = '';
+    document.getElementById('rep_cantidad').value = '1';
+    document.getElementById('rep_soporte').value = '';
+    document.getElementById('rep_localidad').value = '';
+    document.getElementById('rep_descripcion').value = '';
+}
+
+function eliminarSubReporte(index) {
+    subReporte.splice(index, 1);
+    document.getElementById('sub_actividades_reporte').value = JSON.stringify(subReporte);
+    renderTablaReporte(subReporte);
 }
 
 // =====================================
