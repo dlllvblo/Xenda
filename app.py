@@ -2631,170 +2631,43 @@ def export_matriz():
 # =========================================
 
 @app.route('/dashboard')
-
 def dashboard():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+    return render_template('dashboard.html')
 
-    if 'usuario' not in session:
+@app.route("/api/dashboard")
+def api_dashboard():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return jsonify({'error': 'No autorizado'}), 403
+    def num(v):
+        try: return int(v or 0)
+        except (TypeError, ValueError): return 0
 
-        return redirect('/login')
-
-    # =====================================
-    # KPIs
-    # =====================================
-
-    total_registros = Registro.query.count()
-
-    total_infografias = db.session.query(
-
-        db.func.sum(
-            Registro.num_infografias
-        )
-
-    ).scalar() or 0
-
-    total_planos = db.session.query(
-
-        db.func.sum(
-            Registro.planos
-        )
-
-    ).scalar() or 0
-
-    total_mediciones = db.session.query(
-
-        db.func.sum(
-            Registro.mediciones_agroforestales
-        )
-
-    ).scalar() or 0
-
-    usuarios_activos = db.session.query(
-        Registro.usuario
-    ).distinct().count()
-
-    # =====================================
-    # REGISTROS POR TRAMO
-    # =====================================
-
-    tramos_data = db.session.query(
-
-        Registro.tramo,
-
-        db.func.count(
-            Registro.id
-        )
-
-    ).group_by(
-        Registro.tramo
-    ).all()
-
-    tramos_labels = [
-        t[0]
-        for t in tramos_data
-        if t[0]
-    ]
-
-    tramos_values = [
-        t[1]
-        for t in tramos_data
-        if t[0]
-    ]
-
-    # =====================================
-    # REGISTROS RECIENTES
-    # =====================================
-
-    recientes = Registro.query.order_by(
-
-        Registro.fecha.desc()
-
-    ).limit(10).all()
-
-    # =====================================
-    # DETALLES POR TRAMO
-    # =====================================
-
-    detalle_tramos = {}
-
-    for tramo in tramos_labels:
-
-        registros_tramo = Registro.query.filter_by(
-            tramo=tramo
-        ).all()
-
-        municipios = sorted(list(set([
-            str(r.municipio)
-            for r in registros_tramo
-            if r.municipio
-        ])))
-
-        usuarios = sorted(list(set([
-            str(r.usuario)
-            for r in registros_tramo
-            if r.usuario
-        ])))
-
-        detalle_tramos[tramo] = {
-            'total': len(registros_tramo),
-            'municipios': municipios,
-            'usuarios': usuarios
-        }
-
-    # =====================================
-    # REGISTROS POR DIRECCIÓN
-    # =====================================
-
-    direcciones_data = db.session.query(
-        Registro.direccion,
-        db.func.count(Registro.id)
-    ).group_by(Registro.direccion).order_by(db.func.count(Registro.id).desc()).all()
-    direcciones_labels = [d[0] for d in direcciones_data if d[0]]
-    direcciones_values = [d[1] for d in direcciones_data if d[0]]
-
-    propiedad_data = db.session.query(
-        Registro.tipo_propiedad,
-        db.func.count(Registro.id)
-    ).group_by(Registro.tipo_propiedad).all()
-    propiedad_labels = [p[0] for p in propiedad_data if p[0]]
-    propiedad_values = [p[1] for p in propiedad_data if p[0]]
-
-    actividad_data = db.session.query(
-        Registro.actividad,
-        db.func.count(Registro.id)
-    ).group_by(Registro.actividad).order_by(db.func.count(Registro.id).desc()).all()
-    actividad_labels = [a[0] for a in actividad_data if a[0]]
-    actividad_values = [a[1] for a in actividad_data if a[0]]
-
-    total_fichas = db.session.query(db.func.sum(Registro.mediciones_bdts)).scalar() or 0
-    total_planos_generados = db.session.query(db.func.sum(Registro.planos_generados)).scalar() or 0
-    total_planos_validados = db.session.query(db.func.sum(Registro.planos_validados)).scalar() or 0
-
-    # =====================================
-    # JSON DASHBOARD
-    # =====================================
-
-    return render_template(
-        'dashboard.html',
-        total_registros=total_registros,
-        total_infografias=total_infografias,
-        total_planos=total_planos,
-        total_mediciones=total_mediciones,
-        usuarios_activos=usuarios_activos,
-        tramos_labels=tramos_labels,
-        tramos_values=tramos_values,
-        recientes=recientes,
-        detalle_tramos=detalle_tramos,
-        direcciones_labels=direcciones_labels,
-        direcciones_values=direcciones_values,
-        propiedad_labels=propiedad_labels,
-        propiedad_values=propiedad_values,
-        actividad_labels=actividad_labels,
-        actividad_values=actividad_values,
-        total_fichas=total_fichas,
-        total_planos_generados=total_planos_generados,
-        total_planos_validados=total_planos_validados,
-        admin_correo=ADMIN_CORREO
-    )
+    registros = []
+    for r in Registro.query.order_by(Registro.fecha.asc()).all():
+        try:
+            lat = float(r.latitud) if r.latitud not in (None, "") else None
+            lng = float(r.longitud) if r.longitud not in (None, "") else None
+        except (TypeError, ValueError):
+            lat = lng = None
+        registros.append({
+            "fecha": r.fecha.date().isoformat() if r.fecha else None,
+            "direccion": r.direccion or "",
+            "tramo": r.tramo or "",
+            "propiedad": r.tipo_propiedad or "SIN DATO",
+            "actividad": r.actividad or "",
+            "num_infografias": num(r.num_infografias),
+            "infografias_generadas": num(r.infografias_generadas),
+            "infografias_validadas": num(r.infografias_validadas),
+            "mediciones_agroforestales": num(r.mediciones_agroforestales),
+            "mediciones_bdts": num(r.mediciones_bdts),
+            "planos": num(r.planos),
+            "planos_generados": num(r.planos_generados),
+            "planos_validados": num(r.planos_validados),
+            "lat": lat, "lng": lng,
+        })
+    return jsonify({"registros": registros})
 
 # =========================================
 # DASHBOARD DE CONTEO

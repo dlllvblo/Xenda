@@ -4,556 +4,418 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XENDA · Centro de Operaciones</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
-    --bg:#130D0C;
-    --bg-grain:#170F0E;
-    --panel:#1E1513;
-    --panel-2:#241915;
-    --line:#39271F;
-    --line-soft:#2C1E19;
-
-    /* Paleta institucional (deep) + variantes legibles en oscuro */
-    --guinda-deep:#6E152E;
-    --guinda:#A21E42;
-    --verde-deep:#245C4F;
-    --verde:#2F8270;
-    --dorado:#BC945A;
-    --dorado-bright:#D7AE6E;
-    --arena:#DEC9A2;
-
-    --text:#F4EADD;
-    --muted:#AB9381;
-    --muted-2:#7C6557;
-
-    --radius:14px;
-    --shadow:0 18px 40px -18px rgba(0,0,0,.7);
+    --guinda:#6E152E; --guinda2:#9F2241;
+    --arena:#BC945A;  --arena2:#DEC9A2; --arena3:#EFE3CE;
+    --verde:#245C4F;  --verde2:#3E8574;
+    --tinta:#241f22;  --humo:#7a7278;
+    --papel:#FBF8F2;  --linea:#ece5d8; --card:#ffffff;
   }
-
-  *{box-sizing:border-box;margin:0;padding:0}
-
-  html,body{height:100%}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
   body{
-    background:
-      radial-gradient(1200px 600px at 78% -10%, rgba(162,30,66,.10), transparent 60%),
-      radial-gradient(900px 500px at 5% 110%, rgba(47,130,112,.08), transparent 60%),
-      var(--bg);
-    color:var(--text);
-    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--papel); color:var(--tinta);
     -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-    padding:18px;
+  }
+  .nums{font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+  .eyebrow{font-size:10.5px;letter-spacing:2.4px;text-transform:uppercase;font-weight:700;color:var(--humo)}
+
+  /* ---------------- HERO ---------------- */
+  .hero{
+    background:radial-gradient(120% 140% at 85% -20%,#8a1c3a 0%,var(--guinda) 55%,#5a1126 100%);
+    color:#fff; padding:26px clamp(20px,4vw,52px) 30px;
+    position:relative; overflow:hidden;
+  }
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand .mk{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);font-weight:800;letter-spacing:1px}
+  .brand h1{font-size:20px;letter-spacing:5px;font-weight:700;line-height:1}
+  .brand .sub{font-size:11px;letter-spacing:2.2px;text-transform:uppercase;opacity:.8;margin-top:5px}
+  .stamp{font-size:12px;text-align:right;opacity:.85;line-height:1.5}
+  .badge-demo{display:none;background:var(--arena2);color:#4a3413;font-weight:800;font-size:10px;
+    letter-spacing:1.5px;text-transform:uppercase;padding:4px 11px;border-radius:999px;margin-bottom:6px}
+
+  .hero-stat{display:flex;align-items:baseline;gap:16px;margin:22px 0 4px;flex-wrap:wrap}
+  .hero-stat .big{font-size:clamp(52px,9vw,88px);font-weight:800;line-height:.9}
+  .hero-stat .cap{font-size:13px;letter-spacing:2px;text-transform:uppercase;opacity:.82}
+  .hero-stat .cap b{display:block;font-size:15px;letter-spacing:.4px;text-transform:none;opacity:1;margin-top:3px;font-weight:600}
+
+  /* Línea de tren = 8 corredores */
+  .rail{position:relative;margin-top:30px;padding:0 6px}
+  .rail-track{display:flex;justify-content:space-between;align-items:flex-end;position:relative;gap:6px}
+  .rail-track::before{content:"";position:absolute;left:2%;right:2%;bottom:34px;height:2px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.35) 8%,rgba(255,255,255,.35) 92%,transparent)}
+  .station{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;
+    gap:9px;padding:0;flex:1;min-width:56px;color:#fff;transition:transform .18s ease}
+  .station:hover{transform:translateY(-3px)}
+  .station .cnt{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;opacity:.95;height:16px}
+  .station .dot{width:var(--sz,16px);height:var(--sz,16px);border-radius:50%;
+    background:var(--arena2);box-shadow:0 0 0 4px rgba(110,21,46,.55),0 0 0 5px rgba(255,255,255,.22);
+    transition:all .2s ease}
+  .station .code{font-size:10px;letter-spacing:1px;font-weight:700;opacity:.72;text-transform:uppercase}
+  .station:hover .dot{background:#fff}
+  .station.on .dot{background:#fff;box-shadow:0 0 0 4px rgba(110,21,46,.55),0 0 0 7px var(--arena)}
+  .station.on .code{opacity:1}
+  .station.dim{opacity:.42}
+  @media(max-width:720px){
+    .rail-track{overflow-x:auto;justify-content:flex-start;padding-bottom:6px}
+    .station{min-width:64px}
   }
 
-  .mono{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
-  .display{font-family:'Space Grotesk',system-ui,sans-serif}
-
-  /* ===== TOP BAR ===== */
-  .topbar{
-    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-    padding:14px 20px;margin-bottom:16px;
-    background:linear-gradient(180deg,var(--panel),var(--panel-2));
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
+  /* ---------------- FILTROS ---------------- */
+  .filtros{
+    position:sticky;top:0;z-index:30;background:rgba(251,248,242,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--linea);padding:12px clamp(20px,4vw,52px);
+    display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;
   }
-  .brand{display:flex;align-items:center;gap:14px;min-width:0}
-  .brand .logo{
-    width:42px;height:42px;border-radius:10px;flex:0 0 auto;
-    background:linear-gradient(135deg,var(--guinda) 0%,var(--guinda-deep) 100%);
-    display:grid;place-items:center;
-    box-shadow:0 0 0 1px rgba(215,174,110,.25), inset 0 1px 0 rgba(255,255,255,.12);
-    position:relative;
-  }
-  .brand .logo svg{width:24px;height:24px}
-  .brand h1{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:.06em;line-height:1}
-  .brand .sub{font-size:.62rem;letter-spacing:.34em;color:var(--dorado);text-transform:uppercase;margin-top:5px;font-weight:600}
+  .fg{display:flex;flex-direction:column;gap:5px}
+  .fg label{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--humo);font-weight:700}
+  .filtros select,.filtros input[type=date]{
+    padding:8px 12px;border:1px solid var(--linea);border-radius:10px;background:#fff;
+    font-size:13.5px;color:var(--tinta);min-width:150px;font-family:inherit}
+  .filtros select:focus,.filtros input:focus{outline:none;border-color:var(--guinda2);box-shadow:0 0 0 3px rgba(159,34,65,.13)}
+  .btn-clear{padding:8px 15px;border:1px solid var(--linea);background:#fff;color:var(--humo);
+    border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  .btn-clear:hover{background:#f2ede4;color:var(--guinda)}
 
-  .topbar .spacer{flex:1 1 40px}
+  /* ---------------- LAYOUT ---------------- */
+  .wrap{max-width:1200px;margin:0 auto;padding:26px clamp(20px,4vw,52px) 60px}
 
-  .live{display:flex;align-items:center;gap:9px;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:600}
-  .live .dot{width:9px;height:9px;border-radius:50%;background:var(--verde);box-shadow:0 0 0 0 rgba(47,130,112,.6);animation:pulse 2.4s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,130,112,.55)}70%{box-shadow:0 0 0 9px rgba(47,130,112,0)}100%{box-shadow:0 0 0 0 rgba(47,130,112,0)}}
-  .clock{font-size:.82rem;color:var(--arena);letter-spacing:.05em}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:26px}
+  .stat{background:var(--card);border:1px solid var(--linea);border-radius:18px;padding:18px 20px;transition:transform .18s ease,box-shadow .18s ease}
+  .stat:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(110,21,46,.07)}
+  .stat .n{font-size:34px;font-weight:800;color:var(--guinda);line-height:1}
+  .stat .l{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--humo);font-weight:700;margin-top:9px}
+  .stat .s{font-size:12px;color:var(--humo);margin-top:2px}
+  .stat.v .n{color:var(--verde)} .stat.a .n{color:var(--arena)}
 
-  .period{position:relative}
-  .period select{
-    appearance:none;-webkit-appearance:none;
-    background:var(--bg);color:var(--text);
-    border:1px solid var(--line);border-radius:9px;
-    padding:9px 34px 9px 14px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;
-    cursor:pointer;letter-spacing:.02em;
-  }
-  .period select:focus-visible{outline:2px solid var(--dorado);outline-offset:2px}
-  .period::after{content:"";position:absolute;right:13px;top:50%;transform:translateY(-30%) rotate(45deg);width:7px;height:7px;border-right:2px solid var(--dorado);border-bottom:2px solid var(--dorado);pointer-events:none}
+  .prod{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px}
+  .prod-t{background:linear-gradient(160deg,#fff,#fdfaf4);border:1px solid var(--linea);border-radius:18px;padding:18px 20px;position:relative;overflow:hidden}
+  .prod-t::after{content:"";position:absolute;right:-24px;top:-24px;width:80px;height:80px;border-radius:50%;background:var(--tone,var(--arena3));opacity:.5}
+  .prod-t .cap{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--humo);font-weight:700;position:relative}
+  .prod-t .n{font-size:30px;font-weight:800;color:var(--tinta);margin-top:6px;position:relative}
+  .prod-t .s{font-size:12px;color:var(--verde);font-weight:600;margin-top:3px;position:relative}
+  @media(max-width:640px){.prod{grid-template-columns:1fr}}
 
-  /* ===== TRAMO CHIPS ===== */
-  .chips{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
-  .chips .lab{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--muted-2);font-weight:600;margin-right:4px}
-  .chip{
-    display:inline-flex;align-items:center;gap:8px;
-    background:var(--panel);border:1px solid var(--line);
-    color:var(--muted);padding:7px 14px 7px 11px;border-radius:999px;
-    font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;
-    cursor:pointer;transition:all .18s ease;letter-spacing:.02em;user-select:none;
-  }
-  .chip .swatch{width:9px;height:9px;border-radius:3px;flex:0 0 auto;transition:opacity .18s}
-  .chip:hover{border-color:var(--muted-2);color:var(--text)}
-  .chip.off{opacity:.42;text-decoration:line-through;text-decoration-color:var(--muted-2)}
-  .chip.off .swatch{opacity:.3}
-  .chip:focus-visible{outline:2px solid var(--dorado);outline-offset:2px}
+  .card{background:var(--card);border:1px solid var(--linea);border-radius:22px;padding:22px 24px;margin-bottom:22px}
+  .card .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:12px;flex-wrap:wrap}
+  .card h3{font-size:15px;font-weight:800;color:var(--tinta);letter-spacing:.2px}
+  .card .note{font-size:12px;color:var(--humo);margin-bottom:16px}
 
-  /* ===== GRID ===== */
-  .kpi-triple .trio{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-top:2px}
-  .kpi-triple .trio .cell{flex:1;text-align:center;padding:6px 4px;border-radius:9px;background:var(--bg);border:1px solid var(--line-soft)}
-  .kpi-triple .trio .cell .n{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;line-height:1}
-  .kpi-triple .trio .cell .t{font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);margin-top:5px}
-  .kpi-triple .trio .cell.pla .n{color:var(--dorado-bright)}
-  .kpi-triple .trio .cell.fic .n{color:var(--verde)}
-  .kpi-triple .trio .cell.inf .n{color:var(--guinda)}
-  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  #mapa{height:440px;width:100%;border-radius:16px;z-index:1;border:1px solid var(--linea)}
+  .leaflet-popup-content{font-family:'Segoe UI',sans-serif;font-size:13px;margin:12px 14px}
+  .pt{font-weight:800;color:var(--guinda);margin-bottom:3px}
+  .pr{color:var(--humo);font-size:12px;line-height:1.5}
 
-  .panel{
-    background:linear-gradient(180deg,var(--panel),var(--panel-2));
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:18px 20px;
-    box-shadow:var(--shadow);
-    position:relative;overflow:hidden;
-  }
-  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
-  .panel-head h2{font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--arena)}
-  .panel-head .tag{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted-2);letter-spacing:.1em;border:1px solid var(--line);padding:3px 8px;border-radius:6px}
+  .canvas-box{position:relative;height:250px}
 
-  /* KPI cards */
-  .kpi{grid-column:span 3}
-  .kpi .top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-  .kpi .icon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;border:1px solid var(--line);background:var(--bg)}
-  .kpi .icon svg{width:18px;height:18px}
-  .kpi .delta{font-family:'IBM Plex Mono',monospace;font-size:.66rem;font-weight:600;padding:3px 7px;border-radius:6px;letter-spacing:.02em}
-  .delta.up{color:var(--verde);background:rgba(47,130,112,.12)}
-  .delta.flat{color:var(--dorado);background:rgba(188,148,90,.12)}
-  .kpi .value{font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:700;line-height:1;letter-spacing:-.02em}
-  .kpi .label{font-size:.72rem;color:var(--muted);margin-top:8px;letter-spacing:.02em}
+  /* Barra de propiedad */
+  .split{display:flex;height:26px;border-radius:8px;overflow:hidden;margin:6px 0 14px}
+  .split span{display:block;transition:width .4s ease}
+  .split-legend{display:flex;gap:22px;flex-wrap:wrap}
+  .split-legend div{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tinta)}
+  .split-legend .sw{width:12px;height:12px;border-radius:3px}
+  .split-legend b{font-variant-numeric:tabular-nums}
+  .split-legend .pct{color:var(--humo);font-size:12px}
 
-  /* spans */
-  .span8{grid-column:span 8}
-  .span4{grid-column:span 4}
-  .span12{grid-column:span 12}
+  .empty{display:grid;place-items:center;height:250px;color:var(--humo);font-size:13px;text-align:center}
 
-  /* ===== RAIL (signature) ===== */
-  .rail-row{display:grid;grid-template-columns:150px 1fr 96px;align-items:center;gap:18px;padding:15px 0;border-top:1px solid var(--line-soft)}
-  .rail-row:first-child{border-top:none}
-  .rail-id{display:flex;flex-direction:column;gap:3px}
-  .rail-id .badge{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.82rem;letter-spacing:.04em;display:inline-flex;align-items:center;gap:7px}
-  .rail-id .badge::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--c)}
-  .rail-id .nm{font-size:.72rem;color:var(--muted)}
-  .rail-id .meta{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted-2);letter-spacing:.04em;margin-top:2px}
+  footer{text-align:center;color:var(--humo);font-size:12px;padding:20px;letter-spacing:.4px}
+  footer a{color:var(--guinda2);text-decoration:none;font-weight:700}
+  footer a:hover{text-decoration:underline}
 
-  .track{position:relative;height:30px;display:flex;align-items:center}
-  .track .bed{
-    position:absolute;left:0;right:0;height:8px;border-radius:5px;
-    background:
-      repeating-linear-gradient(90deg, transparent 0 9px, rgba(255,255,255,.05) 9px 11px),
-      var(--bg);
-    border:1px solid var(--line);
-  }
-  .track .fill{
-    position:absolute;left:0;height:8px;border-radius:5px;width:0;
-    background:linear-gradient(90deg, color-mix(in srgb,var(--c) 55%,#000), var(--c));
-    box-shadow:0 0 12px -1px var(--c);
-    transition:width 1.1s cubic-bezier(.2,.8,.2,1);
-  }
-  .track .train{
-    position:absolute;top:50%;transform:translate(-50%,-50%);
-    width:18px;height:18px;border-radius:50%;
-    background:var(--c);border:2px solid var(--bg);
-    box-shadow:0 0 0 2px var(--c), 0 0 14px var(--c);
-    left:0;transition:left 1.1s cubic-bezier(.2,.8,.2,1);z-index:3;
-  }
-  .track .station{position:absolute;top:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--panel);border:1.5px solid var(--muted-2);z-index:2}
-  .rail-pct{text-align:right;font-family:'Space Grotesk',sans-serif}
-  .rail-pct .big{font-size:1.5rem;font-weight:700;color:var(--c)}
-  .rail-pct .sm{font-size:.6rem;color:var(--muted-2);letter-spacing:.12em;text-transform:uppercase}
-
-  /* chart wrappers */
-  .chart-wrap{position:relative;width:100%}
-  .h-line{height:280px}
-  .h-doughnut{height:240px}
-  .h-bar{height:230px}
-  .doughnut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-  .doughnut-center .n{font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:700;line-height:1}
-  .doughnut-center .t{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-2);margin-top:4px}
-
-  /* Bitácora feed */
-  .feed{display:flex;flex-direction:column;gap:0;max-height:300px;overflow:hidden}
-  .feed-item{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line-soft);animation:slideIn .5s ease}
-  .feed-item:first-child{border-top:none}
-  @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-  .feed-item .when{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--muted-2);white-space:nowrap;padding-top:2px}
-  .feed-item .body{font-size:.78rem;line-height:1.45;color:var(--text)}
-  .feed-item .body .tr{font-family:'IBM Plex Mono',monospace;font-size:.66rem;font-weight:600;padding:1px 6px;border-radius:5px;margin-right:6px;color:#fff}
-  .feed-item .body .verb{color:var(--dorado-bright);font-weight:600}
-
-  footer{margin-top:18px;text-align:center;font-size:.64rem;color:var(--muted-2);letter-spacing:.08em}
-  footer .mono{color:var(--muted)}
-
-  /* ===== responsive ===== */
-  @media (max-width:1040px){
-    .kpi{grid-column:span 6}
-    .span8,.span4{grid-column:span 12}
-  }
-  @media (max-width:560px){
-    body{padding:12px}
-    .kpi{grid-column:span 12}
-    .rail-row{grid-template-columns:1fr;gap:10px}
-    .rail-pct{text-align:left}
-    .kpi .value{font-size:2.1rem}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
-  }
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto}}
 </style>
 </head>
 <body>
 
-  <!-- TOP BAR -->
-  <div class="topbar">
+<header class="hero">
+  <div class="hero-top">
     <div class="brand">
-      <div class="logo" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#F4EADD" stroke-width="1.8" stroke-linecap="round">
-          <path d="M5 3v18M19 3v18"/><path d="M5 7h14M5 12h14M5 17h14"/>
-        </svg>
-      </div>
-      <div>
-        <h1>XENDA</h1>
-        <div class="sub">Centro de Operaciones</div>
-      </div>
+      <div class="mk">XN</div>
+      <div><h1>XENDA</h1><div class="sub">Centro de Operaciones · RAN · SEDATU</div></div>
     </div>
-    <div class="spacer"></div>
-    <div class="live"><span class="dot"></span> En vivo</div>
-    <div class="clock mono" id="clock">--:--:--</div>
-    <div class="period">
-      <select id="periodSel" aria-label="Periodo">
-        <option value="mensual">Mensual · actual</option>
-        <option value="quincenal">Quincenal · actual</option>
-        <option value="trimestral">Trimestral · actual</option>
-      </select>
+    <div>
+      <div class="badge-demo" id="badgeDemo">Datos demo</div>
+      <div class="stamp" id="stamp">—</div>
     </div>
   </div>
 
-  <!-- TRAMO FILTER -->
-  <div class="chips" id="chips">
-    <span class="lab">Tramos</span>
+  <div class="hero-stat">
+    <div class="big nums" id="heroNum">0</div>
+    <div class="cap">Registros en vista<b id="heroRango">—</b></div>
   </div>
 
-  <!-- GRID -->
-  <div class="grid">
+  <div class="rail"><div class="rail-track" id="rail"></div></div>
+</header>
 
-    <!-- KPIs -->
-    <div class="panel kpi" id="kpi-act">
-      <div class="top">
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#D7AE6E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 16V9M12 16V6M16 16v-5M20 16v-8"/></svg></div>
-        <span class="delta flat" id="lbl-periodo">—</span>
-      </div>
-      <div class="value mono" id="v-act">0</div>
-      <div class="label">Actividades registradas</div>
-    </div>
-
-    <div class="panel kpi" id="kpi-nuc">
-      <div class="top">
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2F8270" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></div>
-        
-      </div>
-      <div class="value mono" id="v-nuc">0</div>
-      <div class="label">Núcleos agrarios atendidos</div>
-    </div>
-
-    <div class="panel kpi" id="kpi-fre">
-      <div class="top">
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#A21E42" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4M4 4l9 2-2 4 8 1.5-3 3.5 3 3.5-8-1.5 2 4-9-2"/></svg></div>
-        
-      </div>
-      <div class="value mono" id="v-fre">0</div>
-      <div class="label">Frentes de trabajo activos</div>
-    </div>
-
-    <div class="panel kpi kpi-triple" id="kpi-prod">
-      <div class="top">
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DEC9A2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M14 4v6h6M8 13h8M8 17h5"/></svg></div>
-        <span class="delta flat">Producción</span>
-      </div>
-      <div class="trio">
-        <div class="cell pla"><div class="n mono" id="v-pla">0</div><div class="t">Planos</div></div>
-        <div class="cell fic"><div class="n mono" id="v-fic">0</div><div class="t">Fichas</div></div>
-        <div class="cell inf"><div class="n mono" id="v-inf">0</div><div class="t">Infogr.</div></div>
-      </div>
-    </div>
-
-    <!-- RAIL signature -->
-    <div class="panel span8">
-      <div class="panel-head">
-        <h2>Avance de liberación por tramo</h2>
-        <span class="tag">DERECHO DE VÍA</span>
-      </div>
-      <div id="rail"></div>
-    </div>
-
-    <!-- Doughnut dependencias -->
-    <div class="panel span4">
-      <div class="panel-head">
-        <h2>Por tipo de propiedad</h2>
-        <span class="tag">SOCIAL / PRIVADA</span>
-      </div>
-      <div class="chart-wrap h-doughnut">
-        <canvas id="depChart"></canvas>
-        <div class="doughnut-center">
-          <div class="n mono" id="depTotal">0</div>
-          <div class="t">participaciones</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Line quincenas -->
-    <div class="panel span8">
-      <div class="panel-head">
-        <h2>Actividades por quincena</h2>
-        <span class="tag">SERIE HISTÓRICA</span>
-      </div>
-      <div class="chart-wrap h-line"><canvas id="lineChart"></canvas></div>
-    </div>
-
-    <!-- Bitácora -->
-    <div class="panel span4">
-      <div class="panel-head">
-        <h2>Bitácora en campo</h2>
-        <span class="live" style="font-size:.58rem"><span class="dot"></span></span>
-      </div>
-      <div class="feed" id="feed"></div>
-    </div>
-
-    <!-- Tipos de actividad -->
-    <div class="panel span12">
-      <div class="panel-head">
-        <h2>Tipos de actividad</h2>
-        <span class="tag">CLASIFICACIÓN OPERATIVA</span>
-      </div>
-      <div class="chart-wrap h-bar"><canvas id="tipoChart"></canvas></div>
-    </div>
-
+<div class="filtros">
+  <div class="fg">
+    <label for="fDir">Dirección</label>
+    <select id="fDir"><option value="">Todas</option></select>
   </div>
+  <div class="fg">
+    <label for="fDesde">Desde</label>
+    <input type="date" id="fDesde">
+  </div>
+  <div class="fg">
+    <label for="fHasta">Hasta</label>
+    <input type="date" id="fHasta">
+  </div>
+  <button class="btn-clear" id="btnClear">Limpiar</button>
+</div>
+
+<main class="wrap">
+
+  <section class="stat-row" id="stats"></section>
+
+  <section class="prod" id="prod"></section>
+
+  <section class="card">
+    <div class="head"><h3>Cobertura en campo</h3></div>
+    <div class="note" id="mapNote">Puntos GPS de los registros capturados</div>
+    <div id="mapa"></div>
+  </section>
+
+  <section class="card">
+    <div class="head"><h3>Actividad en el tiempo</h3></div>
+    <div class="note">Registros capturados por día</div>
+    <div class="canvas-box"><canvas id="chSerie"></canvas></div>
+  </section>
+
+  <section class="card">
+    <div class="head"><h3>Tipo de propiedad</h3></div>
+    <div class="note">Distribución de los registros en vista</div>
+    <div class="split" id="splitBar"></div>
+    <div class="split-legend" id="splitLeg"></div>
+  </section>
 
   <footer>
-    XENDA · Sistema de captura y reporte de actividades de campo &nbsp;·&nbsp;
-    <span class="mono">SEDATU — Liberación de derecho de vía ferroviaria</span><br>
-    <span style="color:var(--muted-2)">Datos de demostración — conecta tu endpoint Flask para alimentar en tiempo real</span>
+    XENDA · Registro Agrario Nacional · SEDATU &nbsp;·&nbsp;
+    <a href="/registros">Registros</a> &nbsp;·&nbsp; <a href="/">Captura</a>
   </footer>
+</main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* XENDA · Centro de Operaciones
+   Fuente: GET /api/dashboard -> { "registros":[...] }. Fallback DEMO si no responde. */
 
-/* Colores por tramo (paleta institucional). Fallback dorado si aparece un tramo nuevo. */
-const C = {
-  TAP:'#A21E42', TMQ:'#2F8270', TQI:'#D7AE6E', TSNL:'#DEC9A2',
-  TIGDL:'#6E152E', TMLM:'#BC945A', TQSLP:'#8C6A3F', TSLPS:'#4A7C6F', SIN:'#7C6557'
-};
-function colorTramo(id){ return C[id] || '#BC945A'; }
+const CSS=getComputedStyle(document.documentElement), C=n=>CSS.getPropertyValue(n).trim();
+const nf=new Intl.NumberFormat('es-MX');
+const REDUCE=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TRAMOS={TAP:'AIFA–Pachuca',TIGDL:'Irapuato–Guadalajara',TMLM:'Mazatlán–Los Mochis',
+  TMQ:'México–Querétaro',TQI:'Querétaro–Irapuato',TQSLP:'Querétaro–S.L.P.',
+  TSNL:'Saltillo–Nuevo Laredo',TSLPS:'S.L.P.–Saltillo'};
 
-/* Estado */
-let periodo = 'mensual';
-let ultimoData = null;
-const tramosOff = new Set();
-let lineChart, propChart, tipoChart;
+let RAW=[]; let chSerie=null; let mapa, capa; let tramoSel='';
 
-/* ---------- utilidades ---------- */
-function countUp(el, target, dur=900, fmt=v=>Math.round(v).toLocaleString('es-MX')){
-  if(!el) return;
-  if(reduceMotion){el.textContent=fmt(target);return;}
-  const from = parseFloat((el.dataset.cur||'0'));
-  const start=performance.now();
-  function step(now){
-    const t=Math.min(1,(now-start)/dur);
-    const e=1-Math.pow(1-t,3);
-    el.textContent=fmt(from+(target-from)*e);
-    if(t<1)requestAnimationFrame(step); else el.dataset.cur=target;
-  }
-  requestAnimationFrame(step);
-}
-
-/* ---------- Chart.js defaults ---------- */
-Chart.defaults.color='#AB9381';
-Chart.defaults.font.family="'IBM Plex Mono', monospace";
-Chart.defaults.font.size=11;
-const GRID='rgba(255,255,255,.05)';
-const tip={
-  backgroundColor:'#241915',borderColor:'#39271F',borderWidth:1,
-  titleColor:'#DEC9A2',bodyColor:'#F4EADD',padding:11,cornerRadius:9,
-  titleFont:{family:"'Space Grotesk'",weight:'600'},displayColors:true,boxPadding:4,
-};
-
-function buildCharts(){
-  lineChart=new Chart(document.getElementById('lineChart'),{
-    type:'line',
-    data:{labels:[],datasets:[]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{usePointStyle:true,pointStyle:'circle',padding:18,font:{size:11}}},tooltip:tip},
-      scales:{x:{grid:{color:GRID},border:{color:'#39271F'}},y:{grid:{color:GRID},border:{display:false},beginAtZero:true}},
-      elements:{line:{tension:.4,borderWidth:2.5},point:{radius:3,hoverRadius:6,borderWidth:2}},
-    }
-  });
-  propChart=new Chart(document.getElementById('depChart'),{
-    type:'doughnut',
-    data:{labels:[],datasets:[{data:[],
-      backgroundColor:['#2F8270','#A21E42','#D7AE6E','#DEC9A2','#6E152E','#7C6557'],
-      borderColor:'#1E1513',borderWidth:3,hoverOffset:8}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',
-      plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyle:'circle',padding:11,font:{size:10}}},tooltip:tip}}
-  });
-  tipoChart=new Chart(document.getElementById('tipoChart'),{
-    type:'bar',
-    data:{labels:[],datasets:[{data:[],
-      backgroundColor:ctx=>{const g=ctx.chart.ctx.createLinearGradient(0,0,ctx.chart.width,0);g.addColorStop(0,'#6E152E');g.addColorStop(1,'#A21E42');return g;},
-      borderRadius:6,barThickness:18}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:tip},
-      scales:{x:{grid:{color:GRID},border:{display:false},beginAtZero:true},y:{grid:{display:false},border:{color:'#39271F'}}}}
-  });
-}
-
-/* ---------- CHIPS ---------- */
-function renderChips(porTramo){
-  const el=document.getElementById('chips');
-  if(!el) return;
-  el.querySelectorAll('.chip').forEach(c=>c.remove());
-  porTramo.forEach(t=>{
-    const b=document.createElement('button');
-    b.className='chip'+(tramosOff.has(t.id)?' off':'');
-    b.dataset.id=t.id;
-    b.innerHTML='<span class="swatch" style="background:'+colorTramo(t.id)+'"></span>'+t.id+' \u00b7 '+t.nombre;
-    b.addEventListener('click',()=>{
-      if(tramosOff.has(t.id)) tramosOff.delete(t.id); else tramosOff.add(t.id);
-      b.classList.toggle('off');
-      pintar(ultimoData);
-    });
-    el.appendChild(b);
-  });
-}
-
-/* ---------- RAIL: solo nombre + barra (normalizada al máximo) ---------- */
-function renderRail(porTramo){
-  const el=document.getElementById('rail');
-  el.innerHTML='';
-  const activos=porTramo.filter(t=>!tramosOff.has(t.id));
-  if(!activos.length){ el.innerHTML='<div class="empty" style="padding:30px 10px;text-align:center;color:var(--muted-2);font-size:.8rem">Sin datos en el periodo seleccionado.</div>'; return; }
-  const max=Math.max(...activos.map(t=>t.registros),1);
-  activos.forEach(t=>{
-    const pct=Math.round(t.registros/max*100);
-    const c=colorTramo(t.id);
-    const row=document.createElement('div');
-    row.className='rail-row';
-    row.style.setProperty('--c',c);
-    let stations='';[0,25,50,75,100].forEach(p=>stations+='<div class="station" style="left:'+p+'%"></div>');
-    row.innerHTML=
-      '<div class="rail-id">'+
-        '<span class="badge">'+t.id+'</span>'+
-        '<span class="nm">'+t.nombre+'</span>'+
-      '</div>'+
-      '<div class="track"><div class="bed"></div>'+stations+
-        '<div class="fill"></div><div class="train"></div></div>';
-    el.appendChild(row);
-    requestAnimationFrame(()=>{
-      row.querySelector('.fill').style.width=pct+'%';
-      row.querySelector('.train').style.left=pct+'%';
-    });
-  });
-}
-
-/* ---------- FEED (bitácora real) ---------- */
-function renderFeed(bitacora){
-  const el=document.getElementById('feed');
-  el.innerHTML='';
-  const items=(bitacora||[]).filter(b=>!tramosOff.has(b.tramo));
-  if(!items.length){ el.innerHTML='<div class="empty" style="padding:30px 10px;text-align:center;color:var(--muted-2);font-size:.8rem">Sin actividad reciente.</div>'; return; }
-  items.slice(0,6).forEach(b=>{
-    const node=document.createElement('div');
-    node.className='feed-item';
-    node.innerHTML='<span class="when">'+(b.fecha||'')+'</span>'+
-      '<span class="body"><span class="tr" style="background:'+colorTramo(b.tramo)+'">'+b.tramo+'</span> '+
-      '<span class="verb">'+(b.direccion||'')+'</span> '+(b.texto||'')+'</span>';
-    el.appendChild(node);
-  });
-}
-
-/* ---------- PINTAR ---------- */
-function pintar(d){
-  if(!d) return;
-  ultimoData=d;
-  const lbl=document.getElementById('lbl-periodo');
-  if(lbl) lbl.textContent=d.periodo_label||'';
-
-  const act=d.por_tramo.filter(t=>!tramosOff.has(t.id));
-  const sum=(a,k)=>a.reduce((x,t)=>x+(t[k]||0),0);
-
-  countUp(document.getElementById('v-act'), sum(act,'registros'));
-  countUp(document.getElementById('v-nuc'), sum(act,'nucleos'));
-  countUp(document.getElementById('v-fre'), sum(act,'frentes'));
-  countUp(document.getElementById('v-pla'), sum(act,'planos'));
-  countUp(document.getElementById('v-fic'), sum(act,'fichas'));
-  countUp(document.getElementById('v-inf'), sum(act,'infografias'));
-
-  renderRail(d.por_tramo);
-  renderFeed(d.bitacora);
-
-  lineChart.data.labels=d.serie.labels;
-  lineChart.data.datasets=Object.entries(d.serie.por_tramo)
-    .filter(([id])=>!tramosOff.has(id))
-    .map(([id,vals])=>({label:id,data:vals,borderColor:colorTramo(id),
-      backgroundColor:colorTramo(id)+'22',pointBackgroundColor:colorTramo(id),
-      pointBorderColor:'#130D0C',fill:false}));
-  lineChart.update();
-
-  propChart.data.labels=d.por_propiedad.labels;
-  propChart.data.datasets[0].data=d.por_propiedad.values;
-  propChart.update();
-  const dt=document.getElementById('depTotal');
-  if(dt) countUp(dt, d.por_propiedad.values.reduce((a,b)=>a+b,0));
-
-  tipoChart.data.labels=d.tipos_actividad.labels;
-  tipoChart.data.datasets[0].data=d.tipos_actividad.values;
-  tipoChart.update();
-}
-
-/* ---------- FETCH ---------- */
-async function cargarDashboard(){
+async function cargar(){
   try{
-    const res=await fetch('/api/dashboard?periodo='+encodeURIComponent(periodo),{credentials:'same-origin'});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const d=await res.json();
-    renderChips(d.por_tramo);
-    pintar(d);
-  }catch(err){
-    console.error('Error cargando dashboard:',err);
-    document.getElementById('rail').innerHTML='<div class="empty" style="padding:30px 10px;text-align:center;color:var(--muted-2);font-size:.8rem">No se pudo cargar la información. Revisa tu sesión de admin.</div>';
-  }
+    const r=await fetch('/api/dashboard',{headers:{Accept:'application/json'}});
+    if(!r.ok) throw 0;
+    const j=await r.json();
+    if(!j.registros||!j.registros.length) throw 0;
+    RAW=j.registros; fuente(false);
+  }catch(e){ RAW=demo(); fuente(true); }
+  RAW.forEach(x=>x._d=x.fecha?new Date(x.fecha+'T00:00:00'):null);
+  initFiltros(); initMapa(); render();
+}
+function fuente(d){
+  document.getElementById('badgeDemo').style.display=d?'inline-block':'none';
+  const h=new Date();
+  document.getElementById('stamp').innerHTML=
+    'Actualizado<br>'+h.toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
 }
 
-const sel=document.getElementById('periodSel');
-if(sel) sel.addEventListener('change',e=>{ periodo=e.target.value; tramosOff.clear(); cargarDashboard(); });
+function initFiltros(){
+  const dirs=[...new Set(RAW.map(r=>r.direccion).filter(Boolean))].sort();
+  const sel=document.getElementById('fDir');
+  dirs.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o);});
+  ['fDir','fDesde','fHasta'].forEach(id=>document.getElementById(id).addEventListener('change',render));
+  document.getElementById('btnClear').addEventListener('click',()=>{
+    tramoSel='';['fDir','fDesde','fHasta'].forEach(id=>document.getElementById(id).value='');render();
+  });
+}
+const v=id=>document.getElementById(id).value;
+function filtra(exTramo){
+  const d=v('fDir'),desde=v('fDesde')?new Date(v('fDesde')+'T00:00:00'):null,
+        hasta=v('fHasta')?new Date(v('fHasta')+'T23:59:59'):null;
+  return RAW.filter(r=>{
+    if(!exTramo && tramoSel && r.tramo!==tramoSel) return false;
+    if(d && r.direccion!==d) return false;
+    if(desde&&(!r._d||r._d<desde)) return false;
+    if(hasta&&(!r._d||r._d>hasta)) return false;
+    return true;
+  });
+}
 
-/* reloj */
-function tick(){const c=document.getElementById('clock'); if(c) c.textContent=new Date().toLocaleTimeString('es-MX',{hour12:false});}
-tick();setInterval(tick,1000);
+function render(){
+  const F=filtra();
+  heroYRail(F);
+  stats(F);
+  prod(F);
+  serie(F);
+  propiedad(F);
+  puntos(F);
+}
 
-/* init */
-buildCharts();
-cargarDashboard();
-setInterval(cargarDashboard, 60000);
+/* ---- hero + línea de tren ---- */
+function heroYRail(F){
+  document.getElementById('heroNum').textContent=nf.format(F.length);
+  const fs=F.map(r=>r._d).filter(Boolean).sort((a,b)=>a-b);
+  document.getElementById('heroRango').textContent=fs.length
+    ? `${fs[0].toLocaleDateString('es-MX',{day:'2-digit',month:'short'})} – ${fs.at(-1).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'})}`
+    : 'Sin registros';
+
+  const base=filtra(true);                       // cuenta por corredor ignorando el filtro de corredor
+  const m={}; base.forEach(r=>m[r.tramo]=(m[r.tramo]||0)+1);
+  const max=Math.max(1,...Object.values(m));
+  const rail=document.getElementById('rail');
+  rail.innerHTML=Object.keys(TRAMOS).map(t=>{
+    const n=m[t]||0;
+    const sz=(12+Math.sqrt(n/max)*22).toFixed(1);
+    const cls=['station',tramoSel===t?'on':'',tramoSel&&tramoSel!==t?'dim':''].join(' ');
+    return `<button class="${cls}" data-t="${t}" title="${TRAMOS[t]}">
+      <span class="cnt">${n||''}</span>
+      <span class="dot" style="--sz:${sz}px"></span>
+      <span class="code">${t}</span></button>`;
+  }).join('');
+  rail.querySelectorAll('.station').forEach(b=>b.onclick=()=>{
+    tramoSel = tramoSel===b.dataset.t ? '' : b.dataset.t; render();
+  });
+}
+
+/* ---- KPIs ---- */
+function stats(F){
+  const s=k=>F.reduce((a,r)=>a+(+r[k]||0),0);
+  const gps=F.filter(r=>r.lat!=null&&r.lng!=null).length;
+  const trs=new Set(F.map(r=>r.tramo).filter(Boolean)).size;
+  const dirs=new Set(F.map(r=>r.direccion).filter(Boolean)).size;
+  const cards=[
+    {n:F.length,l:'Registros',s:'en operación',c:''},
+    {n:gps,l:'Con GPS',s:F.length?Math.round(gps/F.length*100)+'% del total':'—',c:'v'},
+    {n:trs,l:'Corredores',s:'con actividad',c:'a'},
+    {n:dirs,l:'Direcciones',s:'participando',c:''},
+  ];
+  document.getElementById('stats').innerHTML=cards.map(c=>`
+    <div class="stat ${c.c}"><div class="n nums">${nf.format(c.n)}</div>
+    <div class="l">${c.l}</div><div class="s">${c.s}</div></div>`).join('');
+}
+
+/* ---- producción (3 tiles de texto) ---- */
+function prod(F){
+  const s=k=>F.reduce((a,r)=>a+(+r[k]||0),0);
+  const med=s('mediciones_agroforestales')+s('mediciones_bdts');
+  const t=[
+    {cap:'Mediciones',n:med,s:'agroforestal + BDT',tone:'var(--arena3)'},
+    {cap:'Planos',n:s('planos'),s:`${s('planos_validados')} validados`,tone:'#dfeae6'},
+    {cap:'Infografías',n:s('num_infografias'),s:`${s('infografias_validadas')} validadas`,tone:'#f3dde3'},
+  ];
+  document.getElementById('prod').innerHTML=t.map(x=>`
+    <div class="prod-t" style="--tone:${x.tone}">
+      <div class="cap">${x.cap}</div><div class="n nums">${nf.format(x.n)}</div><div class="s">${x.s}</div></div>`).join('');
+}
+
+/* ---- serie temporal ---- */
+function serie(F){
+  const box=document.getElementById('chSerie').parentElement;
+  const m={}; F.forEach(r=>{if(r.fecha)m[r.fecha]=(m[r.fecha]||0)+1;});
+  const dias=Object.keys(m).sort();
+  if(chSerie){chSerie.destroy();chSerie=null;}
+  box.querySelector('.empty')?.remove();
+  document.getElementById('chSerie').style.display='';
+  if(!dias.length){const e=document.createElement('div');e.className='empty';e.textContent='Sin registros en esta vista';box.appendChild(e);document.getElementById('chSerie').style.display='none';return;}
+  const ctx=document.getElementById('chSerie').getContext('2d');
+  const g=ctx.createLinearGradient(0,0,0,250);
+  g.addColorStop(0,'rgba(110,21,46,.22)');g.addColorStop(1,'rgba(110,21,46,0)');
+  chSerie=new Chart(ctx,{
+    type:'line',
+    data:{labels:dias.map(d=>new Date(d+'T00:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short'})),
+      datasets:[{data:dias.map(d=>m[d]),borderColor:C('--guinda'),backgroundColor:g,fill:true,
+        tension:.4,borderWidth:2.5,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:C('--guinda')}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:REDUCE?false:{duration:600},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>` ${i.raw} registro(s)`}}},
+      scales:{y:{beginAtZero:true,ticks:{precision:0,color:C('--humo')},grid:{color:'#f0eadf'}},
+              x:{ticks:{color:C('--humo'),maxRotation:0,autoSkip:true,maxTicksLimit:8},grid:{display:false}}}}
+  });
+}
+
+/* ---- propiedad (barra CSS) ---- */
+function propiedad(F){
+  const m={}; F.forEach(r=>{const k=r.propiedad||'SIN DATO';m[k]=(m[k]||0)+1;});
+  const col={SOCIAL:C('--verde'),PRIVADA:C('--guinda2'),'SIN DATO':C('--arena')};
+  const ents=Object.entries(m).sort((a,b)=>b[1]-a[1]);
+  const tot=ents.reduce((a,e)=>a+e[1],0)||1;
+  document.getElementById('splitBar').innerHTML=ents.map(([k,n])=>
+    `<span style="width:${n/tot*100}%;background:${col[k]||C('--arena')}" title="${k}"></span>`).join('');
+  document.getElementById('splitLeg').innerHTML=ents.map(([k,n])=>
+    `<div><span class="sw" style="background:${col[k]||C('--arena')}"></span>
+      ${k} · <b>${nf.format(n)}</b> <span class="pct">(${Math.round(n/tot*100)}%)</span></div>`).join('');
+}
+
+/* ---- mapa ---- */
+function initMapa(){
+  mapa=L.map('mapa',{scrollWheelZoom:false,zoomControl:true}).setView([22.5,-101],5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(mapa);
+  capa=L.layerGroup().addTo(mapa);
+  mapa.on('focus',()=>mapa.scrollWheelZoom.enable());
+  mapa.on('blur',()=>mapa.scrollWheelZoom.disable());
+}
+function puntos(F){
+  capa.clearLayers();
+  const pts=F.filter(r=>r.lat!=null&&r.lng!=null);
+  document.getElementById('mapNote').textContent=
+    pts.length?`${nf.format(pts.length)} punto(s) GPS en la vista`:'Ningún registro con coordenadas en esta vista';
+  const b=[];
+  pts.forEach(r=>{
+    L.circleMarker([r.lat,r.lng],{radius:7,color:'#fff',weight:1.5,fillColor:C('--guinda'),fillOpacity:.85})
+     .bindPopup(`<div class="pt">${r.direccion||'—'}</div>
+       <div class="pr"><b>${r.tramo||'—'}</b> · ${TRAMOS[r.tramo]||''}</div>
+       <div class="pr">${r.actividad||'—'}${r.propiedad?' · '+r.propiedad:''}</div>
+       <div class="pr">${r.fecha?new Date(r.fecha+'T00:00:00').toLocaleDateString('es-MX'):''}</div>`)
+     .addTo(capa);
+    b.push([r.lat,r.lng]);
+  });
+  if(b.length) mapa.fitBounds(b,{padding:[30,30],maxZoom:11});
+}
+
+/* ---- DEMO ---- */
+function demo(){
+  const dirs=["BDT'S AGROFORESTALES","BDT'S CONSTRUCCIÓN","CARTOGRAFÍA","MEDICIONES",
+    "PRODUCTOS Y SISTEMAS GEOESPACIALES","TOPOGRAFÍA NORTE","TOPOGRAFÍA OCCIDENTE"];
+  const acts=["MEDICIÓN","REUNIÓN DE SEGUIMIENTO","ASAMBLEA","REVISIÓN","VALIDACIÓN"];
+  const props=["SOCIAL","PRIVADA","SIN DATO"];
+  const users=["edgar.ramirez@ran.gob.mx","brigada.centro@ran.gob.mx","topo.norte@ran.gob.mx"];
+  const geo={TMQ:[[19.43,-99.13],[20.39,-99.99],[20.59,-100.39],[19.71,-99.22]],
+    TAP:[[19.75,-99.02],[20.10,-98.76]],TQI:[[20.52,-100.81],[20.67,-101.35]],
+    TSNL:[[25.42,-101.00],[26.90,-101.42],[27.48,-99.51]],TQSLP:[[20.59,-100.39],[22.15,-100.98]],
+    TSLPS:[[22.15,-100.98],[24.02,-101.13]]};
+  const tr=Object.keys(geo),pick=a=>a[Math.floor(Math.random()*a.length)],ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+  const out=[],hoy=new Date();
+  for(let i=0;i<140;i++){
+    const t=pick(tr),d=new Date(hoy);d.setDate(d.getDate()-ri(0,80));
+    const base=pick(geo[t]),g=Math.random()<.72,dir=pick(dirs);
+    const esInfo=dir.includes("GEOESPACIALES")||dir==="CARTOGRAFÍA";
+    const ni=esInfo?ri(0,6):0,ig=esInfo?ri(0,ni):0;
+    const pl=(dir==="CARTOGRAFÍA")?ri(0,5):0,pg=pl?ri(0,pl):0;
+    out.push({id:i+1,fecha:d.toISOString().slice(0,10),direccion:dir,tramo:t,propiedad:pick(props),
+      actividad:pick(acts),usuario:pick(users),
+      num_infografias:ni,infografias_generadas:ig,infografias_validadas:ri(0,ig),
+      mediciones_agroforestales:dir.includes("AGRO")||dir==="MEDICIONES"?ri(0,12):0,
+      mediciones_bdts:dir.includes("CONSTRUCCIÓN")||dir==="MEDICIONES"?ri(0,8):0,
+      planos:pl,planos_generados:pg,planos_validados:ri(0,pg),
+      lat:g?+(base[0]+(Math.random()-.5)*.3).toFixed(5):null,
+      lng:g?+(base[1]+(Math.random()-.5)*.3).toFixed(5):null});
+  }
+  return out;
+}
+cargar();
 </script>
 </body>
 </html>
