@@ -2626,6 +2626,102 @@ def export_matriz():
     _rellenar_matriz(rows, PLANTILLA_MATRIZ, out)
     return send_file(out, as_attachment=True, download_name=os.path.basename(out))
 
+# ============================================================
+# EXPORT REPORTE TRIMESTRAL DGCAT (agregado por tramo × actividad)
+# ============================================================
+PLANTILLA_TRIMESTRAL = os.path.join(os.path.dirname(__file__), 'plantillas', 'TRIMESTRAL_DGCAT.xlsx')
+
+_ACT_KW_TRIM = [   # orden = prioridad (fichas antes que medición-BDT; AGA antes que expropiación)
+    ('ASAMBLEAS', 'ASAMBLEAS_COP'),
+    ('SENSIBILIZACION', 'REUNIONES_SENSIBILIZACION'),
+    ('LEVANTAMIENTO TOPO', 'MEDICION_TOPOGRAFICA'),
+    ('CONSTRUCCION Y ENVIADAS', 'FICHAS_BDT_CONSTRUCCION'),
+    ('AGROFORESTALES Y ENVIADAS', 'FICHAS_BDT_AGROFORESTAL'),
+    ('BDT', 'MEDICION_BDT'),
+    ('REVISION Y VALIDACION', 'REVISION_VALIDACION_CAMPO'),
+    ('PLANOS CARTOGRAFICOS', 'PLANOS_CARTOGRAFICOS'),
+    ('INFOGRAFIAS', 'INFOGRAFIAS_GEOPORTAL'),
+    ('ASISTENCIA TECNICA', 'CARPETA_BASICA_ASISTENCIA'),
+    ('ANTE EL AGA', 'CARPETA_BASICA_AGA'),
+    ('EXPROPIACION', 'TRABAJOS_EXPROPIACION'),
+]
+
+def _norm_trim(s):
+    s = unicodedata.normalize('NFD', str(s or '')).encode('ascii', 'ignore').decode()
+    return s.upper().replace('´', ' ')
+
+def _slug_actividad(b):
+    t = _norm_trim(b)
+    for kw, slug in _ACT_KW_TRIM:
+        if kw in t:
+            return slug
+    return None
+
+def _tramo_de_celda(a):
+    na = _norm_trim(a).replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+    for code, nombre in TRAMOS_NOMBRES.items():
+        key = _norm_trim(nombre).replace(' ', '').replace('-', '')
+        if key and key in na:
+            return code
+    return None
+
+@app.route('/export_trimestral')
+def export_trimestral():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+
+    from collections import defaultdict
+    hoy = hora_cdmx()
+    anio = int(request.args.get('anio', hoy.year))
+    trimestre = int(request.args.get('trimestre', (hoy.month - 1) // 3 + 1))
+    meses_tri = {1: (1, 2, 3), 2: (4, 5, 6), 3: (7, 8, 9), 4: (10, 11, 12)}
+    meses = meses_tri.get(trimestre, (1, 2, 3))
+
+    # --- Agregación (tramo, slug, propiedad) -> suma de cantidad ---
+    agg = defaultdict(int)
+    registros = Registro.query.filter(
+        db.extract('year', Registro.fecha) == anio,
+        db.extract('month', Registro.fecha).in_(meses),
+    ).all()
+    for reg in registros:
+        u = (reg.tipo_propiedad or '').upper()
+        prop = 'PRIVADA' if 'PRIVADA' in u else 'SOCIAL' if 'SOCIAL' in u else None
+        if not reg.tramo or prop is None:
+            continue
+        for s in SubActividad.query.filter_by(registro_id=reg.id, tipo='reporte').all():
+            if s.actividad_canonica and s.cantidad:
+                agg[(reg.tramo, s.actividad_canonica, prop)] += int(s.cantidad)
+
+    # --- Rellenar copia de la plantilla (solo D y E) ---
+    wb = openpyxl.load_workbook(PLANTILLA_TRIMESTRAL)
+    _AUX = {'Coordinador en Campo', 'ANEXO 1'}
+    ws = next(wb[s] for s in wb.sheetnames if s not in _AUX)   # la hoja del reporte, se llame como se llame
+
+    MESES_MAY = {1:'ENERO',2:'FEBRERO',3:'MARZO',4:'ABRIL',5:'MAYO',6:'JUNIO',
+                 7:'JULIO',8:'AGOSTO',9:'SEPTIEMBRE',10:'OCTUBRE',11:'NOVIEMBRE',12:'DICIEMBRE'}
+    ws['A1'] = f"PERÍODO QUE SE INFORMA: {MESES_MAY[meses[0]]}, {MESES_MAY[meses[1]]} Y {MESES_MAY[meses[2]]}"
+
+    # bloques = rangos entre filas de 'agenda'; tramo = primer tramo hallado en col A del bloque
+    agenda_rows = [r for r in range(1, ws.max_row + 1)
+                   if 'ATENDER LA AGENDA' in _norm_trim(ws.cell(r, 2).value)]
+    agenda_rows.append(ws.max_row + 1)
+    for i in range(len(agenda_rows) - 1):
+        ini, fin = agenda_rows[i], agenda_rows[i + 1] - 1
+        code = next((c for r in range(ini, fin + 1)
+                     if (c := _tramo_de_celda(ws.cell(r, 1).value))), None)
+        if not code:
+            continue
+        for r in range(ini, fin + 1):
+            slug = _slug_actividad(ws.cell(r, 2).value)
+            if not slug:
+                continue
+            ws.cell(r, 4).value = agg.get((code, slug, 'PRIVADA'), 0) or None
+            ws.cell(r, 5).value = agg.get((code, slug, 'SOCIAL'), 0) or None
+
+    out = os.path.join('/tmp', f'REPORTE_TRIMESTRAL_{anio}_T{trimestre}.xlsx')
+    wb.save(out)
+    return send_file(out, as_attachment=True, download_name=os.path.basename(out))
+
 # =========================================
 # DASHBOARD
 # =========================================
