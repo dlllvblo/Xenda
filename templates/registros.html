@@ -257,7 +257,7 @@
 
     {% if session['usuario'] == admin_correo %}
 
-        
+        <a
             href="/mapa_registros"
             class="btn-limpiar btn-filtrar"
             style="
@@ -270,7 +270,7 @@
             Ver mapa general
         </a>
 
-        
+        <a
             href="/descargar_registros?{{ request.query_string.decode() }}"
             class="btn-limpiar btn-filtrar"
             style="
