@@ -257,7 +257,7 @@
 
     {% if session['usuario'] == admin_correo %}
 
-        <a
+        
             href="/mapa_registros"
             class="btn-limpiar btn-filtrar"
             style="
@@ -268,6 +268,19 @@
             "
         >
             Ver mapa general
+        </a>
+
+        
+            href="/descargar_registros?{{ request.query_string.decode() }}"
+            class="btn-limpiar btn-filtrar"
+            style="
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            "
+        >
+            Descargar Excel
         </a>
 
     {% endif %}
@@ -297,6 +310,7 @@
             <th>Planos Validados</th>
             <th>Trabajo Realizado (Tipo / Estatus / Actividad)</th>
             <th>Trabajo Programado (Tipo / Estatus / Actividad)</th>
+            <th>Reporte Matriz (Actividad / Cant. / Soporte / Descripción)</th>
             <th>Usuario</th>
 
             {% if session['usuario'] == admin_correo %}
@@ -357,6 +371,20 @@
                         <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:nowrap; width:110px;">{{ d.tipo or '—' }}</td>
                         <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:nowrap; width:120px;">{{ d.estatus or '—' }}</td>
                         <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:normal;">{{ d.actividad }}</td>
+                    </tr>
+                    {%- endfor %}
+                </table>
+                {%- else -%}—{%- endif -%}
+            </td>
+            <td style="padding:0; min-width:420px;">
+                {%- if r.det_reporte -%}
+                <table style="border-collapse:collapse; width:100%; min-width:0;">
+                    {%- for d in r.det_reporte %}
+                    <tr>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:nowrap;">{{ d.actividad or '—' }}</td>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:nowrap; width:50px; text-align:center;">{{ d.cantidad or '—' }}</td>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:nowrap;">{{ d.soporte or '—' }}</td>
+                        <td style="border:1px solid #e0e0e0; padding:6px 10px; white-space:normal;">{% if d.ubicacion %}({{ d.ubicacion }}) {% endif %}{{ d.descripcion }}</td>
                     </tr>
                     {%- endfor %}
                 </table>

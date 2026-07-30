@@ -2211,10 +2211,26 @@ def registros():
                 filas.append({'tipo': 'CAMPO', 'estatus': s.trabajo_campo or '', 'actividad': act})
         return filas
 
+    def desglosar_reporte(subs):
+        filas = []
+        for s in subs:
+            if s.tipo == 'reporte' and (s.actividad_canonica or s.descripcion):
+                etq = ACTIVIDADES_CANONICAS.get(s.actividad_canonica, {}).get('corto', s.actividad_canonica or '')
+                ubic = ', '.join(x for x in [s.entidad, s.municipio, s.nucleo, s.localidad] if x)
+                filas.append({
+                    'actividad': etq,
+                    'cantidad': s.cantidad or '',
+                    'soporte': s.soporte_documental or '',
+                    'ubicacion': ubic,
+                    'descripcion': s.descripcion or ''
+                })
+        return filas
+
     for r in lista:
         subs = SubActividad.query.filter_by(registro_id=r.id).all()
         r.det_realizadas = desglosar(r, subs, 'realizado')
         r.det_programadas = desglosar(r, subs, 'programado')
+        r.det_reporte = desglosar_reporte(subs)
 
     entidades = sorted([
         e[0]
@@ -2461,9 +2477,20 @@ def descargar_registros():
                               'frente': str(s.frente) if s.frente else ''})
         return filas
 
-    registros = Registro.query.order_by(
-        Registro.fecha.desc()
-    ).all()
+    query = Registro.query
+    tramo = request.args.get('tramo')
+    entidad = request.args.get('entidad')
+    municipio = request.args.get('municipio')
+    usuario = request.args.get('usuario')
+    if tramo:
+        query = query.filter(Registro.tramo == tramo)
+    if entidad:
+        query = query.filter(Registro.entidad == entidad)
+    if municipio:
+        query = query.filter(Registro.municipio == municipio)
+    if usuario:
+        query = query.filter(Registro.usuario == usuario)
+    registros = query.order_by(Registro.fecha.desc()).all()
 
     datos = []
 
@@ -2529,67 +2556,6 @@ def descargar_registros():
         ruta_archivo,
         as_attachment=True
     )
-
-# =========================================
-# DESCARGAR REPORTE MENSUAL (bajo demanda)
-# =========================================
-
-@app.route('/descargar_reporte_mensual')
-def descargar_reporte_mensual():
-    if session.get('usuario') not in ADMIN_CORREOS:
-        return 'No autorizado', 403
-
-    ahora = hora_cdmx()
-    anio = request.args.get('anio', type=int) or ahora.year
-    mes = request.args.get('mes', type=int) or ahora.month
-
-    registros = Registro.query.filter(
-        db.extract('year', Registro.fecha) == anio,
-        db.extract('month', Registro.fecha) == mes
-    ).all()
-
-    if not registros:
-        return '<h2 style="font-family:sans-serif;padding:40px;">No hay registros en el periodo seleccionado.</h2>'
-
-    datos = []
-    for r in registros:
-        datos.append({
-            'ID': r.id,
-            'DIRECCIÓN': r.direccion,
-            'FECHA': r.fecha.strftime('%d/%m/%Y %H:%M:%S') if r.fecha else '',
-            'TRAMO': r.tramo,
-            'ENTIDAD': r.entidad,
-            'MUNICIPIO': r.municipio,
-            'NUCLEO': r.nucleo,
-            'FRENTE': r.frente,
-            'ACTIVIDAD': r.actividad,
-            'MODALIDAD': r.tipo,
-            'TIPO_PROPIEDAD': r.tipo_propiedad,
-            'MEDICIONES_AGROFORESTALES': r.mediciones_agroforestales,
-            'MEDICIONES_BDTS': r.mediciones_bdts,
-            'PLANOS': r.planos,
-            'PLANOS_GENERADOS': r.planos_generados,
-            'PLANOS_VALIDADOS': r.planos_validados,
-            'NUM_INFOGRAFIAS': r.num_infografias,
-            'INFOGRAFIAS_GENERADAS': r.infografias_generadas,
-            'INFOGRAFIAS_VALIDADAS': r.infografias_validadas,
-            'ESTATUS_INFOGRAFIAS': r.estatus_infografias,
-            'TRABAJO_REALIZADO': r.trabajo_realizado,
-            'ESTATUS_TRABAJO_REALIZADO': r.estatus_trabajo_realizado,
-            'ACTIVIDADES_REALIZADAS': r.actividades_realizadas,
-            'TRABAJO_PROGRAMADO': r.trabajo_programado,
-            'ESTATUS_TRABAJO_PROGRAMADO': r.estatus_trabajo_programado,
-            'ACTIVIDADES_PROGRAMADAS': r.actividades_programadas,
-            'OBSERVACIONES': r.observaciones,
-            'USUARIO': r.usuario
-        })
-
-    df = pd.DataFrame(datos)
-    nombre_excel = f'XENDA_{anio}_{mes:02d}.xlsx'
-    ruta_excel = os.path.join('/tmp', nombre_excel)
-    df.to_excel(ruta_excel, index=False)
-
-    return send_file(ruta_excel, as_attachment=True, download_name=nombre_excel)
 
 # ============================================================
 # EXPORT MATRIZ INFORMES_PROPUESTA (columnas K–V del REPORTE)
