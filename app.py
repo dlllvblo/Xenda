@@ -1680,9 +1680,21 @@ def reiniciar_registros():
         )
         nombre = f"XENDA_RESPALDO_{hora_cdmx().strftime('%Y%m%d_%H%M%S')}.xlsx"
         ruta = os.path.join('/tmp', nombre)
+        def _sin_tz(df):
+            """Quita zona horaria; Excel no soporta datetimes tz-aware."""
+            for col in df.columns:
+                s = df[col]
+                if isinstance(s.dtype, pd.DatetimeTZDtype):
+                    df[col] = s.dt.tz_localize(None)
+                else:
+                    df[col] = s.map(
+                        lambda v: v.replace(tzinfo=None) if hasattr(v, 'tzinfo') and v.tzinfo else v
+                    )
+            return df
+
         with pd.ExcelWriter(ruta) as writer:
-            df_reg.to_excel(writer, sheet_name='Registros', index=False)
-            df_sub.to_excel(writer, sheet_name='SubActividades', index=False)
+            _sin_tz(df_reg).to_excel(writer, sheet_name='Registros', index=False)
+            _sin_tz(df_sub).to_excel(writer, sheet_name='SubActividades', index=False)
         return ruta, nombre
 
     def _borrar_todo():
