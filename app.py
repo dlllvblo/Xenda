@@ -17,7 +17,6 @@ import unicodedata
 import os
 import uuid
 import json
-import requests
 import geopandas as gpd
 from shapely.geometry import Point  
 from google.oauth2.service_account import Credentials
@@ -2477,6 +2476,23 @@ def descargar_registros():
                               'frente': str(s.frente) if s.frente else ''})
         return filas
 
+    def desglosar_reporte(subs):
+        filas = []
+        for s in subs:
+            if s.tipo == 'reporte' and (s.actividad_canonica or s.descripcion):
+                etq = ACTIVIDADES_CANONICAS.get(s.actividad_canonica, {}).get('corto', s.actividad_canonica or '')
+                filas.append({
+                    'actividad': etq,
+                    'cantidad': s.cantidad if s.cantidad is not None else '',
+                    'soporte': s.soporte_documental or '',
+                    'entidad': s.entidad or '',
+                    'municipio': s.municipio or '',
+                    'nucleo': s.nucleo or '',
+                    'localidad': s.localidad or '',
+                    'descripcion': s.descripcion or ''
+                })
+        return filas
+
     query = Registro.query
     tramo = request.args.get('tramo')
     entidad = request.args.get('entidad')
@@ -2518,12 +2534,14 @@ def descargar_registros():
 
         det_r = desglosar(r, subs, 'realizado')
         det_p = desglosar(r, subs, 'programado')
+        det_rep = desglosar_reporte(subs)
 
-        # Una fila por bloque; realizadas y programadas emparejadas por índice
-        n = max(len(det_r), len(det_p), 1)
+        # Una fila por bloque; realizadas, programadas y matriz emparejadas por índice
+        n = max(len(det_r), len(det_p), len(det_rep), 1)
         for i in range(n):
             dr = det_r[i] if i < len(det_r) else {}
             dp = det_p[i] if i < len(det_p) else {}
+            dm = det_rep[i] if i < len(det_rep) else {}
             fila = base.copy()
             fila['TIPO TRABAJO REALIZADO']        = dr.get('tipo', '')
             fila['ESTATUS REALIZADO']             = dr.get('estatus', '')
@@ -2536,6 +2554,14 @@ def descargar_registros():
             fila['TIPO TRABAJO PROGRAMADO']       = dp.get('tipo', '')
             fila['ESTATUS PROGRAMADO']            = dp.get('estatus', '')
             fila['ACTIVIDAD PROGRAMADA']          = dp.get('actividad', '')
+            fila['ACTIVIDAD MATRIZ']              = dm.get('actividad', '')
+            fila['CANTIDAD MATRIZ']               = dm.get('cantidad', '')
+            fila['SOPORTE MATRIZ']                = dm.get('soporte', '')
+            fila['ENTIDAD MATRIZ']                = dm.get('entidad', '')
+            fila['MUNICIPIO MATRIZ']              = dm.get('municipio', '')
+            fila['NÚCLEO MATRIZ']                 = dm.get('nucleo', '')
+            fila['LOCALIDAD MATRIZ']              = dm.get('localidad', '')
+            fila['DESCRIPCIÓN MATRIZ']            = dm.get('descripcion', '')
             fila['USUARIO']                       = r.usuario
             fila['FECHA']                         = r.fecha.strftime('%d/%m/%Y %H:%M:%S') if r.fecha else ''
             datos.append(fila)
