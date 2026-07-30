@@ -16,6 +16,7 @@ import pandas as pd
 import unicodedata
 import os
 import uuid
+import json
 import geopandas as gpd
 from shapely.geometry import Point  
 from google.oauth2.service_account import Credentials
@@ -674,10 +675,11 @@ def exportar_excel_mensual():
         'https://www.googleapis.com/auth/drive'
     ]
 
-    creds = Credentials.from_service_account_file(
-        'credentials.json',
-        scopes=SCOPES
-    )
+    creds_json = os.environ.get("GOOGLE_CREDENTIALS")
+    if creds_json:
+        creds = Credentials.from_service_account_info(json.loads(creds_json), scopes=SCOPES)
+    else:
+        creds = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
 
     service = build(
         'drive',
@@ -694,6 +696,10 @@ def exportar_excel_mensual():
         fields='files(id, name)'
 
     ).execute()
+
+    if not folders.get('files'):
+        app.logger.warning("Carpeta 'XENDA_REPORTES' no encontrada en Drive; se omite exportación.")
+        return
 
     folder_id = folders['files'][0]['id']
 
@@ -1784,8 +1790,6 @@ def crear_usuarios():
 
 def index():
 
-    exportar_excel_mensual()
-
 #    if (
 #        not registro_habilitado()
 #        and
@@ -1801,6 +1805,11 @@ def index():
     if 'usuario' not in session:
 
         return redirect('/login')
+
+    try:
+        exportar_excel_mensual()
+    except Exception as e:
+        app.logger.warning(f"exportar_excel_mensual falló, index sigue: {e}")
 
     entidades = sorted(
 
