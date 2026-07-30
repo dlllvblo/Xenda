@@ -769,23 +769,6 @@ def exportar_excel_mensual():
     db.session.commit()
 
 # =========================================
-# CRON: EXPORT MENSUAL (Render Cron Job)
-# =========================================
-
-@app.route('/cron_export')
-def cron_export():
-    token_esperado = os.environ.get('CRON_TOKEN')
-    token_recibido = request.headers.get('X-CRON-TOKEN')
-    if not token_esperado or token_recibido != token_esperado:
-        return 'No autorizado', 403
-    try:
-        exportar_excel_mensual()
-        return 'OK', 200
-    except Exception as e:
-        app.logger.warning(f"cron_export falló: {e}")
-        return f'Error: {e}', 500
-
-# =========================================
 # GENERAR PRE-REPORTE QUINCENAL HTML
 # =========================================
 
@@ -1824,11 +1807,6 @@ def index():
 
         return redirect('/login')
 
-    try:
-        exportar_excel_mensual()
-    except Exception as e:
-        app.logger.warning(f"exportar_excel_mensual falló, index sigue: {e}")
-
     entidades = sorted(
 
         catalogo['ENTIDAD_FEDERATIVA']
@@ -2551,6 +2529,67 @@ def descargar_registros():
         ruta_archivo,
         as_attachment=True
     )
+
+# =========================================
+# DESCARGAR REPORTE MENSUAL (bajo demanda)
+# =========================================
+
+@app.route('/descargar_reporte_mensual')
+def descargar_reporte_mensual():
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return 'No autorizado', 403
+
+    ahora = hora_cdmx()
+    anio = request.args.get('anio', type=int) or ahora.year
+    mes = request.args.get('mes', type=int) or ahora.month
+
+    registros = Registro.query.filter(
+        db.extract('year', Registro.fecha) == anio,
+        db.extract('month', Registro.fecha) == mes
+    ).all()
+
+    if not registros:
+        return '<h2 style="font-family:sans-serif;padding:40px;">No hay registros en el periodo seleccionado.</h2>'
+
+    datos = []
+    for r in registros:
+        datos.append({
+            'ID': r.id,
+            'DIRECCIÓN': r.direccion,
+            'FECHA': r.fecha.strftime('%d/%m/%Y %H:%M:%S') if r.fecha else '',
+            'TRAMO': r.tramo,
+            'ENTIDAD': r.entidad,
+            'MUNICIPIO': r.municipio,
+            'NUCLEO': r.nucleo,
+            'FRENTE': r.frente,
+            'ACTIVIDAD': r.actividad,
+            'MODALIDAD': r.tipo,
+            'TIPO_PROPIEDAD': r.tipo_propiedad,
+            'MEDICIONES_AGROFORESTALES': r.mediciones_agroforestales,
+            'MEDICIONES_BDTS': r.mediciones_bdts,
+            'PLANOS': r.planos,
+            'PLANOS_GENERADOS': r.planos_generados,
+            'PLANOS_VALIDADOS': r.planos_validados,
+            'NUM_INFOGRAFIAS': r.num_infografias,
+            'INFOGRAFIAS_GENERADAS': r.infografias_generadas,
+            'INFOGRAFIAS_VALIDADAS': r.infografias_validadas,
+            'ESTATUS_INFOGRAFIAS': r.estatus_infografias,
+            'TRABAJO_REALIZADO': r.trabajo_realizado,
+            'ESTATUS_TRABAJO_REALIZADO': r.estatus_trabajo_realizado,
+            'ACTIVIDADES_REALIZADAS': r.actividades_realizadas,
+            'TRABAJO_PROGRAMADO': r.trabajo_programado,
+            'ESTATUS_TRABAJO_PROGRAMADO': r.estatus_trabajo_programado,
+            'ACTIVIDADES_PROGRAMADAS': r.actividades_programadas,
+            'OBSERVACIONES': r.observaciones,
+            'USUARIO': r.usuario
+        })
+
+    df = pd.DataFrame(datos)
+    nombre_excel = f'XENDA_{anio}_{mes:02d}.xlsx'
+    ruta_excel = os.path.join('/tmp', nombre_excel)
+    df.to_excel(ruta_excel, index=False)
+
+    return send_file(ruta_excel, as_attachment=True, download_name=nombre_excel)
 
 # ============================================================
 # EXPORT MATRIZ INFORMES_PROPUESTA (columnas K–V del REPORTE)
