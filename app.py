@@ -1668,18 +1668,47 @@ def eliminar_usuario(id):
 def reiniciar_registros():
     if session.get('usuario') not in ADMIN_CORREOS:
         return 'No autorizado', 403
-    if request.method == 'POST':
-        confirmacion = request.form.get('confirmacion', '')
-        if confirmacion.upper() != 'CONFIRMAR':
-            flash('Escribe CONFIRMAR para continuar')
-            return redirect('/reiniciar_registros')
+
+    def _generar_respaldo():
+        regs = Registro.query.all()
+        subs = SubActividad.query.all()
+        df_reg = pd.DataFrame(
+            [{c.name: getattr(r, c.name) for c in Registro.__table__.columns} for r in regs]
+        )
+        df_sub = pd.DataFrame(
+            [{c.name: getattr(s, c.name) for c in SubActividad.__table__.columns} for s in subs]
+        )
+        nombre = f"XENDA_RESPALDO_{hora_cdmx().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        ruta = os.path.join('/tmp', nombre)
+        with pd.ExcelWriter(ruta) as writer:
+            df_reg.to_excel(writer, sheet_name='Registros', index=False)
+            df_sub.to_excel(writer, sheet_name='SubActividades', index=False)
+        return ruta, nombre
+
+    def _borrar_todo():
         SubActividad.query.delete()
         Registro.query.delete()
         RegistroEliminado.query.delete()
         Exportacion.query.delete()
         db.session.commit()
+
+    if request.method == 'POST':
+        confirmacion = request.form.get('confirmacion', '')
+        if confirmacion.upper() != 'CONFIRMAR':
+            flash('Escribe CONFIRMAR para continuar')
+            return redirect('/reiniciar_registros')
+
+        accion = request.form.get('accion', 'borrar')
+
+        if accion == 'descargar':
+            ruta, nombre = _generar_respaldo()   # SIEMPRE antes de borrar
+            _borrar_todo()
+            return send_file(ruta, as_attachment=True, download_name=nombre)
+
+        _borrar_todo()
         flash('Registros reiniciados correctamente')
         return redirect('/admin')
+
     return '''
         <h2>¿Seguro que deseas reiniciar TODOS los registros?</h2>
         <p>Esta acción no se puede deshacer.</p>
@@ -1692,8 +1721,15 @@ def reiniciar_registros():
                 style="padding:8px; font-size:16px; margin:10px 0;"
             >
             <br>
-            <button type="submit">Reiniciar registros</button>
-            <a href="/admin">Cancelar</a>
+            <button type="submit" name="accion" value="descargar"
+                style="padding:10px 16px; margin:6px 4px; background:#2e7d32; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:15px;">
+                Descargar respaldo y borrar
+            </button>
+            <button type="submit" name="accion" value="borrar"
+                style="padding:10px 16px; margin:6px 4px; background:#c62828; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:15px;">
+                Borrar sin descargar
+            </button>
+            <a href="/admin" style="margin-left:8px;">Cancelar</a>
         </form>
     '''
 
