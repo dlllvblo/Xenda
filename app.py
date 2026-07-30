@@ -17,6 +17,7 @@ import unicodedata
 import os
 import uuid
 import json
+import requests
 import geopandas as gpd
 from shapely.geometry import Point  
 from google.oauth2.service_account import Credentials
@@ -766,6 +767,23 @@ def exportar_excel_mensual():
     db.session.add(nueva_exportacion)
 
     db.session.commit()
+
+# =========================================
+# CRON: EXPORT MENSUAL (Render Cron Job)
+# =========================================
+
+@app.route('/cron_export')
+def cron_export():
+    token_esperado = os.environ.get('CRON_TOKEN')
+    token_recibido = request.headers.get('X-CRON-TOKEN')
+    if not token_esperado or token_recibido != token_esperado:
+        return 'No autorizado', 403
+    try:
+        exportar_excel_mensual()
+        return 'OK', 200
+    except Exception as e:
+        app.logger.warning(f"cron_export falló: {e}")
+        return f'Error: {e}', 500
 
 # =========================================
 # GENERAR PRE-REPORTE QUINCENAL HTML
