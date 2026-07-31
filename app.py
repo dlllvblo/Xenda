@@ -876,7 +876,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 <div class="seccion-header guinda">
                     ACTIVIDADES PROGRAMADAS DEL {quincena} EN PROPIEDAD SOCIAL
                 </div>
-                <div class="seccion-body">{bloques_p}</div>
+                <div class="seccion-body">{bloques_p or SIN_PROGRAMADAS}</div>
             </div>
             '''
             # ---- TABLA NÚCLEOS SOCIAL ----
@@ -1031,7 +1031,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                 <div class="seccion-header guinda">
                     ACTIVIDADES PROGRAMADAS DEL {quincena} EN PROPIEDAD PRIVADA
                 </div>
-                <div class="seccion-body">{bloques_p}</div>
+                <div class="seccion-body">{bloques_p or SIN_PROGRAMADAS}</div>
             </div>
             '''
             # ---- TABLA NÚCLEOS PRIVADA ----
@@ -1184,7 +1184,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                     <div class="seccion-header guinda">
                         ACTIVIDADES PROGRAMADAS DEL {quincena}
                     </div>
-                    <div class="seccion-body">{bloques_gp}</div>
+                    <div class="seccion-body">{bloques_gp or SIN_PROGRAMADAS}</div>
                 </div>
                 '''        
 
@@ -2542,7 +2542,7 @@ def descargar_registros():
         ('PRODUCCIÓN TÉCNICA', 'FCE4D6', [('No. de Mediciones', 'mediciones_agroforestales'), ('No. de Fichas', 'mediciones_bdts'), ('Planos', 'planos'), ('Planos Generados', 'planos_generados'), ('Planos Validados', 'planos_validados')]),
         ('REPORTE MATRIZ', 'FFF2CC', [('Actividad', 'rep_actividad'), ('Cantidad', 'rep_cantidad'), ('Soporte', 'rep_soporte'), ('Entidad', 'rep_entidad'), ('Municipio', 'rep_municipio'), ('Núcleo Agrario', 'rep_nucleo'), ('Localidad', 'rep_localidad'), ('Descripción', 'rep_descripcion')]),
         ('TRABAJO REALIZADO', 'D9E1F2', [('Actividad Realizada', 'tr_actividad'), ('Estatus', 'tr_estatus'), ('Descripción', 'tr_descripcion')]),
-        ('ACTIVIDADES REALIZADAS', 'E2EFDA', [('Descripción', 'ar_descripcion'), ('Entidad', 'ar_entidad'), ('Municipio', 'ar_municipio'), ('Núcleo Agrario', 'ar_nucleo'), ('Localidad', 'ar_localidad'), ('Frente', 'ar_frente'), ('Trabajo de Campo', 'ar_trabajo_campo')]),
+        ('ACTIVIDADES REALIZADAS (TABLA INTEGRADA)', 'E2EFDA', [('Descripción', 'ar_descripcion'), ('Entidad', 'ar_entidad'), ('Municipio', 'ar_municipio'), ('Núcleo Agrario', 'ar_nucleo'), ('Localidad', 'ar_localidad'), ('Frente', 'ar_frente'), ('Trabajo de Campo', 'ar_trabajo_campo')]),
         ('TRABAJO PROGRAMADO', 'D9E1F2', [('Actividad Programada', 'tp_actividad'), ('Estatus', 'tp_estatus'), ('Descripción', 'tp_descripcion')]),
         ('ACTIVIDADES PROGRAMADAS', 'E2EFDA', [('Descripción', 'ap_descripcion'), ('Entidad', 'ap_entidad'), ('Municipio', 'ap_municipio'), ('Núcleo Agrario', 'ap_nucleo'), ('Localidad', 'ap_localidad'), ('Frente', 'ap_frente'), ('Trabajo de Campo', 'ap_trabajo_campo')]),
         ('REGISTRO', 'D6DCE4', [('Usuario', 'usuario'), ('Fecha', 'fecha')]),
@@ -2590,21 +2590,25 @@ def descargar_registros():
     wb = openpyxl.Workbook(); ws = wb.active; ws.title = 'Registros'
     thin = Side(style='thin', color='BFBFBF'); borde = Border(left=thin, right=thin, top=thin, bottom=thin)
     centro = Alignment(horizontal='center', vertical='center', wrap_text=True)
+    COLORES_INST = ['245C4F', '6E152E']
     col = 1
-    for nombre, color, cols in SECCIONES:
+    for idx, (nombre, _color, cols) in enumerate(SECCIONES):
+        inst = COLORES_INST[idx % 2]
+        relleno = PatternFill('solid', fgColor=inst)
         ini = col
         if not nombre:
             ws.merge_cells(start_row=1, start_column=col, end_row=2, end_column=col)
-            c = ws.cell(row=1, column=col, value=cols[0][0]); c.font = Font(bold=True); c.alignment = centro; c.border = borde
+            c = ws.cell(row=1, column=col, value=cols[0][0])
+            c.font = Font(bold=True, color='FFFFFF'); c.alignment = centro; c.border = borde; c.fill = relleno
             col += 1; continue
         for label, key in cols:
-            c2 = ws.cell(row=2, column=col, value=label); c2.font = Font(bold=True, size=9); c2.alignment = centro; c2.border = borde
-            if color: c2.fill = PatternFill('solid', fgColor=color)
+            c2 = ws.cell(row=2, column=col, value=label)
+            c2.font = Font(bold=True, size=9, color='FFFFFF'); c2.alignment = centro; c2.border = borde; c2.fill = relleno
             col += 1
         fin = col - 1
         ws.merge_cells(start_row=1, start_column=ini, end_row=1, end_column=fin)
-        c1 = ws.cell(row=1, column=ini, value=nombre); c1.font = Font(bold=True, size=10); c1.alignment = centro; c1.border = borde
-        if color: c1.fill = PatternFill('solid', fgColor=color)
+        c1 = ws.cell(row=1, column=ini, value=nombre)
+        c1.font = Font(bold=True, size=10, color='FFFFFF'); c1.alignment = centro; c1.border = borde; c1.fill = relleno
     orden = [k for _, _, cols in SECCIONES for _, k in cols]
     for ridx, f in enumerate(rows, start=3):
         for cidx, key in enumerate(orden, start=1):
@@ -2982,6 +2986,8 @@ def service_worker():
 # =========================================
 # PRE-REPORTE QUINCENAL
 # =========================================
+
+SIN_PROGRAMADAS = '<p class="acts-texto" style="font-weight:bold;">SIN ACTIVIDADES PROGRAMADAS.</p>'
 
 @app.route('/pre_reporte')
 
