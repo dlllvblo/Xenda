@@ -2489,147 +2489,133 @@ def descargar_eliminados():
 
 @app.route('/descargar_registros')
 def descargar_registros():
-
     if session.get('usuario') not in ADMIN_CORREOS:
         return 'No autorizado', 403
 
-    # Mismo desglose que usa /registros, para que el Excel sea consistente
-    def desglosar(reg, subs, kind):
-        filas = []
-        campo = reg.actividades_realizadas if kind == 'realizado' else reg.actividades_programadas
-        tipo_campo = reg.trabajo_realizado if kind == 'realizado' else reg.trabajo_programado
-        est_campo = reg.estatus_trabajo_realizado if kind == 'realizado' else reg.estatus_trabajo_programado
-        if campo:
-            filas.append({'tipo': tipo_campo or '', 'estatus': est_campo or '', 'actividad': campo,
-                          'entidad': '', 'municipio': '', 'nucleo': '', 'localidad': '', 'frente': ''})
-        tb = 'trabajo_' + kind
-        for s in subs:
-            if s.tipo == tb and s.descripcion:
-                desc = s.descripcion
-                est = ''
-                if desc.startswith('['):
-                    fin = desc.find(']')
-                    if fin > 0:
-                        est = desc[1:fin]
-                        desc = desc[fin + 1:].strip()
-                filas.append({'tipo': (s.frente or '').strip(), 'estatus': est, 'actividad': desc,
-                              'entidad': '', 'municipio': '', 'nucleo': '', 'localidad': '', 'frente': ''})
-        tt = 'realizada' if kind == 'realizado' else 'programada'
-        for s in subs:
-            if s.tipo == tt and (s.descripcion or s.trabajo_campo):
-                filas.append({'tipo': 'CAMPO', 'estatus': s.trabajo_campo or '',
-                              'actividad': s.descripcion or '',
-                              'entidad': s.entidad or '', 'municipio': s.municipio or '',
-                              'nucleo': s.nucleo or '', 'localidad': s.localidad or '',
-                              'frente': str(s.frente) if s.frente else ''})
-        return filas
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from openpyxl.utils import get_column_letter
 
     def desglosar_reporte(subs):
-        filas = []
+        out = []
         for s in subs:
             if s.tipo == 'reporte' and (s.actividad_canonica or s.descripcion):
                 etq = ACTIVIDADES_CANONICAS.get(s.actividad_canonica, {}).get('corto', s.actividad_canonica or '')
-                filas.append({
-                    'actividad': etq,
-                    'cantidad': s.cantidad if s.cantidad is not None else '',
-                    'soporte': s.soporte_documental or '',
-                    'entidad': s.entidad or '',
-                    'municipio': s.municipio or '',
-                    'nucleo': s.nucleo or '',
-                    'localidad': s.localidad or '',
-                    'descripcion': s.descripcion or ''
-                })
-        return filas
+                out.append({'actividad': etq, 'cantidad': s.cantidad if s.cantidad is not None else '',
+                            'soporte': s.soporte_documental or '', 'entidad': s.entidad or '',
+                            'municipio': s.municipio or '', 'nucleo': s.nucleo or '',
+                            'localidad': s.localidad or '', 'descripcion': s.descripcion or ''})
+        return out
+
+    def _trabajos(r, subs, kind):
+        out = []
+        campo = r.actividades_realizadas if kind == 'realizado' else r.actividades_programadas
+        tc = r.trabajo_realizado if kind == 'realizado' else r.trabajo_programado
+        ec = r.estatus_trabajo_realizado if kind == 'realizado' else r.estatus_trabajo_programado
+        if campo:
+            out.append({'actividad': tc or '', 'estatus': ec or '', 'descripcion': campo})
+        tb = 'trabajo_' + kind
+        for s in subs:
+            if s.tipo == tb and s.descripcion:
+                desc = s.descripcion; est = ''
+                if desc.startswith('['):
+                    fin = desc.find(']')
+                    if fin > 0:
+                        est = desc[1:fin]; desc = desc[fin + 1:].strip()
+                out.append({'actividad': (s.frente or '').strip(), 'estatus': est, 'descripcion': desc})
+        return out
+
+    def _actividades(subs, kind):
+        tt = 'realizada' if kind == 'realizado' else 'programada'
+        out = []
+        for s in subs:
+            if s.tipo == tt and (s.descripcion or s.trabajo_campo):
+                out.append({'descripcion': s.descripcion or '', 'entidad': s.entidad or '',
+                            'municipio': s.municipio or '', 'nucleo': s.nucleo or '',
+                            'localidad': s.localidad or '', 'frente': str(s.frente) if s.frente else '',
+                            'trabajo_campo': s.trabajo_campo or ''})
+        return out
+
+    SECCIONES = [
+        ('', None, [('ID', 'ID')]),
+        ('INFORMACIÓN TERRITORIAL', 'DDEBF7', [('Dirección', 'direccion'), ('Tramo', 'tramo'), ('Tipo de Propiedad', 'tipo_propiedad')]),
+        ('ACTIVIDAD OPERATIVA', 'E2EFDA', [('Tipo de Actividad', 'actividad'), ('Modalidad', 'tipo'), ('No. de Infografías', 'num_infografias'), ('Infografías Generadas', 'infografias_generadas'), ('Infografías Validadas', 'infografias_validadas'), ('Estatus Infografías', 'estatus_infografias')]),
+        ('PRODUCCIÓN TÉCNICA', 'FCE4D6', [('No. de Mediciones', 'mediciones_agroforestales'), ('No. de Fichas', 'mediciones_bdts'), ('Planos', 'planos'), ('Planos Generados', 'planos_generados'), ('Planos Validados', 'planos_validados')]),
+        ('REPORTE MATRIZ', 'FFF2CC', [('Actividad', 'rep_actividad'), ('Cantidad', 'rep_cantidad'), ('Soporte', 'rep_soporte'), ('Entidad', 'rep_entidad'), ('Municipio', 'rep_municipio'), ('Núcleo Agrario', 'rep_nucleo'), ('Localidad', 'rep_localidad'), ('Descripción', 'rep_descripcion')]),
+        ('TRABAJO REALIZADO', 'D9E1F2', [('Actividad Realizada', 'tr_actividad'), ('Estatus', 'tr_estatus'), ('Descripción', 'tr_descripcion')]),
+        ('ACTIVIDADES REALIZADAS', 'E2EFDA', [('Descripción', 'ar_descripcion'), ('Entidad', 'ar_entidad'), ('Municipio', 'ar_municipio'), ('Núcleo Agrario', 'ar_nucleo'), ('Localidad', 'ar_localidad'), ('Frente', 'ar_frente'), ('Trabajo de Campo', 'ar_trabajo_campo')]),
+        ('TRABAJO PROGRAMADO', 'D9E1F2', [('Actividad Programada', 'tp_actividad'), ('Estatus', 'tp_estatus'), ('Descripción', 'tp_descripcion')]),
+        ('ACTIVIDADES PROGRAMADAS', 'E2EFDA', [('Descripción', 'ap_descripcion'), ('Entidad', 'ap_entidad'), ('Municipio', 'ap_municipio'), ('Núcleo Agrario', 'ap_nucleo'), ('Localidad', 'ap_localidad'), ('Frente', 'ap_frente'), ('Trabajo de Campo', 'ap_trabajo_campo')]),
+        ('REGISTRO', 'D6DCE4', [('Usuario', 'usuario'), ('Fecha', 'fecha')]),
+    ]
 
     query = Registro.query
-    tramo = request.args.get('tramo')
-    entidad = request.args.get('entidad')
-    municipio = request.args.get('municipio')
-    usuario = request.args.get('usuario')
-    if tramo:
-        query = query.filter(Registro.tramo == tramo)
-    if entidad:
-        query = query.filter(Registro.entidad == entidad)
-    if municipio:
-        query = query.filter(Registro.municipio == municipio)
-    if usuario:
-        query = query.filter(Registro.usuario == usuario)
+    tramo = request.args.get('tramo'); entidad = request.args.get('entidad')
+    municipio = request.args.get('municipio'); usuario = request.args.get('usuario')
+    if tramo:     query = query.filter(Registro.tramo == tramo)
+    if entidad:   query = query.filter(Registro.entidad == entidad)
+    if municipio: query = query.filter(Registro.municipio == municipio)
+    if usuario:   query = query.filter(Registro.usuario == usuario)
     registros = query.order_by(Registro.fecha.desc()).all()
 
-    datos = []
-
+    rows = []
     for r in registros:
-
         subs = SubActividad.query.filter_by(registro_id=r.id).all()
-
-        base = {
-            'ID':                             r.id,
-            'DIRECCIÓN':                      r.direccion,
-            'TRAMO':                          r.tramo,
-            'TIPO DE PROPIEDAD':              r.tipo_propiedad,
-            'TIPO DE ACTIVIDAD':              r.actividad,
-            'MODALIDAD':                      r.tipo,
-            'NO. DE INFOGRAFÍAS':             r.num_infografias,
-            'INFOGRAFÍAS GENERADAS':          r.infografias_generadas,
-            'INFOGRAFÍAS VALIDADAS':          r.infografias_validadas,
-            'ESTATUS INFOGRAFÍAS':            r.estatus_infografias,
-            'NO. DE MEDICIONES':              r.mediciones_agroforestales,
-            'NO. DE FICHAS':                  r.mediciones_bdts,
-            'PLANOS':                         r.planos,
-            'PLANOS GENERADOS':               r.planos_generados,
-            'PLANOS VALIDADOS':               r.planos_validados,
-        }
-
-        det_r = desglosar(r, subs, 'realizado')
-        det_p = desglosar(r, subs, 'programado')
-        det_rep = desglosar_reporte(subs)
-
-        # Una fila por bloque; realizadas, programadas y matriz emparejadas por índice
-        n = max(len(det_r), len(det_p), len(det_rep), 1)
+        rep = desglosar_reporte(subs)
+        tr = _trabajos(r, subs, 'realizado'); ar = _actividades(subs, 'realizado')
+        tp = _trabajos(r, subs, 'programado'); ap = _actividades(subs, 'programado')
+        n = max(len(rep), len(tr), len(ar), len(tp), len(ap), 1)
         for i in range(n):
-            dr = det_r[i] if i < len(det_r) else {}
-            dp = det_p[i] if i < len(det_p) else {}
-            dm = det_rep[i] if i < len(det_rep) else {}
-            fila = base.copy()
-            fila['TIPO TRABAJO REALIZADO']        = dr.get('tipo', '')
-            fila['ESTATUS REALIZADO']             = dr.get('estatus', '')
-            fila['ACTIVIDAD REALIZADA']           = dr.get('actividad', '')
-            fila['ENTIDAD (TABLA)']               = dr.get('entidad', '')
-            fila['MUNICIPIO (TABLA)']             = dr.get('municipio', '')
-            fila['NÚCLEO AGRARIO (TABLA)']        = dr.get('nucleo', '')
-            fila['LOCALIDAD (TABLA)']             = dr.get('localidad', '')
-            fila['FRENTE (TABLA)']                = dr.get('frente', '')
-            fila['TIPO TRABAJO PROGRAMADO']       = dp.get('tipo', '')
-            fila['ESTATUS PROGRAMADO']            = dp.get('estatus', '')
-            fila['ACTIVIDAD PROGRAMADA']          = dp.get('actividad', '')
-            fila['ACTIVIDAD MATRIZ']              = dm.get('actividad', '')
-            fila['CANTIDAD MATRIZ']               = dm.get('cantidad', '')
-            fila['SOPORTE MATRIZ']                = dm.get('soporte', '')
-            fila['ENTIDAD MATRIZ']                = dm.get('entidad', '')
-            fila['MUNICIPIO MATRIZ']              = dm.get('municipio', '')
-            fila['NÚCLEO MATRIZ']                 = dm.get('nucleo', '')
-            fila['LOCALIDAD MATRIZ']              = dm.get('localidad', '')
-            fila['DESCRIPCIÓN MATRIZ']            = dm.get('descripcion', '')
-            fila['USUARIO']                       = r.usuario
-            fila['FECHA']                         = r.fecha.strftime('%d/%m/%Y %H:%M:%S') if r.fecha else ''
-            datos.append(fila)
+            f = {'ID': r.id, 'direccion': r.direccion, 'tramo': r.tramo, 'tipo_propiedad': r.tipo_propiedad,
+                 'actividad': r.actividad, 'tipo': r.tipo, 'num_infografias': r.num_infografias,
+                 'infografias_generadas': r.infografias_generadas, 'infografias_validadas': r.infografias_validadas,
+                 'estatus_infografias': r.estatus_infografias, 'mediciones_agroforestales': r.mediciones_agroforestales,
+                 'mediciones_bdts': r.mediciones_bdts, 'planos': r.planos, 'planos_generados': r.planos_generados,
+                 'planos_validados': r.planos_validados, 'usuario': r.usuario,
+                 'fecha': r.fecha.strftime('%d/%m/%Y %H:%M:%S') if r.fecha else ''}
+            d = rep[i] if i < len(rep) else {}
+            for k in ('actividad', 'cantidad', 'soporte', 'entidad', 'municipio', 'nucleo', 'localidad', 'descripcion'):
+                f['rep_' + k] = d.get(k, '')
+            d = tr[i] if i < len(tr) else {}
+            f['tr_actividad'] = d.get('actividad', ''); f['tr_estatus'] = d.get('estatus', ''); f['tr_descripcion'] = d.get('descripcion', '')
+            d = ar[i] if i < len(ar) else {}
+            for k in ('descripcion', 'entidad', 'municipio', 'nucleo', 'localidad', 'frente', 'trabajo_campo'):
+                f['ar_' + k] = d.get(k, '')
+            d = tp[i] if i < len(tp) else {}
+            f['tp_actividad'] = d.get('actividad', ''); f['tp_estatus'] = d.get('estatus', ''); f['tp_descripcion'] = d.get('descripcion', '')
+            d = ap[i] if i < len(ap) else {}
+            for k in ('descripcion', 'entidad', 'municipio', 'nucleo', 'localidad', 'frente', 'trabajo_campo'):
+                f['ap_' + k] = d.get(k, '')
+            rows.append(f)
 
-    df = pd.DataFrame(datos)
+    wb = openpyxl.Workbook(); ws = wb.active; ws.title = 'Registros'
+    thin = Side(style='thin', color='BFBFBF'); borde = Border(left=thin, right=thin, top=thin, bottom=thin)
+    centro = Alignment(horizontal='center', vertical='center', wrap_text=True)
+    col = 1
+    for nombre, color, cols in SECCIONES:
+        ini = col
+        if not nombre:
+            ws.merge_cells(start_row=1, start_column=col, end_row=2, end_column=col)
+            c = ws.cell(row=1, column=col, value=cols[0][0]); c.font = Font(bold=True); c.alignment = centro; c.border = borde
+            col += 1; continue
+        for label, key in cols:
+            c2 = ws.cell(row=2, column=col, value=label); c2.font = Font(bold=True, size=9); c2.alignment = centro; c2.border = borde
+            if color: c2.fill = PatternFill('solid', fgColor=color)
+            col += 1
+        fin = col - 1
+        ws.merge_cells(start_row=1, start_column=ini, end_row=1, end_column=fin)
+        c1 = ws.cell(row=1, column=ini, value=nombre); c1.font = Font(bold=True, size=10); c1.alignment = centro; c1.border = borde
+        if color: c1.fill = PatternFill('solid', fgColor=color)
+    orden = [k for _, _, cols in SECCIONES for _, k in cols]
+    for ridx, f in enumerate(rows, start=3):
+        for cidx, key in enumerate(orden, start=1):
+            c = ws.cell(row=ridx, column=cidx, value=f.get(key, '')); c.alignment = Alignment(vertical='top', wrap_text=True); c.border = borde
+    for cidx in range(1, len(orden) + 1):
+        ws.column_dimensions[get_column_letter(cidx)].width = 18
+    ws.freeze_panes = 'B3'
 
-    ruta_archivo = os.path.join(
-        '/tmp',
-        'registros_xenda.xlsx'
-    )
-
-    df.to_excel(
-        ruta_archivo,
-        index=False
-    )
-
-    return send_file(
-        ruta_archivo,
-        as_attachment=True
-    )
+    ruta_archivo = os.path.join('/tmp', 'registros_xenda.xlsx')
+    wb.save(ruta_archivo)
+    return send_file(ruta_archivo, as_attachment=True, download_name='registros_xenda.xlsx')
 
 # ============================================================
 # EXPORT MATRIZ INFORMES_PROPUESTA (columnas K–V del REPORTE)
