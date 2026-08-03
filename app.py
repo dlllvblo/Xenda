@@ -23,7 +23,8 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 import openpyxl
-import copy 
+import copy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 # =========================================
@@ -188,6 +189,10 @@ class Usuario(db.Model):
 
     nombre = db.Column(
         db.String(200)
+    )
+
+    password_hash = db.Column(
+        db.String(255)
     )
 
 # =========================================
@@ -1510,7 +1515,15 @@ def login():
 
         APP_PASSWORD = os.getenv('APP_PASSWORD')
 
-        if usuario and password == APP_PASSWORD: 
+        # Prioridad: hash individual. Fallback: password global (transición, sin lockout)
+        if usuario and usuario.password_hash:
+            valido = check_password_hash(usuario.password_hash, password)
+        elif usuario and APP_PASSWORD:
+            valido = (password == APP_PASSWORD)
+        else:
+            valido = False
+
+        if valido: 
 
             session.permanent = True
 
@@ -1606,9 +1619,11 @@ def admin():
 
         else:
 
+            password = request.form.get('password', '').strip()
             nuevo = Usuario(
                 correo=correo,
-                nombre=nombre or None
+                nombre=nombre or None,
+                password_hash=generate_password_hash(password) if password else None
             )
 
             db.session.add(nuevo)
@@ -1627,6 +1642,20 @@ def admin():
     'admin.html',
     usuarios=usuarios
 )
+
+@app.route('/reset_password/<int:id>', methods=['POST'])
+def reset_password(id):
+    if session.get('usuario') not in ADMIN_CORREOS:
+        return redirect('/login')
+    usuario = Usuario.query.get_or_404(id)
+    nueva = request.form.get('password', '').strip()
+    if not nueva:
+        flash('La contraseña no puede estar vacía')
+    else:
+        usuario.password_hash = generate_password_hash(nueva)
+        db.session.commit()
+        flash(f'Contraseña actualizada para {usuario.correo}')
+    return redirect('/admin')
 
 @app.route('/eliminar_usuario/<int:id>')
 
@@ -2273,8 +2302,14 @@ def registros():
                 })
         return filas
 
+    ids = [r.id for r in lista]
+    subs_all = SubActividad.query.filter(SubActividad.registro_id.in_(ids)).all() if ids else []
+    subs_por_reg = {}
+    for s in subs_all:
+        subs_por_reg.setdefault(s.registro_id, []).append(s)
+
     for r in lista:
-        subs = SubActividad.query.filter_by(registro_id=r.id).all()
+        subs = subs_por_reg.get(r.id, [])
         r.det_realizadas = desglosar(r, subs, 'realizado')
         r.det_programadas = desglosar(r, subs, 'programado')
         r.det_reporte = desglosar_reporte(subs)
@@ -3368,6 +3403,7 @@ with app.app_context():
             conn.execute(db.text("ALTER TABLE sub_actividad ADD COLUMN IF NOT EXISTS actividad_canonica VARCHAR(60)"))
             conn.execute(db.text("ALTER TABLE sub_actividad ADD COLUMN IF NOT EXISTS cantidad INTEGER"))
             conn.execute(db.text("ALTER TABLE sub_actividad ADD COLUMN IF NOT EXISTS soporte_documental VARCHAR(200)"))
+            conn.execute(db.text("ALTER TABLE usuario ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255)"))
     except Exception as _e:
         print('Auto-migración sub_actividad:', _e)  
 
@@ -3380,5 +3416,5 @@ if __name__ == '__main__':
     app.run(
         host='0.0.0.0',
         port=5000,
-        debug=True
+        debug=os.getenv('FLASK_DEBUG') == '1'
     )

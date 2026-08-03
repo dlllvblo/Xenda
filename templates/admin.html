@@ -289,6 +289,11 @@
                 placeholder="correo@gmail.com"
                 required
             >
+            <input
+                type="text"
+                name="password"
+                placeholder="Contraseña (opcional)"
+            >
             <button type="submit" class="btn btn-guinda">
                 + Agregar
             </button>
@@ -418,11 +423,19 @@
                     <td>{{ usuario.nombre or '—' }}</td>
                     <td>{{ usuario.correo }}</td>
                     <td>
-                        <a
-                            href="/eliminar_usuario/{{ usuario.id }}"
-                            onclick="return confirm('¿Eliminar este usuario?')"
-                            class="eliminar-link"
-                        >
+                        <form action="/reset_password/{{ usuario.id }}" method="POST"
+                              style="display:inline-flex; gap:6px; align-items:center;"
+                              onsubmit="return confirm('¿Asignar nueva contraseña a este usuario?')">
+                            <input type="text" name="password" placeholder="Nueva contraseña"
+                                   style="padding:4px 8px; border-radius:8px; border:1.5px solid #d1d5db; font-size:13px;">
+                            <button type="submit" class="eliminar-link"
+                                    style="border-color:#245C4F; color:#245C4F; background:transparent; cursor:pointer;">
+                                Reset
+                            </button>
+                        </form>
+                        <a href="/eliminar_usuario/{{ usuario.id }}"
+                           onclick="return confirm('¿Eliminar este usuario?')"
+                           class="eliminar-link">
                             Eliminar
                         </a>
                     </td>
