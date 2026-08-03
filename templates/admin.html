@@ -65,6 +65,21 @@
             letter-spacing: 0.5px;
         }
 
+        /* SEPARADOR DE SECCIÓN */
+        .seccion-titulo {
+            color: #dec9a2;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 26px 4px 14px;
+            padding-left: 4px;
+        }
+
+        .seccion-titulo:first-of-type {
+            margin-top: 0;
+        }
+
         /* CARD */
         .card {
             background: rgba(255,255,255,0.96);
@@ -274,31 +289,24 @@
         {% endif %}
     {% endwith %}
 
-    <!-- AGREGAR USUARIO -->
+    <!-- =================================================== -->
+    <!-- BLOQUE 1 · OPERACIÓN                                -->
+    <!-- =================================================== -->
+    <div class="seccion-titulo">Operación</div>
+
+    <!-- NAVEGACIÓN -->
     <div class="card">
-        <div class="card-title">Agregar usuario</div>
-        <form method="POST" class="form-agregar">
-            <input
-                type="text"
-                name="nombre"
-                placeholder="Nombre completo"
-            >
-            <input
-                type="email"
-                name="correo"
-                placeholder="correo@gmail.com"
-                required
-            >
-            <input
-                type="text"
-                name="password"
-                placeholder="Contraseña (opcional)"
-            >
-            <button type="submit" class="btn btn-guinda">
-                + Agregar
-            </button>
-        </form>
+        <div class="card-title">Navegación</div>
+        <div class="nav-grid">
+            <a href="/registros" class="btn btn-guinda">Ver registros</a>
+            <a href="/sesiones" class="btn btn-guinda">Ver sesiones activas</a>
+        </div>
     </div>
+
+    <!-- =================================================== -->
+    <!-- BLOQUE 2 · REPORTES Y EXPORTACIONES                 -->
+    <!-- =================================================== -->
+    <div class="seccion-titulo">Reportes y exportaciones</div>
 
     <!-- REPORTES -->
     <div class="card">
@@ -331,31 +339,6 @@
             </a>
             <a href="/conteo_reporte?periodo=trimestral" target="_blank" class="btn btn-outline-verde">
                 Trimestral
-            </a>
-        </div>
-    </div>
-
-    <!-- NAVEGACIÓN -->
-    <div class="card">
-        <div class="card-title">Navegación</div>
-        <div class="nav-grid">
-            <a href="/registros" class="btn btn-guinda">Ver registros</a>
-            <a href="/sesiones" class="btn btn-guinda">Ver sesiones activas</a>
-        </div>
-    </div>
-
-    <!-- DESCARGAS -->
-    <div class="card">
-        <div class="card-title">Descargas</div>
-        <div class="descargas-grid">
-            <a href="/descargar_usuarios" class="btn btn-outline-guinda">
-                Usuarios
-            </a>
-            <a href="/descargar_eliminados" class="btn btn-outline-guinda">
-                Registros eliminados
-            </a>
-            <a href="/descargar_registros" class="btn btn-outline-guinda">
-                Registros
             </a>
         </div>
     </div>
@@ -403,6 +386,53 @@
                 <option value="4">4º trimestre (Oct–Dic)</option>
             </select>
             <button type="submit" class="btn btn-outline-guinda">Descargar trimestral</button>
+        </form>
+    </div>
+
+    <!-- DESCARGAS -->
+    <div class="card">
+        <div class="card-title">Descargas</div>
+        <div class="descargas-grid">
+            <a href="/descargar_usuarios" class="btn btn-outline-guinda">
+                Usuarios
+            </a>
+            <a href="/descargar_eliminados" class="btn btn-outline-guinda">
+                Registros eliminados
+            </a>
+            <a href="/descargar_registros" class="btn btn-outline-guinda">
+                Registros
+            </a>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- BLOQUE 3 · GESTIÓN DE USUARIOS                      -->
+    <!-- =================================================== -->
+    <div class="seccion-titulo">Gestión de usuarios</div>
+
+    <!-- AGREGAR USUARIO -->
+    <div class="card">
+        <div class="card-title">Agregar usuario</div>
+        <form method="POST" class="form-agregar">
+            <input
+                type="text"
+                name="nombre"
+                placeholder="Nombre completo"
+            >
+            <input
+                type="email"
+                name="correo"
+                placeholder="correo@gmail.com"
+                required
+            >
+            <input
+                type="text"
+                name="password"
+                placeholder="Contraseña (opcional)"
+            >
+            <button type="submit" class="btn btn-guinda">
+                + Agregar
+            </button>
         </form>
     </div>
 

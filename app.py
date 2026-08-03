@@ -2433,7 +2433,7 @@ def descargar_usuarios():
 
     ruta_archivo = os.path.join(
     '/tmp',
-    'registros_xenda.xlsx'
+    'usuarios_xenda.xlsx'
     )
 
     df.to_excel(
