@@ -343,12 +343,7 @@
 
                 box-shadow:
                     0 14px 24px rgba(159,34,65,0.35);
-            }
-
-        #sr_entidad, #sr_municipio, #sr_nucleo,
-        #sp_entidad, #sp_municipio, #sp_nucleo {
-            text-transform: uppercase;
-        }  
+            } 
 
         @media (max-width: 768px) {
 
@@ -571,7 +566,7 @@
                     </option>
 
                     <option value="TAP">AIFA-PACHUCA</option>
-                    <option value="TIGDL">IRAPUATO-GUADALAJARA</option>
+                    <option value="TIG">IRAPUATO-GUADALAJARA</option>
                     <option value="TMLM">MAZATLÁN-LOS MOCHIS</option>
                     <option value="TMQ">MÉXICO-QUERÉTARO</option>
                     <option value="TQI">QUERÉTARO-IRAPUATO</option>
@@ -596,7 +591,7 @@
                 <select name="tipo_propiedad" id="tipo_propiedad">
 
                     <option value="">
-                        Seleccione una opción
+                        Seleccione tipo de propiedad
                     </option>
 
                     <option value="PRIVADA">
@@ -710,7 +705,11 @@
             >
 
                 <option value="">
-                    Seleccione una opción
+                    Seleccione tipo de actividad
+                </option>
+
+                <option value="ASAMBLEA">
+                    ASAMBLEA
                 </option>
 
                 <option value="MEDICIÓN">
@@ -721,15 +720,11 @@
                     REUNIÓN DE SEGUIMIENTO
                 </option>
 
-                <option value="ASAMBLEA">
-                    ASAMBLEA
-                </option>
-
             </select>
 
         </div>
 
-        <div class="input-group">
+        <div class="input-group" id="modalidad-group">
 
             <label>Modalidad</label>
 
@@ -739,7 +734,7 @@
             >
 
                 <option value="">
-                    Seleccione una opción
+                    Seleccione modalidad
                 </option>
 
                 <option value="BDT'S AGROFORESTAL">
@@ -751,13 +746,26 @@
                 </option>
 
                 <option value="1RA">
-                    1ERA
+                    1.ª
                 </option>
 
                 <option value="2DA">
-                    2NDA
+                    2.ª
                 </option>
 
+            </select>
+
+        </div>
+
+        <div class="input-group" id="tipo-carto-group" style="display:none;">
+
+            <label>Tipo</label>
+
+            <select name="tipo_afectacion_carto" id="tipo_afectacion_carto">
+                <option value="">Seleccione tipo</option>
+                <option value="REVISIÓN">REVISIÓN</option>
+                <option value="VALIDACIÓN">VALIDACIÓN</option>
+                <option value="REVISIÓN Y VALIDACIÓN">AMBAS</option>
             </select>
 
         </div>
@@ -838,6 +846,33 @@
 
     </div>
 
+            <!-- CAMPOS CARTOGRAFÍA (MEDICIONES + PRIVADA) -->
+            <div id="cartografia-container" style="display:none;">
+                <div class="input-group">
+                    <label>Tipo de Plano</label>
+                    <select name="tipo_plano" id="tipo_plano">
+                        <option value="">Seleccione tipo de plano</option>
+                        <option value="INDIVIDUAL">INDIVIDUAL</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Tipo</label>
+                    <select name="tipo_afectacion" id="tipo_afectacion">
+                        <option value="">Seleccione tipo</option>
+                        <option value="AFECTACIÓN">AFECTACIÓN</option>
+                        <option value="EXPROPIACIÓN">EXPROPIACIÓN</option>
+                        <option value="REVISIÓN">REVISIÓN</option>
+                        <option value="VALIDACIÓN">VALIDACIÓN</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Nomenclatura</label>
+                    <textarea name="nomenclatura" id="nomenclatura"
+                              placeholder="Ingrese nomenclatura..."
+                              style="min-height:70px;"></textarea>
+                </div>
+            </div>
+
 </div>
 
     <div class="card">
@@ -858,7 +893,7 @@
                     type="number"
                     name="mediciones_agroforestales"
                     min="0"
-                    placeholder="Ingrese el número de mediciones realizadas"
+                    placeholder="Ingrese el número de mediciones"
                     class="bloquear-numero"
                 >
 
@@ -874,7 +909,7 @@
                     type="number"
                     name="mediciones_bdts"
                     min="0"
-                    placeholder="Ingrese el número de mediciones realizadas"
+                    placeholder="Ingrese el número de fichas"
                     class="bloquear-numero" 
                 >
 
@@ -954,7 +989,7 @@
                         <option value="CARPETA_BASICA_ASISTENCIA">GESTIÓN DOCUMENTAL DE CARPETA BÁSICA (ASISTENCIA TÉCNICA)</option>
                         <option value="TRABAJOS_EXPROPIACION">TRABAJOS TÉCNICOS E INFORMATIVOS DE EXPROPIACIÓN</option>
                         <option value="CARPETA_BASICA_AGA">CARPETA BÁSICA ANTE AGA (EXPROPIACIÓN)</option> -->
-                        <option value="">SELECCIONE UNA OPCIÓN</option>
+                        <option value="">Seleccione una opción</option>
                         <option value="ASAMBLEAS_COP">ASISTENCIA A ASAMBLEAS DE LOS NÚCLEOS AGRARIOS INVOLUCRADOS, SUSCRIPCIÓN PARA SOLICITUD DE ANUENCIA Y FIRMA DE COP DE USO COMÚN</option>
                         <option value="REUNIONES_SENSIBILIZACION">ASISTENCIA A REUNIONES INFORMATIVAS DE SENSIBILIZACIÓN CON LOS NÚCLEOS AGRARIOS INVOLUCRADOS</option>
                         <option value="FICHAS_BDT_AGROFORESTAL">ELABORACIÓN DE FICHAS DE BIENES DISTINTOS A LA TIERRA AGROFORESTALES Y ENVIADAS</option>
@@ -968,27 +1003,27 @@
                         <option value="MEDICION_BDT">INSPECCIÓN OCULAR Y TRABAJOS DE MEDICIÓN EN PROPIEDAD SOCIAL Y PRIVADA PARA LOS BDT'S AGROFORESTALES — CONSTRUCCIÓN</option>
                         <option value="REVISION_VALIDACION_CAMPO">REVISIÓN Y VALIDACIÓN DE INFORMACIÓN RECOPILADA EN CAMPO POR LA BRIGADA</option>
                     </select>
-                    <input id="rep_cantidad" type="number" min="0" step="1" value="1" placeholder="CANTIDAD" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                    <input id="rep_soporte" list="soportes_dl" placeholder="SOPORTE DOCUMENTAL / PRODUCTO" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
+                    <input id="rep_cantidad" type="number" min="0" step="1" value="0" placeholder="CANTIDAD" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <input id="rep_soporte" list="soportes_dl" placeholder="Soporte documental / Producto" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                     <select id="rep_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">ENTIDAD</option>
+                        <option value="">Entidad</option>
                     </select>
                     <select id="rep_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">MUNICIPIO</option>
+                        <option value="">Municipio</option>
                     </select>
                     <select id="rep_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">NÚCLEO AGRARIO</option>
+                        <option value="">Núcleo agrario</option>
                         <option value="VARIOS">VARIOS</option>
                     </select>
-                    <input id="rep_localidad" placeholder="LOCALIDAD (opcional)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
-                    <textarea id="rep_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
+                    <input id="rep_localidad" placeholder="Localidad (solo si aplica)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
+                    <textarea id="rep_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px;"></textarea>
                     <datalist id="soportes_dl">
-                        <option value="FICHAS"></option>
-                        <option value="MINUTAS"></option>
-                        <option value="PLANOS"></option>
-                        <option value="INFOGRAFÍAS"></option>
-                        <option value="MINUTAS Y ARCHIVOS DIGITALES"></option>
-                        <option value="CARPETAS DIGITALES"></option>
+                        <option value="Fichas"></option>
+                        <option value="Minutas"></option>
+                        <option value="Planos"></option>
+                        <option value="Infografías"></option>
+                        <option value="Minutas y archivos digitales"></option>
+                        <option value="Carpetas digitales"></option>
                     </datalist>
                 </div>
                 <button type="button" onclick="agregarSubReporte()" style="background:#404040;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad a la matriz</button>
@@ -1004,7 +1039,7 @@
             <div class="input-group">
                 <label id="label_trabajo_realizado">Tipo de trabajo realizado</label>
                 <select name="trabajo_realizado" id="trabajo_realizado">
-                    <option value="">Seleccione una opción</option>
+                    <option value="">Seleccione tipo</option>
                     <option value="CAMPO">CAMPO</option>
                     <option value="GABINETE">GABINETE</option>
                 </select>
@@ -1013,7 +1048,7 @@
             <div class="input-group" id="estatus_realizado_container">
                 <label>Estatus</label>
                 <select name="estatus_trabajo_realizado" id="estatus_trabajo_realizado">
-                    <option value="">Seleccione un estatus</option>
+                    <option value="">Seleccione estatus</option>
                     <option value="EN PROCESO">EN PROCESO</option>
                     <option value="FINALIZADO">FINALIZADO</option>
                     <option value="PENDIENTE DE INICIAR">PENDIENTE DE INICIAR</option>
@@ -1026,7 +1061,7 @@
                 <label>Descripción de actividades realizadas</label>
                 <textarea name="actividades_realizadas" id="actividades_realizadas"
                     placeholder="Describa las actividades realizadas..."
-                    style="text-transform: uppercase;" autocapitalize="characters"></textarea>
+                    autocapitalize="characters"></textarea>
             </div>
 
             <div id="trabajos_realizados_wrapper" style="grid-column: 1 / -1;">
@@ -1051,21 +1086,21 @@
                 <div id="tabla_sub_realizadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <select id="sr_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">ENTIDAD</option>
+                        <option value="">Entidad</option>
                     </select>
                     <select id="sr_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">MUNICIPIO</option>
+                        <option value="">Municipio</option>
                     </select>
                     <select id="sr_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">NÚCLEO AGRARIO</option>
+                        <option value="">Núcleo agrario</option>
                         <option value="VARIOS">VARIOS</option>
                     </select>
-                    <input id="sr_localidad" placeholder="LOCALIDAD" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; text-transform:uppercase;">
+                    <input id="sr_localidad" placeholder="Localidad (solo si aplica)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                     <div style="position:relative;">
-                        <input id="sr_frente" type="text" inputmode="text" placeholder="FRENTE (número o N/A)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; width:100%; text-transform: uppercase;">
+                        <input id="sr_frente" type="text" inputmode="text" placeholder="Frente (número o N/A)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; width:100%;">
                     </div>
-                    <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (EJ. EN PROCESO, FINALIZADO, INSPECCIONES EN SITIO, PRÁCTICAS DE CAMPO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
-                    <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
+                    <textarea id="sr_trabajo_campo" placeholder="Trabajo de campo: (Ej. En proceso, Finalizado, Pendiente de iniciar, Inspecciones en sitio, Prácticas de campo...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px;"></textarea>
+                    <textarea id="sr_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px;"></textarea>
                 </div>
                 <button type="button" onclick="agregarSubRealizada()" style="background:#245C4F;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad</button>
                 <input type="hidden" name="sub_actividades_realizadas" id="sub_actividades_realizadas" value="[]">
@@ -1083,7 +1118,7 @@
             <div class="input-group">
                 <label id="label_trabajo_programado">Tipo de trabajo programado</label>
                 <select name="trabajo_programado" id="trabajo_programado">
-                    <option value="">Seleccione una opción</option>
+                    <option value="">Seleccione tipo</option>
                     <option value="CAMPO">CAMPO</option>
                     <option value="GABINETE">GABINETE</option>
                 </select>
@@ -1092,7 +1127,7 @@
             <div class="input-group" id="estatus_programado_container">
                 <label>Estatus</label>
                 <select name="estatus_trabajo_programado" id="estatus_trabajo_programado">
-                    <option value="">Seleccione un estatus</option>
+                    <option value="">Seleccione estatus</option>
                     <option value="EN PROCESO">EN PROCESO</option>
                     <option value="FINALIZADO">FINALIZADO</option>
                     <option value="PENDIENTE DE INICIAR">PENDIENTE DE INICIAR</option>
@@ -1103,7 +1138,7 @@
                 <label>Descripción de actividades programadas</label>
                 <textarea name="actividades_programadas" id="actividades_programadas"
                     placeholder="Describa las actividades programadas..."
-                    style="text-transform: uppercase;" autocapitalize="characters"></textarea>
+                    autocapitalize="characters"></textarea>
             </div>
 
             <div id="trabajos_programados_wrapper" style="grid-column: 1 / -1;">
@@ -1128,18 +1163,18 @@
                 <div id="tabla_sub_programadas" style="margin-bottom: 12px;"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <select id="sp_entidad" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">ENTIDAD</option>
+                        <option value="">Entidad</option>
                     </select>
                     <select id="sp_municipio" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">MUNICIPIO</option>
+                        <option value="">Municipio</option>
                     </select>
                     <select id="sp_nucleo" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
-                        <option value="">NÚCLEO AGRARIO</option>
+                        <option value="">Núcleo Agrario</option>
                         <option value="VARIOS">VARIOS</option>
                     </select>
                     <input id="sp_frente" type="number" min="0" step="1" placeholder="FRENTE" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; class="bloquear-numero">
-                    <textarea id="sp_trabajo_campo" placeholder="Trabajo de campo: (EJ. EN PROCESO, FINALIZADO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px; text-transform:uppercase;"></textarea>
-                    <textarea id="sp_descripcion" placeholder="Descripción de la actividad programada..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px; text-transform:uppercase;"></textarea>
+                    <textarea id="sp_trabajo_campo" placeholder="Trabajo de campo: (EJ. EN PROCESO, FINALIZADO...)" style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:60px;"></textarea>
+                    <textarea id="sp_descripcion" placeholder="Descripción de la actividad programada..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px;"></textarea>
                 </div>
                 <button type="button" onclick="agregarSubProgramada()" style="background:#6E152E;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad programada</button>
                 <input type="hidden" name="sub_actividades_programadas" id="sub_actividades_programadas" value="[]">
@@ -1474,13 +1509,13 @@ function aplicarConfigDireccion(direccion) {
     // Opciones del select de actividad según dirección
     const selectActividad = document.querySelector('select[name="actividad"]');
     if (selectActividad) {
+        const valorPrevio = selectActividad.value;  // preservar selección al recalcular
         if (direccion === 'CARTOGRAFÍA') {
             selectActividad.innerHTML = `
                 <option value="">Seleccione una opción</option>
                 <option value="AFECTACIÓN">AFECTACIÓN</option>
                 <option value="EXPROPIACIÓN">EXPROPIACIÓN</option>
-                <option value="REVISIÓN">REVISIÓN</option>
-                <option value="VALIDACIÓN">VALIDACIÓN</option>
+                <option value="GENERAL DE EJIDOS">GENERAL DE EJIDOS</option>
             `;
         } else if (direccion === 'PRODUCTOS Y SISTEMAS GEOESPACIALES') {
             selectActividad.innerHTML = `
@@ -1498,7 +1533,61 @@ function aplicarConfigDireccion(direccion) {
                 <option value="ASAMBLEA">ASAMBLEA</option>
             `;
         }
+        // Restaurar selección previa si sigue existiendo entre las nuevas opciones
+        if (valorPrevio && selectActividad.querySelector(`option[value="${valorPrevio}"]`)) {
+            selectActividad.value = valorPrevio;
+        }
     }
+}
+
+function toggleCartografia() {
+    const cont = document.getElementById('cartografia-container');
+    if (!cont) return;
+    const tp = document.getElementById('tipo_plano');
+    const ta = document.getElementById('tipo_afectacion');
+    const nm = document.getElementById('nomenclatura');
+
+    // El bloque de mediciones aparece SOLO en MEDICIONES + PRIVADA
+    const mostrar = (direccionSelect.value === 'MEDICIONES' && esPropiedadPrivada());
+    cont.style.display = mostrar ? '' : 'none';
+
+    if (!mostrar) {
+        if (tp) tp.value = '';
+        if (ta) ta.value = '';
+        if (nm) nm.value = '';
+    }
+}
+
+function ajustarPropiedadPorDireccion() {
+    const propSelect = document.getElementById('tipo_propiedad');
+    if (!propSelect) return;
+    const optPrivada = propSelect.querySelector('option[value="PRIVADA"]');
+    if (!optPrivada) return;
+    if (direccionSelect.value === 'CARTOGRAFÍA') {
+        if (propSelect.value === 'PRIVADA') propSelect.value = 'SOCIAL';
+        optPrivada.hidden = true;
+        optPrivada.disabled = true;
+    } else {
+        optPrivada.hidden = false;
+        optPrivada.disabled = false;
+    }
+}
+
+function toggleModalidadTipo() {
+    const esCartografia = (direccionSelect.value === 'CARTOGRAFÍA');
+    const modGroup  = document.getElementById('modalidad-group');
+    const tipoGroup = document.getElementById('tipo-carto-group');
+    const modSel    = document.getElementById('tipo');
+    const tipoSel   = document.getElementById('tipo_afectacion_carto');
+    if (modGroup)  modGroup.style.display  = esCartografia ? 'none' : '';
+    if (tipoGroup) tipoGroup.style.display = esCartografia ? '' : 'none';
+
+    // En cartografía, el bloque de mediciones (Tipo de Plano/Tipo/Nomenclatura) nunca se muestra
+    const cartoCont = document.getElementById('cartografia-container');
+    if (cartoCont && esCartografia) cartoCont.style.display = 'none';
+    // Limpiar el que no aplica para no enviar valores cruzados
+    if (esCartografia) { if (modSel) modSel.value = ''; }
+    else { if (tipoSel) tipoSel.value = ''; }
 }
 
 direccionSelect.addEventListener('change', function() {
@@ -1532,6 +1621,9 @@ direccionSelect.addEventListener('change', function() {
 
     mostrarAviso(false);
     aplicarConfigDireccion(direccion);
+    ajustarPropiedadPorDireccion();
+    toggleModalidadTipo();
+    toggleCartografia();
 });
 
 const frenteInput = document.getElementById('frente');
@@ -1873,17 +1965,17 @@ function poblarSelectsSub() {
     ['sr_entidad', 'sp_entidad', 'rep_entidad'].forEach(id => {
         const sel = document.getElementById(id);
         if (sel) {
-            sel.innerHTML = '<option value="">ENTIDAD</option>';
+            sel.innerHTML = '<option value="">Entidad</option>';
             entidades.forEach(e => sel.innerHTML += `<option value="${e}">${e}</option>`);
         }
     });
     ['sr_municipio', 'sp_municipio', 'rep_municipio'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.innerHTML = '<option value="">MUNICIPIO</option>';
+        if (el) el.innerHTML = '<option value="">Municipio</option>';
     });
     ['sr_nucleo', 'sp_nucleo', 'rep_nucleo'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
+        if (el) el.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     });
     if (esPropiedadPrivada()) aplicarNucleoPrivadaSR();
 }
@@ -1901,7 +1993,7 @@ function esPropiedadPrivada() {
 function aplicarNucleoPrivadaSR() {
     const sel = document.getElementById('sr_nucleo');
     if (!sel) return;
-    sel.innerHTML = '<option value="PROPIEDAD PRIVADA">PROPIEDAD PRIVADA</option>';
+    sel.innerHTML = '<option value="PROPIEDAD PRIVADA">Propiedad Privada</option>';
     sel.value = 'PROPIEDAD PRIVADA';
     sel.disabled = true;
 }
@@ -1909,13 +2001,16 @@ function restaurarNucleoSR() {
     const sel = document.getElementById('sr_nucleo');
     if (!sel) return;
     sel.disabled = false;
-    sel.innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
+    sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
 }
 const tipoPropiedadSelect = document.getElementById('tipo_propiedad');
 if (tipoPropiedadSelect) {
     tipoPropiedadSelect.addEventListener('change', function() {
         if (esPropiedadPrivada()) aplicarNucleoPrivadaSR();
         else restaurarNucleoSR();
+        // MEDICIONES + PRIVADA suma las actividades de cartografía: recalcular
+        if (direccionSelect.value) aplicarConfigDireccion(direccionSelect.value);
+        toggleCartografia();
     });
     if (esPropiedadPrivada()) aplicarNucleoPrivadaSR(); // estado correcto al cargar
 }
@@ -1927,10 +2022,10 @@ document.getElementById('sr_entidad').addEventListener('change', function() {
         CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
     )].sort();
     const sel = document.getElementById('sr_municipio');
-    sel.innerHTML = '<option value="">MUNICIPIO</option>';
+    sel.innerHTML = '<option value="">Municipio</option>';
     municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
     if (!esPropiedadPrivada()) {
-        document.getElementById('sr_nucleo').innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
+        document.getElementById('sr_nucleo').innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     }
 });
 
@@ -1942,7 +2037,7 @@ document.getElementById('sr_municipio').addEventListener('change', function() {
         CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
     )].sort();
     const sel = document.getElementById('sr_nucleo');
-    sel.innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
+    sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
 });
 
@@ -1952,9 +2047,9 @@ document.getElementById('rep_entidad').addEventListener('change', function() {
         CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === this.value).map(r => r.MUNICIPIO)
     )].sort();
     const sel = document.getElementById('rep_municipio');
-    sel.innerHTML = '<option value="">MUNICIPIO</option>';
+    sel.innerHTML = '<option value="">Municipio</option>';
     municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
-    document.getElementById('rep_nucleo').innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
+    document.getElementById('rep_nucleo').innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
 });
 
 document.getElementById('rep_municipio').addEventListener('change', function() {
@@ -1964,7 +2059,7 @@ document.getElementById('rep_municipio').addEventListener('change', function() {
         CATALOGO.filter(r => (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === entidad && r.MUNICIPIO === this.value).map(r => r.NUCLEO_AGRARIO)
     )].sort();
     const sel = document.getElementById('rep_nucleo');
-    sel.innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
+    sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
 });
 
@@ -1977,11 +2072,11 @@ if (spEntidad) {
         )].sort();
         const sel = document.getElementById('sp_municipio');
         if (sel) {
-            sel.innerHTML = '<option value="">MUNICIPIO</option>';
+            sel.innerHTML = '<option value="">Municipio</option>';
             municipios.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
         }
         const spNucleo = document.getElementById('sp_nucleo');
-        if (spNucleo) spNucleo.innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
+        if (spNucleo) spNucleo.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     });
 }
 
@@ -1995,7 +2090,7 @@ if (spMunicipio) {
         )].sort();
         const sel = document.getElementById('sp_nucleo');
         if (sel) {
-            sel.innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
+            sel.innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
             nucleos.forEach(n => sel.innerHTML += `<option value="${n}">${n}</option>`);
         }
     });
@@ -2138,8 +2233,8 @@ function agregarSubReporte() {
     document.getElementById('rep_soporte').value = '';
     document.getElementById('rep_localidad').value = '';
     document.getElementById('rep_entidad').value = '';
-    document.getElementById('rep_municipio').innerHTML = '<option value="">MUNICIPIO</option>';
-    document.getElementById('rep_nucleo').innerHTML = '<option value="">NÚCLEO AGRARIO</option><option value="VARIOS">VARIOS</option>';
+    document.getElementById('rep_municipio').innerHTML = '<option value="">Municipio</option>';
+    document.getElementById('rep_nucleo').innerHTML = '<option value="">Núcleo Agrario</option><option value="VARIOS">VARIOS</option>';
     document.getElementById('rep_descripcion').value = '';
 }
 

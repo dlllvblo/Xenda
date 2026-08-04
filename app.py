@@ -342,6 +342,12 @@ class Registro(db.Model):
 
     tipo_propiedad = db.Column(db.String(100))
 
+    tipo_plano = db.Column(db.String(100))
+
+    tipo_afectacion = db.Column(db.String(100))
+
+    nomenclatura = db.Column(db.Text)
+
     observaciones = db.Column(db.Text)
 
     trabajo_realizado = db.Column(db.String(100))
@@ -776,6 +782,42 @@ def exportar_excel_mensual():
 # GENERAR PRE-REPORTE QUINCENAL HTML
 # =========================================
 
+def _encabezado_trabajo(tipo, estatus):
+    """Arma el <p> de 'Trabajo de ...' con su badge de estatus.
+    Si tipo y estatus estan ambos vacios, devuelve '' (sin encabezado)."""
+    tipo = (tipo or '').strip()
+    estatus = (estatus or '').strip()
+    if not (tipo or estatus):
+        return ''
+    return f'<p><strong>Trabajo de {tipo.lower()}:</strong> <span class="estatus-badge">{estatus}</span></p>'
+
+def enumerar_actividades(texto):
+    """Reporte: separa el título (hasta el primer ':') de la lista de lugares
+    (separada por comas) y enumera la lista en cuadrícula. Si no hay título con ':'
+    o no hay lista real, devuelve el texto tal cual."""
+    import re
+    if not texto:
+        return ''
+    texto = str(texto).strip()
+    if ':' not in texto:
+        return texto.replace(chr(10), '<br>')
+    idx = texto.index(':')
+    titulo = texto[:idx + 1].strip()
+    resto = texto[idx + 1:].strip()
+    # Ítems por coma o salto de línea; limpia espacios y punto final
+    items = [p.strip().rstrip('.').strip() for p in re.split(r'[,\n]+', resto)]
+    items = [p for p in items if p]
+    if len(items) <= 1:
+        return texto.replace(chr(10), '<br>')
+    celdas = ''.join(
+        f'<div style="white-space:nowrap;">{i}.{item}</div>'
+        for i, item in enumerate(items, 1)
+    )
+    grid = ('<div style="display:grid;'
+            'grid-template-columns:repeat(auto-fill,minmax(170px,1fr));'
+            'gap:2px 18px;margin-top:4px;">' + celdas + '</div>')
+    return f'<div style="margin-bottom:4px;">{titulo}</div>' + grid
+
 def generar_reporte_quincenal_html(registros, periodo_label):
     quincena = periodo_quincena()
 
@@ -842,9 +884,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tr = desc_tr[1:end]
                                 desc_tr = desc_tr[end+2:]
-                        bloques_r += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
+                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr)}</p>'
                 elif r.trabajo_realizado:
-                    bloques_r += f'<p><strong>Trabajo de {(r.trabajo_realizado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_realizado or ""}</span></p><p class="acts-texto">{(r.actividades_realizadas or "").replace(chr(10), "<br>")}</p>'
+                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas)}</p>'
 
             # SOCIAL — bloques programados
             bloques_p = ''
@@ -860,9 +902,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tp = desc_tp[1:end]
                                 desc_tp = desc_tp[end+2:]
-                        bloques_p += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
+                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp)}</p>'
                 elif r.trabajo_programado:
-                    bloques_p += f'<p><strong>Trabajo de {(r.trabajo_programado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_programado or ""}</span></p><p class="acts-texto">{(r.actividades_programadas or "").replace(chr(10), "<br>")}</p>'
+                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas)}</p>'
 
             secciones_html += f'''
             <div class="pagina">
@@ -997,9 +1039,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tr = desc_tr[1:end]
                                 desc_tr = desc_tr[end+2:]
-                        bloques_r += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
+                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr)}</p>'
                 elif r.trabajo_realizado:
-                    bloques_r += f'<p><strong>Trabajo de {(r.trabajo_realizado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_realizado or ""}</span></p><p class="acts-texto">{(r.actividades_realizadas or "").replace(chr(10), "<br>")}</p>'
+                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas)}</p>'
 
             # Bloques programados
             bloques_p = ''
@@ -1015,9 +1057,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tp = desc_tp[1:end]
                                 desc_tp = desc_tp[end+2:]
-                        bloques_p += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
+                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp)}</p>'
                 elif r.trabajo_programado:
-                    bloques_p += f'<p><strong>Trabajo de {(r.trabajo_programado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_programado or ""}</span></p><p class="acts-texto">{(r.actividades_programadas or "").replace(chr(10), "<br>")}</p>'
+                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas)}</p>'
 
             secciones_html += f'''
             <div class="pagina">
@@ -1150,9 +1192,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tr = desc_tr[1:end]
                                 desc_tr = desc_tr[end+2:]
-                        bloques_g += f'<p><strong>Trabajo de {tipo_tr.lower()}:</strong> <span class="estatus-badge">{estatus_tr}</span></p><p class="acts-texto">{desc_tr.replace(chr(10), "<br>")}</p>'
+                        bloques_g += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr)}</p>'
                 elif r.trabajo_realizado:
-                    bloques_g += f'<p><strong>Trabajo de {(r.trabajo_realizado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_realizado or ""}</span></p><p class="acts-texto">{(r.actividades_realizadas or "").replace(chr(10), "<br>")}</p>'
+                    bloques_g += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas)}</p>'
 
             bloques_gp = ''
             for r in sin_prop:
@@ -1167,9 +1209,10 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tp = desc_tp[1:end]
                                 desc_tp = desc_tp[end+2:]
-                        bloques_gp += f'<p><strong>Trabajo de {tipo_tp.lower()}:</strong> <span class="estatus-badge">{estatus_tp}</span></p><p class="acts-texto">{desc_tp.replace(chr(10), "<br>")}</p>'
+                        encabezado_tp = _encabezado_trabajo(tipo_tp, estatus_tp)
+                        bloques_gp += f'{encabezado_tp}<p class="acts-texto">{enumerar_actividades(desc_tp)}</p>'
                 elif r.trabajo_programado:
-                    bloques_gp += f'<p><strong>Trabajo de {(r.trabajo_programado or "").lower()}:</strong> <span class="estatus-badge">{r.estatus_trabajo_programado or ""}</span></p><p class="acts-texto">{(r.actividades_programadas or "").replace(chr(10), "<br>")}</p>'
+                    bloques_gp += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas)}</p>'
 
             if bloques_g or bloques_gp:
                 secciones_html += f'''
@@ -1959,6 +2002,12 @@ def index():
 
             tipo_propiedad=request.form.get('tipo_propiedad'),
 
+            tipo_plano=request.form.get('tipo_plano') or None,
+
+            tipo_afectacion=request.form.get('tipo_afectacion') or request.form.get('tipo_afectacion_carto') or None,
+
+            nomenclatura=request.form.get('nomenclatura') or None,
+
             observaciones=request.form.get('observaciones', '').upper() or None,
 
             trabajo_realizado=request.form.get('trabajo_realizado'),
@@ -2572,7 +2621,7 @@ def descargar_registros():
 
     SECCIONES = [
         ('', None, [('ID', 'ID')]),
-        ('INFORMACIÓN TERRITORIAL', 'DDEBF7', [('Dirección', 'direccion'), ('Tramo', 'tramo'), ('Tipo de Propiedad', 'tipo_propiedad')]),
+        ('INFORMACIÓN TERRITORIAL', 'DDEBF7', [('Dirección', 'direccion'), ('Tramo', 'tramo'), ('Tipo de Propiedad', 'tipo_propiedad'), ('Tipo de Plano', 'tipo_plano'), ('Tipo', 'tipo_afectacion'), ('Nomenclatura', 'nomenclatura')]),
         ('ACTIVIDAD OPERATIVA', 'E2EFDA', [('Tipo de Actividad', 'actividad'), ('Modalidad', 'tipo'), ('No. de Infografías', 'num_infografias'), ('Infografías Generadas', 'infografias_generadas'), ('Infografías Validadas', 'infografias_validadas'), ('Estatus Infografías', 'estatus_infografias')]),
         ('PRODUCCIÓN TÉCNICA', 'FCE4D6', [('No. de Mediciones', 'mediciones_agroforestales'), ('No. de Fichas', 'mediciones_bdts'), ('Planos', 'planos'), ('Planos Generados', 'planos_generados'), ('Planos Validados', 'planos_validados')]),
         ('REPORTE MATRIZ', 'FFF2CC', [('Actividad', 'rep_actividad'), ('Cantidad', 'rep_cantidad'), ('Soporte', 'rep_soporte'), ('Entidad', 'rep_entidad'), ('Municipio', 'rep_municipio'), ('Núcleo Agrario', 'rep_nucleo'), ('Localidad', 'rep_localidad'), ('Descripción', 'rep_descripcion')]),
@@ -2601,6 +2650,7 @@ def descargar_registros():
         n = max(len(rep), len(tr), len(ar), len(tp), len(ap), 1)
         for i in range(n):
             f = {'ID': r.id, 'direccion': r.direccion, 'tramo': r.tramo, 'tipo_propiedad': r.tipo_propiedad,
+                 'tipo_plano': r.tipo_plano, 'tipo_afectacion': r.tipo_afectacion, 'nomenclatura': r.nomenclatura,
                  'actividad': r.actividad, 'tipo': r.tipo, 'num_infografias': r.num_infografias,
                  'infografias_generadas': r.infografias_generadas, 'infografias_validadas': r.infografias_validadas,
                  'estatus_infografias': r.estatus_infografias, 'mediciones_agroforestales': r.mediciones_agroforestales,
@@ -3403,6 +3453,9 @@ with app.app_context():
             conn.execute(db.text("ALTER TABLE sub_actividad ADD COLUMN IF NOT EXISTS actividad_canonica VARCHAR(60)"))
             conn.execute(db.text("ALTER TABLE sub_actividad ADD COLUMN IF NOT EXISTS cantidad INTEGER"))
             conn.execute(db.text("ALTER TABLE sub_actividad ADD COLUMN IF NOT EXISTS soporte_documental VARCHAR(200)"))
+            conn.execute(db.text("ALTER TABLE registro ADD COLUMN IF NOT EXISTS tipo_plano VARCHAR(100)"))
+            conn.execute(db.text("ALTER TABLE registro ADD COLUMN IF NOT EXISTS tipo_afectacion VARCHAR(100)"))
+            conn.execute(db.text("ALTER TABLE registro ADD COLUMN IF NOT EXISTS nomenclatura TEXT"))
             conn.execute(db.text("ALTER TABLE usuario ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255)"))
     except Exception as _e:
         print('Auto-migración sub_actividad:', _e)  

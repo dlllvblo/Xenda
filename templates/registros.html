@@ -271,19 +271,7 @@
         </a>
 
         <a
-            href="/descargar_registros?{{ request.query_string.decode() }}"
-            class="btn-limpiar btn-filtrar"
-            style="
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-            "
-        >
-            Descargar Excel
-        </a>
-
-    {% endif %}
+            {% endif %}
 
 </form>
 
@@ -297,6 +285,9 @@
             <th>Dirección</th>
             <th>Tramo</th>
             <th>Tipo de propiedad</th>
+            <th>Tipo de Plano</th>
+            <th>Tipo</th>
+            <th>Nomenclatura</th>
             <th>Actividad</th>
             <th>Modalidad</th>
             <th>No. Infografías</th>
@@ -339,6 +330,9 @@
             <td>{{ r.direccion }}</td>
             <td>{{ r.tramo }}</td>
             <td>{{ r.tipo_propiedad }}</td>
+            <td>{{ r.tipo_plano or '—' }}</td>
+            <td>{{ r.tipo_afectacion or '—' }}</td>
+            <td>{{ r.nomenclatura or '—' }}</td>
             <td>{{ r.actividad }}</td>
             <td>{{ r.tipo }}</td>
             <td>{{ r.num_infografias }}</td>
