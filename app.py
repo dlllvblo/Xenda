@@ -1910,17 +1910,17 @@ def crear_usuarios():
 
 def index():
 
-#    if (
-#        not registro_habilitado()
-#        and
-#        session.get('usuario') not in ADMIN_CORREOS
-#):
-#
-#        session.clear()
-#
-#        return render_template(
-#            'cerrado.html'
-#    )
+    if (
+        not registro_habilitado()
+        and
+        session.get('usuario') not in ADMIN_CORREOS
+):
+
+        session.clear()
+
+        return render_template(
+            'cerrado.html'
+    )
 
     if 'usuario' not in session:
 
