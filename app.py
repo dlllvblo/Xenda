@@ -1978,9 +1978,9 @@ def index():
 
             frente=frente,
 
-            actividad=request.form['actividad'],
+            actividad=request.form.get('actividad'),
 
-            tipo=request.form['tipo'],
+            tipo=request.form.get('tipo'),
 
             mediciones_agroforestales=(request.form.get('mediciones_agroforestales') or 0),
 

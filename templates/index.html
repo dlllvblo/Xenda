@@ -54,6 +54,20 @@
             margin: auto;
         }
 
+        @keyframes bannerReveal {
+            from { opacity: 0; transform: translateY(14px) scale(0.985); filter: blur(6px); }
+            to   { opacity: 1; transform: translateY(0)    scale(1);     filter: blur(0);   }
+        }
+
+        @keyframes textRise {
+            from { opacity: 0; transform: translateY(12px); filter: blur(4px); }
+            to   { opacity: 1; transform: translateY(0);    filter: blur(0);   }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .topbar, .topbar h1, .topbar p { animation: none !important; }
+        }
+
         .topbar {
             position: relative;
             overflow: hidden;
@@ -79,6 +93,8 @@
 
             box-shadow:
                 0 10px 24px rgba(0,0,0,0.15);
+
+            animation: bannerReveal 1s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
         .topbar-content {
@@ -103,6 +119,8 @@
             letter-spacing: 5px;
 
             margin-bottom: 10px;
+
+            animation: textRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
         }
 
         .topbar p {
@@ -111,6 +129,8 @@
             font-weight: 500;
 
             letter-spacing: 0.4px;
+
+            animation: textRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
         }
 
         .card {
@@ -686,7 +706,7 @@
 
     </div>
 
-    <div class="card">
+    <div class="card" id="card-actividad-operativa">
 
     <span class="req-nota">* campo obligatorio</span>
     <div class="section-title">
@@ -874,6 +894,88 @@
             </div>
 
 </div>
+
+    <div class="card" id="card-topo-centro" style="display:none;">
+
+        <span class="req-nota">* campo obligatorio</span>
+        <div class="section-title">
+            Actividad Operativa
+        </div>
+
+        <div id="tabla_topo" style="margin-bottom:12px;"></div>
+
+        <div class="grid">
+
+            <div class="input-group">
+                <label>Tipo de Actividad *</label>
+                <select id="topo_tipo_actividad">
+                    <option value="">Seleccione tipo de actividad</option>
+                    <option value="MEDICIÓN">MEDICIÓN</option>
+                    <option value="REUNIÓN DE SEGUIMIENTO">REUNIÓN DE SEGUIMIENTO</option>
+                    <option value="ASAMBLEA">ASAMBLEA</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Modalidad</label>
+                <select id="topo_modalidad">
+                    <option value="">Seleccione modalidad</option>
+                    <option value="1RA">1.ª</option>
+                    <option value="2DA">2.ª</option>
+                    <option value="BDT'S AGROFORESTAL">BDT'S AGROFORESTAL</option>
+                    <option value="BDT'S CONSTRUCCIÓN">BDT'S CONSTRUCCIÓN</option>
+                    <option value="MARCAJE">MARCAJE</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Tipo</label>
+                <select id="topo_tipo">
+                    <option value="">Seleccione tipo</option>
+                    <option value="PARCELA">PARCELA</option>
+                    <option value="POLÍGONO">POLÍGONO</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Entidad</label>
+                <select id="topo_entidad">
+                    <option value="">Entidad</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Municipio</label>
+                <select id="topo_municipio">
+                    <option value="">Municipio</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Localidad</label>
+                <textarea id="topo_localidad" rows="1" placeholder="Ingrese la localidad" autocapitalize="characters" text-transform="uppercase"></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Frente</label>
+                <textarea id="topo_frente" rows="1" placeholder="Frente (número)"></textarea>
+            </div>
+
+            <div class="input-group" style="grid-column: 1 / -1;">
+                <label>Clave *</label>
+                <textarea id="topo_clave" rows="2" placeholder="Claves separadas por coma (ej. AP-MRF-016, AP-TEC-038-3, AP-TEC-039)" autocapitalize="characters"></textarea>
+            </div>
+
+            <div class="input-group" style="grid-column: 1 / -1;">
+                <label>Descripción libre (opcional — reemplaza el texto generado)</label>
+                <textarea id="topo_descripcion_libre" rows="2" placeholder="Solo casos especiales (ej. acercamiento con titular, notas de proyecto...)"></textarea>
+            </div>
+
+        </div>
+
+        <button type="button" onclick="agregarActividadTopo()" style="background:#245C4F;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;width:100%;">+ Añadir actividad</button>
+
+    </div>
 
     <div class="card">
 
@@ -2370,6 +2472,119 @@ function calcularQuincena() {
 }
 
 calcularQuincena();
+
+// ============================================================
+// DIRECCIONES CON FORMULARIO POR ACTIVIDAD (Topo Centro / BDTs)
+// ============================================================
+var DIRS_FORM_TOPO = ["TOPOGRAFÍA CENTRO", "BDT'S AGROFORESTALES", "BDT'S CONSTRUCCIÓN"];
+var FRASES_BASE_TOPO = {
+    "BDT'S CONSTRUCCIÓN|*": "Levantamiento de BDTs de construcción",
+    "BDT'S AGROFORESTAL|*": "Levantamiento de BDTs agroforestales",
+    "MARCAJE|POLÍGONO": "Medición y marcaje de polígono",
+    "MARCAJE|PARCELA": "Medición y marcaje de parcela"
+    // 1RA / 2DA -> sin frase base (no genera actividad)
+};
+function fraseBaseTopo(mod, tipo) {
+    return FRASES_BASE_TOPO[mod + "|" + tipo] || FRASES_BASE_TOPO[mod + "|*"] || "";
+}
+function formatearClavesTopo(raw) {
+    var partes = (raw || "").split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+    if (partes.length <= 1) return partes[0] || "";
+    return partes.slice(0, -1).join(", ") + " y " + partes[partes.length - 1];
+}
+
+function poblarTopoEntidad() {
+    if (typeof CATALOGO === "undefined") return;
+    var tramo = (document.getElementById("tramo") || {}).value || "";
+    var ent = document.getElementById("topo_entidad");
+    if (!ent) return;
+    var entidades = [...new Set(CATALOGO.filter(function (r) { return !tramo || r.TRAMO === tramo; }).map(function (r) { return r.ENTIDAD_FEDERATIVA; }))].sort();
+    ent.innerHTML = "<option value=\"\">Entidad</option>";
+    entidades.forEach(function (e) { ent.innerHTML += "<option value=\"" + e + "\">" + e + "</option>"; });
+    var mun = document.getElementById("topo_municipio");
+    if (mun) mun.innerHTML = "<option value=\"\">Municipio</option>";
+}
+var _topoEnt = document.getElementById("topo_entidad");
+if (_topoEnt) _topoEnt.addEventListener("change", function () {
+    var tramo = (document.getElementById("tramo") || {}).value || "";
+    var entVal = this.value;
+    var municipios = [...new Set(CATALOGO.filter(function (r) { return (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === entVal; }).map(function (r) { return r.MUNICIPIO; }))].sort();
+    var mun = document.getElementById("topo_municipio");
+    mun.innerHTML = "<option value=\"\">Municipio</option>";
+    municipios.forEach(function (m) { mun.innerHTML += "<option value=\"" + m + "\">" + m + "</option>"; });
+});
+
+function renderTopo() {
+    var cont = document.getElementById("tabla_topo");
+    if (!cont) return;
+    if (!subRealizadas.length) { cont.innerHTML = ""; return; }
+    var th = "border:1px solid #ccc; padding:6px; background:#245C4F; color:#fff;";
+    var td = "border:1px solid #ccc; padding:6px;";
+    var h = "<table style=\"width:100%; border-collapse:collapse; font-size:13px;\"><thead><tr>";
+    ["NO","Entidad","Municipio","Localidad","Frente","Actividades realizadas en campo",""].forEach(function (c) { h += "<th style=\"" + th + "\">" + c + "</th>"; });
+    h += "</tr></thead><tbody>";
+    subRealizadas.forEach(function (it, i) {
+        var fr = it.frente ? ("F" + String(it.frente).replace(/^F/i, "")) : "";
+        var celda = "<strong>Trabajo de campo:</strong> " + (it.trabajo_campo || "—") + "<br><strong>Actividades:</strong> " + (it.descripcion || "—");
+        h += "<tr><td style=\"" + td + " text-align:center;\">" + (i + 1) + "</td>" +
+             "<td style=\"" + td + "\">" + (it.entidad || "") + "</td>" +
+             "<td style=\"" + td + "\">" + (it.municipio || "") + "</td>" +
+             "<td style=\"" + td + "\">" + (it.localidad || "") + "</td>" +
+             "<td style=\"" + td + " text-align:center;\">" + fr + "</td>" +
+             "<td style=\"" + td + "\">" + celda + "</td>" +
+             "<td style=\"" + td + " text-align:center;\"><button type=\"button\" onclick=\"eliminarTopo(" + i + ")\" style=\"background:#6E152E;color:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;\">\u2715</button></td></tr>";
+    });
+    h += "</tbody></table>";
+    cont.innerHTML = h;
+}
+function eliminarTopo(index) {
+    subRealizadas.splice(index, 1);
+    document.getElementById("sub_actividades_realizadas").value = JSON.stringify(subRealizadas);
+    renderTopo();
+}
+
+function agregarActividadTopo() {
+    var mod = document.getElementById("topo_modalidad").value;
+    var tipo = document.getElementById("topo_tipo").value;
+    var claveRaw = document.getElementById("topo_clave").value;
+    var libre = document.getElementById("topo_descripcion_libre").value.trim();
+    var fb = fraseBaseTopo(mod, tipo);
+    var claves = formatearClavesTopo(claveRaw);
+    var descripcion = libre ? libre : (fb ? (fb + " " + claves).trim() : "");
+    if (!fb && !libre) { alert("Esa modalidad (1.ª / 2.ª) no genera actividad. Usa Descripción libre si necesitas capturar algo."); return; }
+    if (fb && !libre && !claves) { alert("Ingresa al menos una clave."); return; }
+    var item = {
+        entidad: document.getElementById("topo_entidad").value,
+        municipio: document.getElementById("topo_municipio").value,
+        nucleo: "",
+        localidad: document.getElementById("topo_localidad").value.toUpperCase(),
+        frente: document.getElementById("topo_frente").value,
+        trabajo_campo: fb,
+        descripcion: descripcion
+    };
+    subRealizadas.push(item);
+    document.getElementById("sub_actividades_realizadas").value = JSON.stringify(subRealizadas);
+    renderTopo();
+    document.getElementById("topo_clave").value = "";
+    document.getElementById("topo_descripcion_libre").value = "";
+    document.getElementById("topo_localidad").value = "";
+    document.getElementById("topo_frente").value = "";
+}
+
+function toggleTopoCentro() {
+    var esTopo = (typeof direccionSelect !== "undefined") && DIRS_FORM_TOPO.indexOf(direccionSelect.value) !== -1;
+    var cardTopo = document.getElementById("card-topo-centro");
+    var cardOp = document.getElementById("card-actividad-operativa");
+    var subRe = document.getElementById("sub_realizadas_container");
+    if (cardTopo) cardTopo.style.display = esTopo ? "" : "none";
+    if (cardOp) cardOp.style.display = esTopo ? "none" : "";
+    if (subRe) subRe.style.display = esTopo ? "none" : "";
+    if (esTopo) { poblarTopoEntidad(); renderTopo(); }
+}
+if (typeof direccionSelect !== "undefined" && direccionSelect) direccionSelect.addEventListener("change", toggleTopoCentro);
+var _topoTramo = document.getElementById("tramo");
+if (_topoTramo) _topoTramo.addEventListener("change", function () { poblarTopoEntidad(); });
+toggleTopoCentro();
 
 </script>
 
