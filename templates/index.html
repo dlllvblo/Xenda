@@ -211,6 +211,8 @@
         input,
         textarea {
 
+            text-transform: uppercase;
+
             width: 100%;
 
             padding: 14px;
@@ -788,81 +790,7 @@
                 <option value="REVISIÓN Y VALIDACIÓN">AMBAS</option>
             </select>
 
-        </div>
-
-        <div class="input-group">
-
-            <label>
-                No. de Infografías
-            </label>
-
-            <input
-                type="number"
-                name="num_infografias"
-                min="0"
-                placeholder="Ingrese el número de infografías"
-                class="bloquear-numero"
-            >
-
-        </div>
-
-        <div class="input-group">
-
-            <label>
-                Infografías Generadas
-            </label>
-
-            <input
-                type="number"
-                name="infografias_generadas"
-                min="0"
-                placeholder="Ingrese el número generado"
-                class="bloquear-numero"
-            >
-
-        </div>
-
-        <div class="input-group">
-
-            <label>
-                Infografías Validadas
-            </label>
-
-            <input
-                type="number"
-                name="infografias_validadas"
-                min="0"
-                placeholder="Ingrese el número validado"
-                class="bloquear-numero"
-            >
-
-        </div>
-
-        <div class="input-group">
-
-            <label>
-                Estatus de Infografías
-            </label>
-
-            <select 
-                name="estatus_infografias"
-            >
-
-                <option value="">
-                    Seleccione un estatus
-                </option>
-
-                <option value="EN PROCESO">
-                    EN PROCESO
-                </option>
-
-                <option value="ACTUALIZADA">
-                    ACTUALIZADA
-                </option>
-
-            </select>
-
-        </div>
+        </div>        
 
     </div>
 
@@ -922,9 +850,10 @@
                     <option value="">Seleccione modalidad</option>
                     <option value="1RA">1.ª</option>
                     <option value="2DA">2.ª</option>
+                    <option value="MARCAJE">MARCAJE</option>
                     <option value="BDT'S AGROFORESTAL">BDT'S AGROFORESTAL</option>
                     <option value="BDT'S CONSTRUCCIÓN">BDT'S CONSTRUCCIÓN</option>
-                    <option value="MARCAJE">MARCAJE</option>
+                    <option value="AMBOS BDTS">AMBOS BDTS</option>
                 </select>
             </div>
 
@@ -952,23 +881,30 @@
             </div>
 
             <div class="input-group">
+                <label>Núcleo Agrario</label>
+                <select id="topo_nucleo">
+                    <option value="">Núcleo agrario</option>
+                </select>
+            </div>
+
+            <div class="input-group">
                 <label>Localidad</label>
-                <textarea id="topo_localidad" rows="1" placeholder="Ingrese la localidad" autocapitalize="characters" text-transform="uppercase"></textarea>
+                <textarea id="topo_localidad" rows="1" placeholder="Ingrese la localidad" autocapitalize="characters"></textarea>
             </div>
 
             <div class="input-group">
                 <label>Frente</label>
-                <textarea id="topo_frente" rows="1" placeholder="Frente (número)"></textarea>
+                <input type="text" id="topo_frente" inputmode="numeric" placeholder="Frente (número)">
             </div>
 
             <div class="input-group" style="grid-column: 1 / -1;">
-                <label>Clave *</label>
-                <textarea id="topo_clave" rows="2" placeholder="Claves separadas por coma (ej. AP-MRF-016, AP-TEC-038-3, AP-TEC-039)" autocapitalize="characters"></textarea>
+                <label>Trabajo de campo</label>
+                <textarea id="topo_trabajo_campo" rows="2" placeholder="Trabajo de campo (ej. Levantamiento de BDTs de construcción, Medición de polígono, Reunión de seguimiento...)"></textarea>
             </div>
 
             <div class="input-group" style="grid-column: 1 / -1;">
-                <label>Descripción libre (opcional — reemplaza el texto generado)</label>
-                <textarea id="topo_descripcion_libre" rows="2" placeholder="Solo casos especiales (ej. acercamiento con titular, notas de proyecto...)"></textarea>
+                <label>Actividades</label>
+                <textarea id="topo_actividades" rows="3" placeholder="Describa las actividades realizadas..."></textarea>
             </div>
 
         </div>
@@ -1065,6 +1001,68 @@
 
             </div>
 
+            <div class="input-group">
+
+                <label>
+                    No. de Infografías
+                </label>
+
+                <input
+                    type="number"
+                    name="num_infografias"
+                    min="0"
+                    placeholder="Ingrese el número de infografías"
+                    class="bloquear-numero"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>
+                    Infografías Generadas
+                </label>
+
+                <input
+                    type="number"
+                    name="infografias_generadas"
+                    min="0"
+                    placeholder="Ingrese el número generado"
+                    class="bloquear-numero"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>
+                    Infografías Validadas
+                </label>
+
+                <input
+                    type="number"
+                    name="infografias_validadas"
+                    min="0"
+                    placeholder="Ingrese el número validado"
+                    class="bloquear-numero"
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label>
+                    Estatus de Infografías
+                </label>
+
+                <select name="estatus_infografias">
+                    <option value="">Seleccione un estatus</option>
+                    <option value="EN PROCESO">EN PROCESO</option>
+                    <option value="ACTUALIZADA">ACTUALIZADA</option>
+                </select>
+
+            </div>
+
         </div>
 
     </div>
@@ -1120,12 +1118,13 @@
                     <input id="rep_localidad" placeholder="Localidad (solo si aplica)" autocapitalize="characters" style="border-radius:10px; padding:10px; border:1px solid #d1d5db;">
                     <textarea id="rep_descripcion" placeholder="Descripción de la actividad..." style="border-radius:10px; padding:10px; border:1px solid #d1d5db; grid-column: span 2; min-height:80px;"></textarea>
                     <datalist id="soportes_dl">
-                        <option value="Fichas"></option>
-                        <option value="Minutas"></option>
-                        <option value="Planos"></option>
-                        <option value="Infografías"></option>
-                        <option value="Minutas y archivos digitales"></option>
                         <option value="Carpetas digitales"></option>
+                        <option value="Fichas"></option>
+                        <option value="Infografías"></option>
+                        <option value="Minutas"></option>
+                        <option value="Minutas y archivos digitales"></option>
+                        <option value="Notas informativas"></option>
+                        <option value="Planos"></option>
                     </datalist>
                 </div>
                 <button type="button" onclick="agregarSubReporte()" style="background:#404040;color:white;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:14px;">+ Añadir actividad a la matriz</button>
@@ -2478,8 +2477,9 @@ calcularQuincena();
 // ============================================================
 var DIRS_FORM_TOPO = ["TOPOGRAFÍA CENTRO", "BDT'S AGROFORESTALES", "BDT'S CONSTRUCCIÓN"];
 var FRASES_BASE_TOPO = {
-    "BDT'S CONSTRUCCIÓN|*": "Levantamiento de BDTs de construcción",
-    "BDT'S AGROFORESTAL|*": "Levantamiento de BDTs agroforestales",
+    "BDT'S CONSTRUCCIÓN|*": "Levantamiento de BDTs Construcción",
+    "BDT'S AGROFORESTAL|*": "Levantamiento de BDTs Agroforestales",
+    "AMBOS BDTS|*": "Levantamiento de BDTs Agroforestales y Construcción",
     "MARCAJE|POLÍGONO": "Medición y marcaje de polígono",
     "MARCAJE|PARCELA": "Medición y marcaje de parcela"
     // 1RA / 2DA -> sin frase base (no genera actividad)
@@ -2512,6 +2512,20 @@ if (_topoEnt) _topoEnt.addEventListener("change", function () {
     var mun = document.getElementById("topo_municipio");
     mun.innerHTML = "<option value=\"\">Municipio</option>";
     municipios.forEach(function (m) { mun.innerHTML += "<option value=\"" + m + "\">" + m + "</option>"; });
+    var nuc = document.getElementById("topo_nucleo");
+    if (nuc) nuc.innerHTML = "<option value=\"\">Núcleo agrario</option>";
+});
+
+var _topoMun = document.getElementById("topo_municipio");
+if (_topoMun) _topoMun.addEventListener("change", function () {
+    var tramo = (document.getElementById("tramo") || {}).value || "";
+    var entVal = (document.getElementById("topo_entidad") || {}).value || "";
+    var munVal = this.value;
+    var nucleos = [...new Set(CATALOGO.filter(function (r) { return (!tramo || r.TRAMO === tramo) && r.ENTIDAD_FEDERATIVA === entVal && r.MUNICIPIO === munVal; }).map(function (r) { return r.NUCLEO_AGRARIO; }))].sort();
+    var nuc = document.getElementById("topo_nucleo");
+    if (!nuc) return;
+    nuc.innerHTML = "<option value=\"\">Núcleo agrario</option>";
+    nucleos.forEach(function (n) { nuc.innerHTML += "<option value=\"" + n + "\">" + n + "</option>"; });
 });
 
 function renderTopo() {
@@ -2521,7 +2535,7 @@ function renderTopo() {
     var th = "border:1px solid #ccc; padding:6px; background:#245C4F; color:#fff;";
     var td = "border:1px solid #ccc; padding:6px;";
     var h = "<table style=\"width:100%; border-collapse:collapse; font-size:13px;\"><thead><tr>";
-    ["NO","Entidad","Municipio","Localidad","Frente","Actividades realizadas en campo",""].forEach(function (c) { h += "<th style=\"" + th + "\">" + c + "</th>"; });
+    ["NO","Entidad","Municipio","Núcleo","Localidad","Frente","Actividades realizadas en campo",""].forEach(function (c) { h += "<th style=\"" + th + "\">" + c + "</th>"; });
     h += "</tr></thead><tbody>";
     subRealizadas.forEach(function (it, i) {
         var fr = it.frente ? ("F" + String(it.frente).replace(/^F/i, "")) : "";
@@ -2529,6 +2543,7 @@ function renderTopo() {
         h += "<tr><td style=\"" + td + " text-align:center;\">" + (i + 1) + "</td>" +
              "<td style=\"" + td + "\">" + (it.entidad || "") + "</td>" +
              "<td style=\"" + td + "\">" + (it.municipio || "") + "</td>" +
+             "<td style=\"" + td + "\">" + (it.nucleo || "") + "</td>" +
              "<td style=\"" + td + "\">" + (it.localidad || "") + "</td>" +
              "<td style=\"" + td + " text-align:center;\">" + fr + "</td>" +
              "<td style=\"" + td + "\">" + celda + "</td>" +
@@ -2544,29 +2559,26 @@ function eliminarTopo(index) {
 }
 
 function agregarActividadTopo() {
-    var mod = document.getElementById("topo_modalidad").value;
-    var tipo = document.getElementById("topo_tipo").value;
-    var claveRaw = document.getElementById("topo_clave").value;
-    var libre = document.getElementById("topo_descripcion_libre").value.trim();
-    var fb = fraseBaseTopo(mod, tipo);
-    var claves = formatearClavesTopo(claveRaw);
-    var descripcion = libre ? libre : (fb ? (fb + " " + claves).trim() : "");
-    if (!fb && !libre) { alert("Esa modalidad (1.ª / 2.ª) no genera actividad. Usa Descripción libre si necesitas capturar algo."); return; }
-    if (fb && !libre && !claves) { alert("Ingresa al menos una clave."); return; }
+    var trabajoCampo = document.getElementById("topo_trabajo_campo").value.trim();
+    var actividades = document.getElementById("topo_actividades").value.trim();
+    if (!trabajoCampo && !actividades) { alert("Captura al menos el Trabajo de campo o las Actividades."); return; }
     var item = {
         entidad: document.getElementById("topo_entidad").value,
         municipio: document.getElementById("topo_municipio").value,
-        nucleo: "",
-        localidad: document.getElementById("topo_localidad").value.toUpperCase(),
+        nucleo: document.getElementById("topo_nucleo").value,
+        localidad: document.getElementById("topo_localidad").value,
         frente: document.getElementById("topo_frente").value,
-        trabajo_campo: fb,
-        descripcion: descripcion
+        tipo_actividad: document.getElementById("topo_tipo_actividad").value,
+        modalidad: document.getElementById("topo_modalidad").value,
+        tipo_medicion: document.getElementById("topo_tipo").value,
+        trabajo_campo: trabajoCampo,
+        descripcion: actividades
     };
     subRealizadas.push(item);
     document.getElementById("sub_actividades_realizadas").value = JSON.stringify(subRealizadas);
     renderTopo();
-    document.getElementById("topo_clave").value = "";
-    document.getElementById("topo_descripcion_libre").value = "";
+    document.getElementById("topo_trabajo_campo").value = "";
+    document.getElementById("topo_actividades").value = "";
     document.getElementById("topo_localidad").value = "";
     document.getElementById("topo_frente").value = "";
 }
@@ -2585,6 +2597,27 @@ if (typeof direccionSelect !== "undefined" && direccionSelect) direccionSelect.a
 var _topoTramo = document.getElementById("tramo");
 if (_topoTramo) _topoTramo.addEventListener("change", function () { poblarTopoEntidad(); });
 toggleTopoCentro();
+
+// ── MAYÚSCULAS GLOBAL: todo lo que teclee el usuario se convierte a MAYÚSCULAS ──
+// Excluye campos que NO deben ir en mayúsculas (URLs, correos, contraseñas, números)
+(function () {
+    const EXCLUIR_TIPOS = ['number', 'email', 'url', 'password', 'tel', 'date', 'time'];
+    const EXCLUIR_IDS = [];  // agrega aquí ids que quieras dejar en minúsculas, ej. 'algun_campo'
+
+    document.addEventListener('input', function (e) {
+        const el = e.target;
+        if (!el.matches('input, textarea')) return;
+        if (EXCLUIR_TIPOS.includes((el.type || '').toLowerCase())) return;
+        if (EXCLUIR_IDS.includes(el.id)) return;
+
+        const pos = el.selectionStart;          // preserva la posición del cursor
+        const arriba = el.value.toUpperCase();
+        if (el.value !== arriba) {
+            el.value = arriba;
+            try { el.setSelectionRange(pos, pos); } catch (_) {}
+        }
+    });
+})();
 
 </script>
 

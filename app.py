@@ -405,6 +405,11 @@ class SubActividad(db.Model):
 
     trabajo_campo = db.Column(db.String(300))
 
+    # --- Metadatos de la topo card ---
+    tipo_actividad = db.Column(db.String(60))
+    modalidad = db.Column(db.String(60))
+    tipo_medicion = db.Column(db.String(30))   # PARCELA / POLÍGONO (SubActividad.tipo ya es realizada/programada)
+
     # --- Taxonomía del Excel (columnas K–V del REPORTE) ---
     actividad_canonica = db.Column(db.String(60))    # slug de la actividad K–V
     cantidad = db.Column(db.Integer)                 # conteo -> columna Y/TOTAL
@@ -791,7 +796,7 @@ def _encabezado_trabajo(tipo, estatus):
         return ''
     return f'<p><strong>Trabajo de {tipo.lower()}:</strong> <span class="estatus-badge">{estatus}</span></p>'
 
-def enumerar_actividades(texto):
+def enumerar_actividades(texto, direccion=''):
     """Reporte: separa el título (hasta el primer ':') de la lista de lugares
     (separada por comas) y enumera la lista en cuadrícula. Si no hay título con ':'
     o no hay lista real, devuelve el texto tal cual."""
@@ -809,6 +814,9 @@ def enumerar_actividades(texto):
     items = [p for p in items if p]
     if len(items) <= 1:
         return texto.replace(chr(10), '<br>')
+    # La enumeración en cuadrícula es EXCLUSIVA de CARTOGRAFÍA
+    if str(direccion).strip().upper() != 'CARTOGRAFÍA':
+        return texto.replace(chr(10), '<br>')
     celdas = ''.join(
         f'<div style="white-space:nowrap;">{i}.{item}</div>'
         for i, item in enumerate(items, 1)
@@ -817,6 +825,17 @@ def enumerar_actividades(texto):
             'grid-template-columns:repeat(auto-fill,minmax(170px,1fr));'
             'gap:2px 18px;margin-top:4px;">' + celdas + '</div>')
     return f'<div style="margin-bottom:4px;">{titulo}</div>' + grid
+
+def nucleo_localidad(sub):
+    """Une núcleo y localidad en una sola celda 'NÚCLEO / LOCALIDAD',
+    omitiendo vacíos y el placeholder 'PROPIEDAD PRIVADA'."""
+    vals = []
+    for v in (sub.nucleo, sub.localidad):
+        v = (v or '').strip()
+        if v and v.upper() != 'PROPIEDAD PRIVADA':
+            vals.append(v)
+    return ' / '.join(vals)
+
 
 def generar_reporte_quincenal_html(registros, periodo_label):
     quincena = periodo_quincena()
@@ -884,9 +903,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tr = desc_tr[1:end]
                                 desc_tr = desc_tr[end+2:]
-                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr)}</p>'
+                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr, direccion)}</p>'
                 elif r.trabajo_realizado:
-                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas)}</p>'
+                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas, direccion)}</p>'
 
             # SOCIAL — bloques programados
             bloques_p = ''
@@ -902,9 +921,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tp = desc_tp[1:end]
                                 desc_tp = desc_tp[end+2:]
-                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp)}</p>'
+                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp, direccion)}</p>'
                 elif r.trabajo_programado:
-                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas)}</p>'
+                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas, direccion)}</p>'
 
             secciones_html += f'''
             <div class="pagina">
@@ -941,7 +960,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{contador}</td>
                             <td>{sub.entidad or ''}</td>
                             <td>{sub.municipio or ''}</td>
-                            <td>{sub.nucleo or ''}</td>
+                            <td>{nucleo_localidad(sub)}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
@@ -967,7 +986,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <th>No.</th>
                             <th>Entidad Federativa</th>
                             <th>Municipio</th>
-                            <th>N&uacute;cleo Agrario</th>
+                            <th>N&uacute;cleo / Localidad</th>
                             <th>Frente</th>
                             <th>Actividades Realizadas</th>
                         </tr>
@@ -990,7 +1009,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{contador}</td>
                             <td>{sub.entidad or ''}</td>
                             <td>{sub.municipio or ''}</td>
-                            <td>{sub.nucleo or ''}</td>
+                            <td>{nucleo_localidad(sub)}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
@@ -1014,7 +1033,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                     <table class="tabla-nucleos">
                         <thead><tr>
                             <th>No.</th><th>Entidad Federativa</th><th>Municipio</th>
-                            <th>N&uacute;cleo Agrario</th><th>Frente</th><th>Actividades Programadas</th>
+                            <th>N&uacute;cleo / Localidad</th><th>Frente</th><th>Actividades Programadas</th>
                         </tr></thead>
                         <tbody>{filas_prog_social}</tbody>
                     </table>
@@ -1039,9 +1058,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tr = desc_tr[1:end]
                                 desc_tr = desc_tr[end+2:]
-                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr)}</p>'
+                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr, direccion)}</p>'
                 elif r.trabajo_realizado:
-                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas)}</p>'
+                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas, direccion)}</p>'
 
             # Bloques programados
             bloques_p = ''
@@ -1057,9 +1076,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tp = desc_tp[1:end]
                                 desc_tp = desc_tp[end+2:]
-                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp)}</p>'
+                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp, direccion)}</p>'
                 elif r.trabajo_programado:
-                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas)}</p>'
+                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas, direccion)}</p>'
 
             secciones_html += f'''
             <div class="pagina">
@@ -1096,7 +1115,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{contador}</td>
                             <td>{sub.entidad or ''}</td>
                             <td>{sub.municipio or ''}</td>
-                            <td>{sub.localidad or ''}</td>
+                            <td>{nucleo_localidad(sub)}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
@@ -1122,7 +1141,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <th>No.</th>
                             <th>Entidad Federativa</th>
                             <th>Municipio</th>
-                            <th>Localidad</th>
+                            <th>N&uacute;cleo / Localidad</th>
                             <th>Frente</th>
                             <th>Actividades Realizadas</th>
                         </tr>
@@ -1145,7 +1164,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             <td>{contador}</td>
                             <td>{sub.entidad or ''}</td>
                             <td>{sub.municipio or ''}</td>
-                            <td>{sub.localidad or ''}</td>
+                            <td>{nucleo_localidad(sub)}</td>
                             <td>{('F' + str(sub.frente)) if sub.frente else ''}</td>
                             <td>{'<strong>Trabajo de campo:</strong> ' + sub.trabajo_campo + '<br>' if sub.trabajo_campo else ''}<strong>Actividades:</strong> {(sub.descripcion or '').replace(chr(10), '<br>')}</td>
                         </tr>
@@ -1169,7 +1188,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                     <table class="tabla-nucleos">
                         <thead><tr>
                             <th>No.</th><th>Entidad Federativa</th><th>Municipio</th>
-                            <th>Localidad</th><th>Frente</th><th>Actividades Programadas</th>
+                            <th>N&uacute;cleo / Localidad</th><th>Frente</th><th>Actividades Programadas</th>
                         </tr></thead>
                         <tbody>{filas_prog_privada}</tbody>
                     </table>
@@ -1192,9 +1211,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tr = desc_tr[1:end]
                                 desc_tr = desc_tr[end+2:]
-                        bloques_g += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr)}</p>'
+                        bloques_g += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr, direccion)}</p>'
                 elif r.trabajo_realizado:
-                    bloques_g += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas)}</p>'
+                    bloques_g += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas, direccion)}</p>'
 
             bloques_gp = ''
             for r in sin_prop:
@@ -1210,9 +1229,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                                 estatus_tp = desc_tp[1:end]
                                 desc_tp = desc_tp[end+2:]
                         encabezado_tp = _encabezado_trabajo(tipo_tp, estatus_tp)
-                        bloques_gp += f'{encabezado_tp}<p class="acts-texto">{enumerar_actividades(desc_tp)}</p>'
+                        bloques_gp += f'{encabezado_tp}<p class="acts-texto">{enumerar_actividades(desc_tp, direccion)}</p>'
                 elif r.trabajo_programado:
-                    bloques_gp += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas)}</p>'
+                    bloques_gp += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas, direccion)}</p>'
 
             if bloques_g or bloques_gp:
                 secciones_html += f'''
@@ -1243,9 +1262,24 @@ def generar_reporte_quincenal_html(registros, periodo_label):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pre-Reporte Quincenal &middot; {periodo_label}</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+  @font-face {{
+    font-family: 'Patria';
+    src: url('https://framework-gb.cdn.gob.mx/applications/cms/fonts/Patria_Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }}
+  @font-face {{
+    font-family: 'Patria';
+    src: url('https://framework-gb.cdn.gob.mx/applications/cms/fonts/Patria_Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }}
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Noto Sans', 'Segoe UI', Arial, sans-serif;
     background: #f0f0f0;
     color: #1a1a1a;
   }}
@@ -1283,6 +1317,11 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     font-size: 13px;
     color: #245C4F;
     font-weight: 500;
+  }}
+  .encabezado-texto p.proyecto,
+  .encabezado-texto p.tramo-nombre,
+  .encabezado-texto p.liberacion {{
+    font-family: 'Patria', 'Segoe UI', Arial, sans-serif;
   }}
   .encabezado-logo {{
     width: 120px;
@@ -1368,7 +1407,7 @@ def generar_reporte_quincenal_html(registros, periodo_label):
     color: rgba(222,201,162,0.7);
     margin-bottom: 3px;
   }}
-  .portada-divider {{
+  .portada-divider {{body
     width: 60px;
     height: 2px;
     background: #BC945A;
@@ -2052,7 +2091,10 @@ def index():
                     localidad=item.get('localidad', ''),
                     frente=item.get('frente', ''),
                     descripcion=item.get('descripcion', ''),
-                    trabajo_campo=item.get('trabajo_campo', '')
+                    trabajo_campo=item.get('trabajo_campo', ''),
+                    tipo_actividad=item.get('tipo_actividad', ''),
+                    modalidad=item.get('modalidad', ''),
+                    tipo_medicion=item.get('tipo_medicion', '')
                 )
                 db.session.add(sub)
         except:
@@ -2069,7 +2111,10 @@ def index():
                     localidad=item.get('localidad', ''),
                     frente=item.get('frente', ''),
                     descripcion=item.get('descripcion', ''),
-                    trabajo_campo=item.get('trabajo_campo', '')
+                    trabajo_campo=item.get('trabajo_campo', ''),
+                    tipo_actividad=item.get('tipo_actividad', ''),
+                    modalidad=item.get('modalidad', ''),
+                    tipo_medicion=item.get('tipo_medicion', '')
                 )
                 db.session.add(sub)
         except:
@@ -2616,7 +2661,9 @@ def descargar_registros():
                 out.append({'descripcion': s.descripcion or '', 'entidad': s.entidad or '',
                             'municipio': s.municipio or '', 'nucleo': s.nucleo or '',
                             'localidad': s.localidad or '', 'frente': str(s.frente) if s.frente else '',
-                            'trabajo_campo': s.trabajo_campo or ''})
+                            'trabajo_campo': s.trabajo_campo or '',
+                            'tipo_actividad': s.tipo_actividad or '', 'modalidad': s.modalidad or '',
+                            'tipo_medicion': s.tipo_medicion or ''})
         return out
 
     SECCIONES = [
@@ -2626,9 +2673,9 @@ def descargar_registros():
         ('PRODUCCIÓN TÉCNICA', 'FCE4D6', [('No. de Mediciones', 'mediciones_agroforestales'), ('No. de Fichas', 'mediciones_bdts'), ('Planos', 'planos'), ('Planos Generados', 'planos_generados'), ('Planos Validados', 'planos_validados')]),
         ('REPORTE MATRIZ', 'FFF2CC', [('Actividad', 'rep_actividad'), ('Cantidad', 'rep_cantidad'), ('Soporte', 'rep_soporte'), ('Entidad', 'rep_entidad'), ('Municipio', 'rep_municipio'), ('Núcleo Agrario', 'rep_nucleo'), ('Localidad', 'rep_localidad'), ('Descripción', 'rep_descripcion')]),
         ('TRABAJO REALIZADO', 'D9E1F2', [('Actividad Realizada', 'tr_actividad'), ('Estatus', 'tr_estatus'), ('Descripción', 'tr_descripcion')]),
-        ('ACTIVIDADES REALIZADAS (TABLA INTEGRADA)', 'E2EFDA', [('Descripción', 'ar_descripcion'), ('Entidad', 'ar_entidad'), ('Municipio', 'ar_municipio'), ('Núcleo Agrario', 'ar_nucleo'), ('Localidad', 'ar_localidad'), ('Frente', 'ar_frente'), ('Trabajo de Campo', 'ar_trabajo_campo')]),
+        ('ACTIVIDADES REALIZADAS (TABLA INTEGRADA)', 'E2EFDA', [('Descripción', 'ar_descripcion'), ('Entidad', 'ar_entidad'), ('Municipio', 'ar_municipio'), ('Núcleo Agrario', 'ar_nucleo'), ('Localidad', 'ar_localidad'), ('Frente', 'ar_frente'), ('Trabajo de Campo', 'ar_trabajo_campo'), ('Tipo de Actividad', 'ar_tipo_actividad'), ('Modalidad', 'ar_modalidad'), ('Tipo', 'ar_tipo_medicion')]),
         ('TRABAJO PROGRAMADO', 'D9E1F2', [('Actividad Programada', 'tp_actividad'), ('Estatus', 'tp_estatus'), ('Descripción', 'tp_descripcion')]),
-        ('ACTIVIDADES PROGRAMADAS', 'E2EFDA', [('Descripción', 'ap_descripcion'), ('Entidad', 'ap_entidad'), ('Municipio', 'ap_municipio'), ('Núcleo Agrario', 'ap_nucleo'), ('Localidad', 'ap_localidad'), ('Frente', 'ap_frente'), ('Trabajo de Campo', 'ap_trabajo_campo')]),
+        ('ACTIVIDADES PROGRAMADAS', 'E2EFDA', [('Descripción', 'ap_descripcion'), ('Entidad', 'ap_entidad'), ('Municipio', 'ap_municipio'), ('Núcleo Agrario', 'ap_nucleo'), ('Localidad', 'ap_localidad'), ('Frente', 'ap_frente'), ('Trabajo de Campo', 'ap_trabajo_campo'), ('Tipo de Actividad', 'ap_tipo_actividad'), ('Modalidad', 'ap_modalidad'), ('Tipo', 'ap_tipo_medicion')]),
         ('REGISTRO', 'D6DCE4', [('Usuario', 'usuario'), ('Fecha', 'fecha')]),
     ]
 
@@ -2663,12 +2710,12 @@ def descargar_registros():
             d = tr[i] if i < len(tr) else {}
             f['tr_actividad'] = d.get('actividad', ''); f['tr_estatus'] = d.get('estatus', ''); f['tr_descripcion'] = d.get('descripcion', '')
             d = ar[i] if i < len(ar) else {}
-            for k in ('descripcion', 'entidad', 'municipio', 'nucleo', 'localidad', 'frente', 'trabajo_campo'):
+            for k in ('descripcion', 'entidad', 'municipio', 'nucleo', 'localidad', 'frente', 'trabajo_campo', 'tipo_actividad', 'modalidad', 'tipo_medicion'):
                 f['ar_' + k] = d.get(k, '')
             d = tp[i] if i < len(tp) else {}
             f['tp_actividad'] = d.get('actividad', ''); f['tp_estatus'] = d.get('estatus', ''); f['tp_descripcion'] = d.get('descripcion', '')
             d = ap[i] if i < len(ap) else {}
-            for k in ('descripcion', 'entidad', 'municipio', 'nucleo', 'localidad', 'frente', 'trabajo_campo'):
+            for k in ('descripcion', 'entidad', 'municipio', 'nucleo', 'localidad', 'frente', 'trabajo_campo', 'tipo_actividad', 'modalidad', 'tipo_medicion'):
                 f['ap_' + k] = d.get(k, '')
             rows.append(f)
 
