@@ -791,7 +791,7 @@ def _encabezado_trabajo(tipo, estatus):
         return ''
     return f'<p><strong>Trabajo de {tipo.lower()}:</strong> <span class="estatus-badge">{estatus}</span></p>'
 
-def enumerar_actividades(texto):
+def enumerar_actividades(texto, direccion=None):
     """Reporte: separa el título (hasta el primer ':') de la lista de lugares
     (separada por comas) y enumera la lista en cuadrícula. Si no hay título con ':'
     o no hay lista real, devuelve el texto tal cual."""
@@ -799,6 +799,8 @@ def enumerar_actividades(texto):
     if not texto:
         return ''
     texto = str(texto).strip()
+    if (direccion or '').strip().upper() != 'CARTOGRAFÍA':
+        return texto.replace(chr(10), '<br>')
     if ':' not in texto:
         return texto.replace(chr(10), '<br>')
     idx = texto.index(':')
@@ -884,9 +886,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tr = desc_tr[1:end]
                                 desc_tr = desc_tr[end+2:]
-                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr)}</p>'
+                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr, r.direccion)}</p>'
                 elif r.trabajo_realizado:
-                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas)}</p>'
+                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas, r.direccion)}</p>'
 
             # SOCIAL — bloques programados
             bloques_p = ''
@@ -902,9 +904,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tp = desc_tp[1:end]
                                 desc_tp = desc_tp[end+2:]
-                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp)}</p>'
+                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp, r.direccion)}</p>'
                 elif r.trabajo_programado:
-                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas)}</p>'
+                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas, r.direccion)}</p>'
 
             secciones_html += f'''
             <div class="pagina">
@@ -1039,9 +1041,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tr = desc_tr[1:end]
                                 desc_tr = desc_tr[end+2:]
-                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr)}</p>'
+                        bloques_r += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr, r.direccion)}</p>'
                 elif r.trabajo_realizado:
-                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas)}</p>'
+                    bloques_r += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas, r.direccion)}</p>'
 
             # Bloques programados
             bloques_p = ''
@@ -1057,9 +1059,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tp = desc_tp[1:end]
                                 desc_tp = desc_tp[end+2:]
-                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp)}</p>'
+                        bloques_p += f'{_encabezado_trabajo(tipo_tp, estatus_tp)}<p class="acts-texto">{enumerar_actividades(desc_tp, r.direccion)}</p>'
                 elif r.trabajo_programado:
-                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas)}</p>'
+                    bloques_p += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas, r.direccion)}</p>'
 
             secciones_html += f'''
             <div class="pagina">
@@ -1192,9 +1194,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                             if end > 0:
                                 estatus_tr = desc_tr[1:end]
                                 desc_tr = desc_tr[end+2:]
-                        bloques_g += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr)}</p>'
+                        bloques_g += f'{_encabezado_trabajo(tipo_tr, estatus_tr)}<p class="acts-texto">{enumerar_actividades(desc_tr, r.direccion)}</p>'
                 elif r.trabajo_realizado:
-                    bloques_g += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas)}</p>'
+                    bloques_g += f'{_encabezado_trabajo(r.trabajo_realizado, r.estatus_trabajo_realizado)}<p class="acts-texto">{enumerar_actividades(r.actividades_realizadas, r.direccion)}</p>'
 
             bloques_gp = ''
             for r in sin_prop:
@@ -1210,9 +1212,9 @@ def generar_reporte_quincenal_html(registros, periodo_label):
                                 estatus_tp = desc_tp[1:end]
                                 desc_tp = desc_tp[end+2:]
                         encabezado_tp = _encabezado_trabajo(tipo_tp, estatus_tp)
-                        bloques_gp += f'{encabezado_tp}<p class="acts-texto">{enumerar_actividades(desc_tp)}</p>'
+                        bloques_gp += f'{encabezado_tp}<p class="acts-texto">{enumerar_actividades(desc_tp, r.direccion)}</p>'
                 elif r.trabajo_programado:
-                    bloques_gp += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas)}</p>'
+                    bloques_gp += f'{_encabezado_trabajo(r.trabajo_programado, r.estatus_trabajo_programado)}<p class="acts-texto">{enumerar_actividades(r.actividades_programadas, r.direccion)}</p>'
 
             if bloques_g or bloques_gp:
                 secciones_html += f'''
@@ -1910,17 +1912,17 @@ def crear_usuarios():
 
 def index():
 
-    if (
-        not registro_habilitado()
-        and
-        session.get('usuario') not in ADMIN_CORREOS
-):
+#     if (
+#         not registro_habilitado()
+#         and
+#         session.get('usuario') not in ADMIN_CORREOS
+# ):
 
-        session.clear()
+#         session.clear()
 
-        return render_template(
-            'cerrado.html'
-    )
+#         return render_template(
+#             'cerrado.html'
+#     )
 
     if 'usuario' not in session:
 
